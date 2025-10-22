@@ -64,14 +64,20 @@ const Dashboard = () => {
               <h1 className="text-2xl font-bold text-primary">ABC</h1>
               <p className="text-sm text-muted-foreground">AI Legal & Tax Co-pilot</p>
             </div>
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate("/")}
-              className="gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </Button>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-sm font-medium">John Doe</p>
+                <p className="text-xs text-muted-foreground">PAN: ABCDE1234F</p>
+              </div>
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate("/")}
+                className="gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </header>
