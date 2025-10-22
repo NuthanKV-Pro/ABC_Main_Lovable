@@ -94,13 +94,21 @@ const Salary = () => {
                 <p className="text-sm text-muted-foreground">Income from employment</p>
               </div>
             </div>
-            <Button 
-              onClick={handleSave}
-              className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
-            >
-              <Save className="w-4 h-4" />
-              Save Details
-            </Button>
+            <div className="flex gap-3">
+              <Button 
+                variant="outline"
+                className="gap-2 border-2 border-primary/50 hover:bg-primary/10"
+              >
+                Get Optimal Salary Structure
+              </Button>
+              <Button 
+                onClick={handleSave}
+                className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
+              >
+                <Save className="w-4 h-4" />
+                Save Details
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -136,6 +144,24 @@ const Salary = () => {
                     <SelectItem value="pension">Pension</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="tan">TAN of Employer</Label>
+                <Input
+                  id="tan"
+                  placeholder="Enter TAN"
+                  maxLength={10}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="pan">PAN of Employer</Label>
+                <Input
+                  id="pan"
+                  placeholder="Enter PAN"
+                  maxLength={10}
+                />
               </div>
             </div>
             <div className="space-y-2">

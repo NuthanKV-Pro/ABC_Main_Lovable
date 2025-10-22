@@ -170,7 +170,7 @@ const Dashboard = () => {
         </div>
 
         {/* Summary Card */}
-        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
+        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 mb-6">
           <CardHeader>
             <CardTitle>Income Summary - {selectedYear}</CardTitle>
             <CardDescription>
@@ -188,6 +188,51 @@ const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Tax Planning Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="border-2 hover:shadow-[var(--shadow-card)] transition-shadow">
+            <CardHeader>
+              <CardTitle className="text-lg">Tax Saving Suggestions</CardTitle>
+              <CardDescription>
+                Based on your current and previous returns
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Complete your income details to get personalized tax-saving recommendations
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 hover:shadow-[var(--shadow-card)] transition-shadow">
+            <CardHeader>
+              <CardTitle className="text-lg">Tax Regime Comparison</CardTitle>
+              <CardDescription>
+                Old vs New tax regime analysis
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                We'll calculate which regime saves you more tax based on your income
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 hover:shadow-[var(--shadow-card)] transition-shadow">
+            <CardHeader>
+              <CardTitle className="text-lg">Deductions & Exemptions</CardTitle>
+              <CardDescription>
+                Maximize your tax benefits
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Track your eligible deductions under various sections
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </main>
 
       {/* Chatbot */}
