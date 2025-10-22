@@ -1,0 +1,237 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, Save } from "lucide-react";
+import Chatbot from "@/components/Chatbot";
+import { useToast } from "@/hooks/use-toast";
+
+interface IncomeRow {
+  particulars: string;
+  income: string;
+  exemption: string;
+  taxableIncome: string;
+}
+
+const Salary = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  const [employerName, setEmployerName] = useState("");
+  const [officeAddress, setOfficeAddress] = useState("");
+  const [employmentNature, setEmploymentNature] = useState("");
+
+  const [incomeData, setIncomeData] = useState<IncomeRow[]>([
+    { particulars: "Basic Salary", income: "", exemption: "", taxableIncome: "" },
+    { particulars: "HRA", income: "", exemption: "", taxableIncome: "" },
+    { particulars: "Commission", income: "", exemption: "", taxableIncome: "" },
+    { particulars: "Dearness Allowance", income: "", exemption: "", taxableIncome: "" },
+    { particulars: "Travel Allowance", income: "", exemption: "", taxableIncome: "" },
+    { particulars: "ESOPs", income: "", exemption: "", taxableIncome: "" },
+    { particulars: "Gift", income: "", exemption: "", taxableIncome: "" },
+    { particulars: "Bonus", income: "", exemption: "", taxableIncome: "" },
+    { particulars: "Free Food", income: "", exemption: "", taxableIncome: "" },
+  ]);
+
+  const calculateTaxable = (income: string, exemption: string) => {
+    const incomeNum = parseFloat(income) || 0;
+    const exemptionNum = parseFloat(exemption) || 0;
+    return (incomeNum - exemptionNum).toFixed(2);
+  };
+
+  const updateIncomeRow = (index: number, field: keyof IncomeRow, value: string) => {
+    const newData = [...incomeData];
+    newData[index][field] = value;
+    
+    if (field === "income" || field === "exemption") {
+      newData[index].taxableIncome = calculateTaxable(
+        newData[index].income,
+        newData[index].exemption
+      );
+    }
+    
+    setIncomeData(newData);
+  };
+
+  const calculateTotals = () => {
+    return incomeData.reduce((acc, row) => {
+      return {
+        income: acc.income + (parseFloat(row.income) || 0),
+        exemption: acc.exemption + (parseFloat(row.exemption) || 0),
+        taxableIncome: acc.taxableIncome + (parseFloat(row.taxableIncome) || 0),
+      };
+    }, { income: 0, exemption: 0, taxableIncome: 0 });
+  };
+
+  const handleSave = () => {
+    toast({
+      title: "Salary details saved",
+      description: "Your income information has been saved successfully.",
+    });
+  };
+
+  const totals = calculateTotals();
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
+      {/* Header */}
+      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/dashboard")}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-primary">Salary Income</h1>
+                <p className="text-sm text-muted-foreground">Income from employment</p>
+              </div>
+            </div>
+            <Button 
+              onClick={handleSave}
+              className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
+            >
+              <Save className="w-4 h-4" />
+              Save Details
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        {/* Basic Details */}
+        <Card className="mb-6 border-2">
+          <CardHeader>
+            <CardTitle>Basic Details</CardTitle>
+            <CardDescription>Information about your employer</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="employer">Name of the Employer</Label>
+                <Input
+                  id="employer"
+                  value={employerName}
+                  onChange={(e) => setEmployerName(e.target.value)}
+                  placeholder="Enter employer name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="nature">Nature of Employment</Label>
+                <Select value={employmentNature} onValueChange={setEmploymentNature}>
+                  <SelectTrigger id="nature">
+                    <SelectValue placeholder="Select employment type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="government">Government</SelectItem>
+                    <SelectItem value="private">Private</SelectItem>
+                    <SelectItem value="pension">Pension</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="address">Address of the Office</Label>
+              <Input
+                id="address"
+                value={officeAddress}
+                onChange={(e) => setOfficeAddress(e.target.value)}
+                placeholder="Enter complete office address"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Income Details */}
+        <Card className="border-2">
+          <CardHeader>
+            <CardTitle>Income Details</CardTitle>
+            <CardDescription>
+              Enter your salary components and exemptions
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b-2 border-primary/20">
+                    <th className="text-left p-3 font-semibold bg-muted/50">Particulars</th>
+                    <th className="text-right p-3 font-semibold bg-muted/50">Income (₹)</th>
+                    <th className="text-right p-3 font-semibold bg-muted/50">Exemption (₹)</th>
+                    <th className="text-right p-3 font-semibold bg-muted/50">Taxable Income (₹)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {incomeData.map((row, index) => (
+                    <tr key={index} className="border-b hover:bg-muted/30 transition-colors">
+                      <td className="p-3 font-medium">{row.particulars}</td>
+                      <td className="p-3">
+                        <Input
+                          type="number"
+                          value={row.income}
+                          onChange={(e) => updateIncomeRow(index, "income", e.target.value)}
+                          placeholder="0.00"
+                          className="text-right"
+                        />
+                      </td>
+                      <td className="p-3">
+                        <Input
+                          type="number"
+                          value={row.exemption}
+                          onChange={(e) => updateIncomeRow(index, "exemption", e.target.value)}
+                          placeholder="0.00"
+                          className="text-right"
+                        />
+                      </td>
+                      <td className="p-3">
+                        <Input
+                          type="number"
+                          value={row.taxableIncome}
+                          readOnly
+                          className="text-right bg-muted/50 font-semibold"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                  
+                  {/* Totals Row */}
+                  <tr className="border-t-2 border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
+                    <td className="p-3 font-bold text-lg">Total</td>
+                    <td className="p-3">
+                      <div className="text-right font-bold text-lg text-primary">
+                        ₹{totals.income.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </div>
+                    </td>
+                    <td className="p-3">
+                      <div className="text-right font-bold text-lg text-primary">
+                        ₹{totals.exemption.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </div>
+                    </td>
+                    <td className="p-3">
+                      <div className="text-right font-bold text-lg text-primary">
+                        ₹{totals.taxableIncome.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+
+      {/* Chatbot */}
+      <Chatbot />
+    </div>
+  );
+};
+
+export default Salary;
