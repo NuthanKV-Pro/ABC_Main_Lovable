@@ -67,6 +67,8 @@ const Salary = () => {
   };
 
   const handleSave = () => {
+    const total = calculateTotals();
+    localStorage.setItem('salary_total', total.taxableIncome.toString());
     toast({
       title: "Salary details saved",
       description: "Your income information has been saved successfully.",

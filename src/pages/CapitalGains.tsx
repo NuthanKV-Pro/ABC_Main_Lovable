@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import Chatbot from "@/components/Chatbot";
 
 interface AssetData {
   id: string;
@@ -20,6 +22,7 @@ interface AssetData {
 
 const CapitalGains = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   const [shares, setShares] = useState<AssetData[]>([
     {
@@ -172,6 +175,18 @@ const CapitalGains = () => {
     }
   };
 
+  const handleSave = () => {
+    const total = [...shares, ...mutualFunds, ...property, ...crypto].reduce(
+      (sum, asset) => sum + asset.capitalGain, 
+      0
+    );
+    localStorage.setItem('cg_total', total.toString());
+    toast({
+      title: "Capital gains details saved",
+      description: "Your income information has been saved successfully.",
+    });
+  };
+
   const renderAssetForm = (
     assets: AssetData[],
     category: "shares" | "mutualFunds" | "property" | "crypto",
@@ -301,16 +316,33 @@ const CapitalGains = () => {
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <div>
+            <div className="flex-1">
               <h1 className="text-2xl font-bold text-primary">Capital Gains</h1>
               <p className="text-sm text-muted-foreground">
                 Profit/Loss from sale of assets
               </p>
             </div>
+          </div>
+          <div className="flex gap-3">
+            <Button 
+              variant="outline"
+              className="gap-2 border-2 border-primary/50 hover:bg-primary/10"
+            >
+              Ask When to Sell
+            </Button>
+            <Button 
+              onClick={handleSave}
+              className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
+            >
+              <Save className="w-4 h-4" />
+              Save Details
+            </Button>
+          </div>
           </div>
         </div>
       </header>
@@ -348,6 +380,9 @@ const CapitalGains = () => {
           <Button className="flex-1">Calculate Tax Impact</Button>
         </div>
       </main>
+
+      {/* Chatbot */}
+      <Chatbot />
     </div>
   );
 };

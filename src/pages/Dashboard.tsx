@@ -43,11 +43,39 @@ const incomeCategories = [
   }
 ];
 
-const previousYears = ["FY 2023-24", "FY 2022-23", "FY 2021-22", "FY 2020-21", "FY 2019-20"];
+const previousYears = ["2026-27", "2025-26", "2024-25", "2023-24", "2022-23", "2021-22", "2020-21", "2019-20"];
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [selectedYear, setSelectedYear] = useState("FY 2023-24");
+  const [selectedYear, setSelectedYear] = useState("2024-25");
+  const [incomeValues, setIncomeValues] = useState({
+    salary: 0,
+    hp: 0,
+    pgbp: 0,
+    cg: 0,
+    os: 0
+  });
+
+  // Load income values from localStorage on mount and whenever the page becomes visible
+  useState(() => {
+    const loadIncomeValues = () => {
+      setIncomeValues({
+        salary: parseFloat(localStorage.getItem('salary_total') || '0'),
+        hp: parseFloat(localStorage.getItem('hp_total') || '0'),
+        pgbp: parseFloat(localStorage.getItem('pgbp_total') || '0'),
+        cg: parseFloat(localStorage.getItem('cg_total') || '0'),
+        os: parseFloat(localStorage.getItem('os_total') || '0'),
+      });
+    };
+
+    loadIncomeValues();
+    
+    // Reload when window gains focus (user returns from income page)
+    const handleFocus = () => loadIncomeValues();
+    window.addEventListener('focus', handleFocus);
+    
+    return () => window.removeEventListener('focus', handleFocus);
+  });
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, File | null>>({});
 
   const handleFileUpload = (categoryId: string, file: File) => {
@@ -66,8 +94,8 @@ const Dashboard = () => {
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm font-medium">John Doe</p>
-                <p className="text-xs text-muted-foreground">PAN: ABCDE1234F</p>
+                <p className="text-sm font-medium">Shankar Pillai</p>
+                <p className="text-xs text-muted-foreground">PAN: ILOVE1432U</p>
               </div>
               <Button 
                 variant="ghost" 
@@ -188,7 +216,9 @@ const Dashboard = () => {
               {incomeCategories.map((category) => (
                 <div key={category.id} className="text-center">
                   <p className="text-sm text-muted-foreground mb-1">{category.title}</p>
-                  <p className="text-lg font-bold text-primary">₹0</p>
+                  <p className="text-lg font-bold text-primary">
+                    ₹{incomeValues[category.id as keyof typeof incomeValues].toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
                 </div>
               ))}
             </div>

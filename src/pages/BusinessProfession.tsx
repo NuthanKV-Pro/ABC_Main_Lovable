@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import Chatbot from "@/components/Chatbot";
 
 const BusinessProfession = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [presumptiveIncome, setPresumptiveIncome] = useState({
     grossReceipts: 0,
     presumptiveRate: 8,
@@ -39,22 +42,41 @@ const BusinessProfession = () => {
     });
   };
 
+  const handleSave = () => {
+    // Save the higher of presumptive or regular income
+    const total = Math.max(presumptiveIncome.presumptiveIncome, regularIncome.netIncome);
+    localStorage.setItem('pgbp_total', total.toString());
+    toast({
+      title: "Business & Profession details saved",
+      description: "Your income information has been saved successfully.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/dashboard")}
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-primary">Business & Profession Income</h1>
-              <p className="text-sm text-muted-foreground">Business and professional income details</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/dashboard")}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-primary">Business & Profession Income</h1>
+                <p className="text-sm text-muted-foreground">Business and professional income details</p>
+              </div>
             </div>
+            <Button 
+              onClick={handleSave}
+              className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
+            >
+              <Save className="w-4 h-4" />
+              Save Details
+            </Button>
           </div>
         </div>
       </header>
@@ -214,6 +236,9 @@ const BusinessProfession = () => {
           <Button className="flex-1">Calculate Tax Impact</Button>
         </div>
       </main>
+
+      {/* Chatbot */}
+      <Chatbot />
     </div>
   );
 };

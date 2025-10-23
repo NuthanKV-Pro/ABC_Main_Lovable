@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import Chatbot from "@/components/Chatbot";
 
 interface PropertyData {
   id: string;
@@ -19,6 +21,7 @@ interface PropertyData {
 
 const HouseProperty = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [properties, setProperties] = useState<PropertyData[]>([
     {
       id: "1",
@@ -86,22 +89,40 @@ const HouseProperty = () => {
     }
   };
 
+  const handleSave = () => {
+    const total = properties.reduce((sum, prop) => sum + prop.taxableRent, 0);
+    localStorage.setItem('hp_total', total.toString());
+    toast({
+      title: "House property details saved",
+      description: "Your income information has been saved successfully.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/dashboard")}
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-primary">House Property Income</h1>
-              <p className="text-sm text-muted-foreground">Rental income from property</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/dashboard")}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-primary">House Property Income</h1>
+                <p className="text-sm text-muted-foreground">Rental income from property</p>
+              </div>
             </div>
+            <Button 
+              onClick={handleSave}
+              className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
+            >
+              <Save className="w-4 h-4" />
+              Save Details
+            </Button>
           </div>
         </div>
       </header>
@@ -234,6 +255,9 @@ const HouseProperty = () => {
           </div>
         </div>
       </main>
+
+      {/* Chatbot */}
+      <Chatbot />
     </div>
   );
 };

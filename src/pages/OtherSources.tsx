@@ -37,6 +37,8 @@ const OtherSources = () => {
   };
 
   const handleSave = () => {
+    const total = calculateTotal();
+    localStorage.setItem('os_total', total.toString());
     toast({
       title: "Other sources details saved",
       description: "Your income information has been saved successfully.",
