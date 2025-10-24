@@ -212,7 +212,7 @@ const Dashboard = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
               {incomeCategories.map((category) => (
                 <div key={category.id} className="text-center">
                   <p className="text-sm text-muted-foreground mb-1">{category.title}</p>
@@ -221,6 +221,14 @@ const Dashboard = () => {
                   </p>
                 </div>
               ))}
+            </div>
+            <div className="flex gap-3 justify-center">
+              <Button variant="default" className="gap-2">
+                Sync Tally
+              </Button>
+              <Button variant="default" className="gap-2">
+                MIS
+              </Button>
             </div>
           </CardContent>
         </Card>
