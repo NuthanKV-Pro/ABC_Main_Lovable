@@ -233,47 +233,95 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Tax Planning Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="border-2 hover:shadow-[var(--shadow-card)] transition-shadow">
+        {/* Gross Total Income */}
+        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 mb-6">
+          <CardHeader>
+            <CardTitle>Gross Total Income</CardTitle>
+            <CardDescription>Summary of all income heads</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              {incomeCategories.map((category) => (
+                <div key={category.id} className="text-center">
+                  <p className="text-sm text-muted-foreground mb-1">{category.title}</p>
+                  <p className="text-lg font-bold text-primary">
+                    ₹{incomeValues[category.id as keyof typeof incomeValues].toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Additional Tax Sections */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <Card className="border-2 hover:shadow-[var(--shadow-card)] transition-shadow cursor-pointer" onClick={() => navigate("/deductions")}>
             <CardHeader>
-              <CardTitle className="text-lg">Tax Saving Suggestions</CardTitle>
-              <CardDescription>
-                Based on your current and previous returns
-              </CardDescription>
+              <CardTitle className="text-lg">Deductions</CardTitle>
+              <CardDescription>Chapter VI-A deductions</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Complete your income details to get personalized tax-saving recommendations
-              </p>
+              <Button className="w-full" variant="outline">View Details</Button>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:shadow-[var(--shadow-card)] transition-shadow">
+          <Card className="border-2 hover:shadow-[var(--shadow-card)] transition-shadow cursor-pointer" onClick={() => navigate("/exempt-income")}>
             <CardHeader>
-              <CardTitle className="text-lg">Tax Regime Comparison</CardTitle>
-              <CardDescription>
-                Old vs New tax regime analysis
-              </CardDescription>
+              <CardTitle className="text-lg">Exempt Income</CardTitle>
+              <CardDescription>Income not subject to tax</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                We'll calculate which regime saves you more tax based on your income
-              </p>
+              <Button className="w-full" variant="outline">View Details</Button>
             </CardContent>
           </Card>
 
-          <Card className="border-2 hover:shadow-[var(--shadow-card)] transition-shadow">
+          <Card className="border-2 hover:shadow-[var(--shadow-card)] transition-shadow cursor-pointer" onClick={() => navigate("/regime-comparison")}>
             <CardHeader>
-              <CardTitle className="text-lg">Deductions & Exemptions</CardTitle>
-              <CardDescription>
-                Maximize your tax benefits
-              </CardDescription>
+              <CardTitle className="text-lg">Compare Regimes</CardTitle>
+              <CardDescription>Old vs New tax regime</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Track your eligible deductions under various sections
-              </p>
+              <Button className="w-full" variant="outline">Compare</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 hover:shadow-[var(--shadow-card)] transition-shadow cursor-pointer" onClick={() => navigate("/year-comparison")}>
+            <CardHeader>
+              <CardTitle className="text-lg">Year Comparison</CardTitle>
+              <CardDescription>Compare with previous year</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" variant="outline">Compare</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 hover:shadow-[var(--shadow-card)] transition-shadow cursor-pointer" onClick={() => navigate("/tax-payments")}>
+            <CardHeader>
+              <CardTitle className="text-lg">Advance Tax, TDS & TCS</CardTitle>
+              <CardDescription>Tax payments & deductions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" variant="outline">View Details</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 hover:shadow-[var(--shadow-card)] transition-shadow cursor-pointer" onClick={() => navigate("/total-income-tax")}>
+            <CardHeader>
+              <CardTitle className="text-lg">Total Income & Tax</CardTitle>
+              <CardDescription>Complete tax summary</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full" variant="outline">View Summary</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 border-primary/50 bg-gradient-to-br from-primary/10 to-accent/10 hover:shadow-[var(--shadow-card)] transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="text-lg text-primary">How to Save Tax</CardTitle>
+              <CardDescription>Next year tax planning</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full bg-primary hover:bg-primary/90 shadow-[var(--shadow-gold)]">Get Advice</Button>
             </CardContent>
           </Card>
         </div>
