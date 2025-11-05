@@ -121,7 +121,7 @@ const HouseProperty = () => {
               className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
             >
               <Save className="w-4 h-4" />
-              Save Details
+              Auto Saved
             </Button>
           </div>
         </div>

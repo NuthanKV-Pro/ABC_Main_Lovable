@@ -30,9 +30,9 @@ const modules = [
     small: true
   },
   {
-    id: "mcs",
-    title: "MCS",
-    description: "Management Control Systems",
+    id: "mca",
+    title: "MCA",
+    description: "Ministry of Corporate Affairs",
     icon: Building,
     route: null,
     comingSoon: true
@@ -78,12 +78,49 @@ const Index = () => {
         </div>
       </header>
 
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-16 lg:py-24">
+        <div className="text-center max-w-4xl mx-auto">
+          <div className="inline-block mb-6 px-6 py-2 rounded-full bg-primary/10 border border-primary/20">
+            <p className="text-primary font-medium flex items-center gap-2">
+              <span className="text-xl">✨</span> AI-Powered Tax Consultation
+            </p>
+          </div>
+          
+          <h1 className="text-5xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            AnyBody Can Consult
+          </h1>
+          
+          <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            Your intelligent co-pilot for legal and tax consultation.
+            Analyze income, optimize deductions, and get expert AI guidance.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white shadow-[var(--shadow-gold)] px-8 py-6 text-lg"
+              onClick={() => navigate("/auth")}
+            >
+              Get Started →
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              className="px-8 py-6 text-lg"
+            >
+              Learn More
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-4 pb-12">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">Welcome to ABC Co-pilot</h2>
+          <h2 className="text-3xl font-bold mb-4">Choose Your Module</h2>
           <p className="text-lg text-muted-foreground">
-            Your AI-powered assistant for legal and tax management
+            Select a module to get started with your consultation
           </p>
         </div>
 

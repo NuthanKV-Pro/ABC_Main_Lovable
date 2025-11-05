@@ -47,7 +47,7 @@ const previousYears = ["2026-27", "2025-26", "2024-25", "2023-24", "2022-23", "2
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [selectedYear, setSelectedYear] = useState("2024-25");
+  const [selectedYear, setSelectedYear] = useState("2026-27");
   const [incomeValues, setIncomeValues] = useState({
     salary: 0,
     hp: 0,
@@ -203,13 +203,11 @@ const Dashboard = () => {
           })}
         </div>
 
-        {/* Summary Card */}
+        {/* Gross Total Income */}
         <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 mb-6">
           <CardHeader>
-            <CardTitle>Income Summary - {selectedYear}</CardTitle>
-            <CardDescription>
-              Complete all sections for accurate tax computation
-            </CardDescription>
+            <CardTitle>Gross Total Income</CardTitle>
+            <CardDescription>Summary of all income heads</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
@@ -229,26 +227,6 @@ const Dashboard = () => {
               <Button variant="default" className="gap-2">
                 MIS
               </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Gross Total Income */}
-        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5 mb-6">
-          <CardHeader>
-            <CardTitle>Gross Total Income</CardTitle>
-            <CardDescription>Summary of all income heads</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {incomeCategories.map((category) => (
-                <div key={category.id} className="text-center">
-                  <p className="text-sm text-muted-foreground mb-1">{category.title}</p>
-                  <p className="text-lg font-bold text-primary">
-                    ₹{incomeValues[category.id as keyof typeof incomeValues].toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </p>
-                </div>
-              ))}
             </div>
           </CardContent>
         </Card>

@@ -86,90 +86,41 @@ const Auth = () => {
             <CardHeader>
               <CardTitle className="text-2xl">Welcome</CardTitle>
               <CardDescription>
-                Sign in or create an account to continue
+                Sign in or create your account to continue
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="login" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="login">Login</TabsTrigger>
-                  <TabsTrigger value="signup">Sign Up</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="login">
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="pan">PAN Number</Label>
-                      <Input 
-                        id="pan" 
-                        placeholder="ABCDE1234F" 
-                        required 
-                        className="uppercase"
-                        maxLength={10}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Income Tax Login Password</Label>
-                      <Input 
-                        id="password" 
-                        type="password" 
-                        placeholder="Enter your password"
-                        required 
-                      />
-                    </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 transition-opacity shadow-[var(--shadow-gold)]"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? "Signing in..." : "Sign In"}
-                    </Button>
-                  </form>
-                </TabsContent>
-                
-                <TabsContent value="signup">
-                  <form onSubmit={handleSignup} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-pan">PAN Number</Label>
-                      <Input 
-                        id="signup-pan" 
-                        placeholder="ABCDE1234F" 
-                        required 
-                        className="uppercase"
-                        maxLength={10}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="signup-password">Create Password</Label>
-                      <Input 
-                        id="signup-password" 
-                        type="password" 
-                        placeholder="Create a strong password"
-                        required 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="confirm-password">Confirm Password</Label>
-                      <Input 
-                        id="confirm-password" 
-                        type="password" 
-                        placeholder="Re-enter your password"
-                        required 
-                      />
-                    </div>
-                    <div className="rounded-lg bg-muted p-3 text-sm text-muted-foreground">
-                      By signing up, you agree to let us extract basic information from your Income Tax profile
-                    </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 transition-opacity shadow-[var(--shadow-gold)]"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? "Creating account..." : "Create Account"}
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="pan">PAN Number</Label>
+                  <Input 
+                    id="pan" 
+                    placeholder="ABCDE1234F" 
+                    required 
+                    className="uppercase"
+                    maxLength={10}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    placeholder="Enter your password"
+                    required 
+                  />
+                </div>
+                <div className="rounded-lg bg-muted p-3 text-sm text-muted-foreground">
+                  By continuing, you agree to let us extract basic information from your Income Tax profile
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 transition-opacity shadow-[var(--shadow-gold)]"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Please wait..." : "Sign In / Sign Up"}
+                </Button>
+              </form>
             </CardContent>
           </Card>
         </div>
