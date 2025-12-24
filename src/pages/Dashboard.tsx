@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Upload, Home, Building2, Briefcase, TrendingUp, Wallet, LogOut } from "lucide-react";
 import Chatbot from "@/components/Chatbot";
+import TaxHub from "@/components/TaxHub";
+import TaxSavingsRecommendations from "@/components/TaxSavingsRecommendations";
 
 const incomeCategories = [
   {
@@ -97,6 +99,7 @@ const Dashboard = () => {
                 <p className="text-sm font-medium">Shankar Pillai</p>
                 <p className="text-xs text-muted-foreground">PAN: ILOVE1432U</p>
               </div>
+              <TaxHub />
               <Button 
                 variant="ghost" 
                 onClick={() => navigate("/")}
@@ -302,6 +305,11 @@ const Dashboard = () => {
               <Button className="w-full bg-primary hover:bg-primary/90 shadow-[var(--shadow-gold)]">Get Advice</Button>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Tax Savings Recommendations */}
+        <div className="mb-6">
+          <TaxSavingsRecommendations incomeValues={incomeValues} />
         </div>
       </main>
 
