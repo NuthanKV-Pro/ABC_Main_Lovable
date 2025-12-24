@@ -17,6 +17,7 @@ import RegimeComparison from "./pages/RegimeComparison";
 import YearComparison from "./pages/YearComparison";
 import TaxPayments from "./pages/TaxPayments";
 import TotalIncomeTax from "./pages/TotalIncomeTax";
+import ProfileSettings from "./pages/ProfileSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/year-comparison" element={<YearComparison />} />
           <Route path="/tax-payments" element={<TaxPayments />} />
           <Route path="/total-income-tax" element={<TotalIncomeTax />} />
+          <Route path="/profile" element={<ProfileSettings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

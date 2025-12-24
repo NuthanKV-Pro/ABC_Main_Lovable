@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, Home, Building2, Briefcase, TrendingUp, Wallet, LogOut } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Upload, Home, Building2, Briefcase, TrendingUp, Wallet, LogOut, Pencil, Check, X, Settings } from "lucide-react";
 import Chatbot from "@/components/Chatbot";
 import TaxHub from "@/components/TaxHub";
 import TaxSavingsRecommendations from "@/components/TaxSavingsRecommendations";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 const incomeCategories = [
   {
@@ -49,7 +51,11 @@ const previousYears = ["2026-27", "2025-26", "2024-25", "2023-24", "2022-23", "2
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { profile, updateProfile } = useUserProfile();
   const [selectedYear, setSelectedYear] = useState("2026-27");
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editName, setEditName] = useState(profile.name);
+  const [editPan, setEditPan] = useState(profile.pan);
   const [incomeValues, setIncomeValues] = useState({
     salary: 0,
     hp: 0,
@@ -57,6 +63,17 @@ const Dashboard = () => {
     cg: 0,
     os: 0
   });
+
+  const handleSaveProfile = () => {
+    updateProfile({ name: editName, pan: editPan.toUpperCase() });
+    setIsEditingProfile(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditName(profile.name);
+    setEditPan(profile.pan);
+    setIsEditingProfile(false);
+  };
 
   // Load income values from localStorage on mount and whenever the page becomes visible
   useState(() => {
@@ -95,11 +112,50 @@ const Dashboard = () => {
               <p className="text-sm text-muted-foreground">AI Legal & Tax Co-pilot</p>
             </div>
             <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm font-medium">Shankaran Pillai</p>
-                <p className="text-xs text-muted-foreground">PAN: ILOVE1432U</p>
-              </div>
+              {isEditingProfile ? (
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-col gap-1">
+                    <Input
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      className="h-7 text-sm w-40"
+                      placeholder="Name"
+                    />
+                    <Input
+                      value={editPan}
+                      onChange={(e) => setEditPan(e.target.value.toUpperCase())}
+                      className="h-6 text-xs w-40"
+                      placeholder="PAN"
+                      maxLength={10}
+                    />
+                  </div>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleSaveProfile}>
+                    <Check className="w-4 h-4 text-green-600" />
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleCancelEdit}>
+                    <X className="w-4 h-4 text-red-600" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="text-right">
+                    <p className="text-sm font-medium">{profile.name}</p>
+                    <p className="text-xs text-muted-foreground">PAN: {profile.pan}</p>
+                  </div>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsEditingProfile(true)}>
+                    <Pencil className="w-3 h-3" />
+                  </Button>
+                </div>
+              )}
               <TaxHub />
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => navigate("/profile")}
+                title="Profile Settings"
+              >
+                <Settings className="w-4 h-4" />
+              </Button>
               <Button 
                 variant="ghost" 
                 onClick={() => navigate("/")}
