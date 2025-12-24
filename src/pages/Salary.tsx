@@ -5,8 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Download, ExternalLink } from "lucide-react";
 import Chatbot from "@/components/Chatbot";
+import TaxBreakdownCharts from "@/components/TaxBreakdownCharts";
+import TaxPlanningCalendar from "@/components/TaxPlanningCalendar";
+import IncomeHistory from "@/components/IncomeHistory";
+import { exportSalaryReport } from "@/utils/pdfExport";
 import { useToast } from "@/hooks/use-toast";
 
 interface IncomeRow {
@@ -75,7 +79,28 @@ const Salary = () => {
     });
   };
 
+  const handleExportPDF = () => {
+    const totals = calculateTotals();
+    exportSalaryReport(
+      incomeData,
+      { employerName, officeAddress, employmentNature },
+      totals
+    );
+    toast({
+      title: "PDF Downloaded",
+      description: "Your salary report has been downloaded successfully.",
+    });
+  };
+
   const totals = calculateTotals();
+
+  // Prepare chart data
+  const chartIncomeData = incomeData.map(row => ({
+    particulars: row.particulars,
+    income: parseFloat(row.income) || 0,
+    exemption: parseFloat(row.exemption) || 0,
+    taxableIncome: parseFloat(row.taxableIncome) || 0
+  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
@@ -96,12 +121,22 @@ const Salary = () => {
                 <p className="text-sm text-muted-foreground">Income from employment</p>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <Button 
                 variant="outline"
                 className="gap-2 border-2 border-primary/50 hover:bg-primary/10"
+                onClick={() => window.open('https://abcsalop.lovable.app', '_blank')}
               >
+                <ExternalLink className="w-4 h-4" />
                 Get Optimal Salary Structure
+              </Button>
+              <Button 
+                variant="outline"
+                className="gap-2"
+                onClick={handleExportPDF}
+              >
+                <Download className="w-4 h-4" />
+                Export PDF
               </Button>
               <Button 
                 onClick={handleSave}
@@ -254,6 +289,15 @@ const Salary = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Tax Breakdown Charts */}
+        <TaxBreakdownCharts incomeData={chartIncomeData} />
+
+        {/* Tax Planning Calendar */}
+        <TaxPlanningCalendar />
+
+        {/* Income History */}
+        <IncomeHistory />
       </main>
 
       {/* Chatbot */}
