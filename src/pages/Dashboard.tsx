@@ -96,7 +96,7 @@ const Dashboard = () => {
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm font-medium">Shankar Pillai</p>
+                <p className="text-sm font-medium">Shankaran Pillai</p>
                 <p className="text-xs text-muted-foreground">PAN: ILOVE1432U</p>
               </div>
               <TaxHub />
