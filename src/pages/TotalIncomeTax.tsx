@@ -3,7 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { exportTaxComputationReport } from "@/utils/taxReportExport";
 
 // Tax calculation for New Regime (FY 2024-25)
 const calculateNewRegimeTax = (income: number): number => {
@@ -17,6 +20,8 @@ const calculateNewRegimeTax = (income: number): number => {
 
 const TotalIncomeTax = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { profile } = useUserProfile();
 
   const [incomeData, setIncomeData] = useState({
     salary: 0,
@@ -63,18 +68,40 @@ const TotalIncomeTax = () => {
   const surcharge = Math.round(calculateSurcharge(totalIncome, tax));
   const totalTax = Math.round(tax + cess + surcharge);
 
+  const handleExportPDF = () => {
+    exportTaxComputationReport(
+      incomeData,
+      deductions,
+      {
+        name: profile.name,
+        pan: profile.pan,
+        assessmentYear: '2025-26'
+      }
+    );
+    toast({
+      title: "PDF Downloaded",
+      description: "Your tax computation report has been downloaded successfully.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => navigate("/dashboard")}>
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-primary">Total Income & Tax</h1>
-              <p className="text-sm text-muted-foreground">Complete tax computation summary</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" onClick={() => navigate("/dashboard")}>
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-primary">Total Income & Tax</h1>
+                <p className="text-sm text-muted-foreground">Complete tax computation summary</p>
+              </div>
             </div>
+            <Button onClick={handleExportPDF} className="gap-2">
+              <Download className="w-4 h-4" />
+              Export Report PDF
+            </Button>
           </div>
         </div>
       </header>
