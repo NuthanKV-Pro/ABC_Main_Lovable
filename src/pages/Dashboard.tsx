@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, Home, Building2, Briefcase, TrendingUp, Wallet, LogOut, Pencil, Check, X, Settings } from "lucide-react";
+import { Upload, Home, Building2, Briefcase, TrendingUp, Wallet, LogOut, Pencil, Check, X, Settings, CalendarDays } from "lucide-react";
 import Chatbot from "@/components/Chatbot";
 import TaxHub from "@/components/TaxHub";
 import TaxSavingsRecommendations from "@/components/TaxSavingsRecommendations";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import IncomeTaxCalendar from "@/components/IncomeTaxCalendar";
 
 const incomeCategories = [
   {
@@ -148,6 +150,7 @@ const Dashboard = () => {
                 </div>
               )}
               <TaxHub />
+              <ThemeToggle />
               <Button 
                 variant="ghost" 
                 size="icon"
@@ -366,6 +369,11 @@ const Dashboard = () => {
         {/* Tax Savings Recommendations */}
         <div className="mb-6">
           <TaxSavingsRecommendations incomeValues={incomeValues} />
+        </div>
+
+        {/* Income Tax Calendar */}
+        <div className="mb-6">
+          <IncomeTaxCalendar />
         </div>
       </main>
 
