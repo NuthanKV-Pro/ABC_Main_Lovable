@@ -100,7 +100,7 @@ const Index = () => {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white shadow-[var(--shadow-gold)] px-8 py-6 text-lg"
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/dashboard")}
             >
               Get Started →
             </Button>

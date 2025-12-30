@@ -1,32 +1,92 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeft } from "lucide-react";
 
+// Tax calculation functions for Old Regime
+const calculateOldRegimeTax = (income: number): number => {
+  if (income <= 250000) return 0;
+  if (income <= 500000) return (income - 250000) * 0.05;
+  if (income <= 1000000) return 12500 + (income - 500000) * 0.2;
+  return 12500 + 100000 + (income - 1000000) * 0.3;
+};
+
+// Tax calculation functions for New Regime (FY 2024-25)
+const calculateNewRegimeTax = (income: number): number => {
+  if (income <= 300000) return 0;
+  if (income <= 700000) return (income - 300000) * 0.05;
+  if (income <= 1000000) return 20000 + (income - 700000) * 0.1;
+  if (income <= 1200000) return 20000 + 30000 + (income - 1000000) * 0.15;
+  if (income <= 1500000) return 20000 + 30000 + 30000 + (income - 1200000) * 0.2;
+  return 20000 + 30000 + 30000 + 60000 + (income - 1500000) * 0.3;
+};
+
 const RegimeComparison = () => {
   const navigate = useNavigate();
+  
+  const [incomeData, setIncomeData] = useState({
+    salary: 0,
+    hp: 0,
+    pgbp: 0,
+    cg: 0,
+    os: 0
+  });
+  
+  const [deductions, setDeductions] = useState(0);
 
-  // Sample data - in a real app, this would come from calculations
-  const data = {
-    gti: 1500000,
-    deductionOld: 150000,
-    deductionNew: 50000,
-    slabsOld: 187500,
-    slabsNew: 195000,
-    cess: 4,
+  // Load data from localStorage
+  useEffect(() => {
+    const loadData = () => {
+      setIncomeData({
+        salary: parseFloat(localStorage.getItem('salary_total') || '0'),
+        hp: parseFloat(localStorage.getItem('hp_total') || '0'),
+        pgbp: parseFloat(localStorage.getItem('pgbp_total') || '0'),
+        cg: parseFloat(localStorage.getItem('cg_total') || '0'),
+        os: parseFloat(localStorage.getItem('os_total') || '0'),
+      });
+      setDeductions(parseFloat(localStorage.getItem('deductions_total') || '0'));
+    };
+
+    loadData();
+    window.addEventListener('focus', loadData);
+    return () => window.removeEventListener('focus', loadData);
+  }, []);
+
+  const gti = incomeData.salary + incomeData.hp + incomeData.pgbp + incomeData.cg + incomeData.os;
+  
+  // Old regime allows full deductions, new regime has limited deductions
+  const deductionOld = deductions;
+  const deductionNew = Math.min(deductions, 75000); // Standard deduction limit in new regime
+  
+  const taxableIncomeOld = Math.max(0, gti - deductionOld);
+  const taxableIncomeNew = Math.max(0, gti - deductionNew);
+  
+  const slabsOld = calculateOldRegimeTax(taxableIncomeOld);
+  const slabsNew = calculateNewRegimeTax(taxableIncomeNew);
+  
+  const cess = 4;
+  
+  const cessOld = (slabsOld * cess) / 100;
+  const cessNew = (slabsNew * cess) / 100;
+  
+  const totalWithCessOld = slabsOld + cessOld;
+  const totalWithCessNew = slabsNew + cessNew;
+  
+  // Surcharge calculation (simplified)
+  const calculateSurcharge = (income: number, tax: number): number => {
+    if (income <= 5000000) return 0;
+    if (income <= 10000000) return tax * 0.1;
+    if (income <= 20000000) return tax * 0.15;
+    if (income <= 50000000) return tax * 0.25;
+    return tax * 0.37;
   };
-
-  const totalOld = data.slabsOld;
-  const cessOld = (totalOld * data.cess) / 100;
-  const totalWithCessOld = totalOld + cessOld;
-  const surchargeOld = 0; // Calculate based on income
+  
+  const surchargeOld = calculateSurcharge(taxableIncomeOld, slabsOld);
+  const surchargeNew = calculateSurcharge(taxableIncomeNew, slabsNew);
+  
   const finalTaxOld = totalWithCessOld + surchargeOld;
-
-  const totalNew = data.slabsNew;
-  const cessNew = (totalNew * data.cess) / 100;
-  const totalWithCessNew = totalNew + cessNew;
-  const surchargeNew = 0; // Calculate based on income
   const finalTaxNew = totalWithCessNew + surchargeNew;
 
   const betterRegime = finalTaxOld < finalTaxNew ? 'old' : 'new';
@@ -64,23 +124,23 @@ const RegimeComparison = () => {
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">Gross Total Income</TableCell>
-                  <TableCell className="text-right">{data.gti.toLocaleString('en-IN')}</TableCell>
-                  <TableCell className="text-right">{data.gti.toLocaleString('en-IN')}</TableCell>
+                  <TableCell className="text-right">{gti.toLocaleString('en-IN')}</TableCell>
+                  <TableCell className="text-right">{gti.toLocaleString('en-IN')}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Deduction</TableCell>
-                  <TableCell className="text-right">{data.deductionNew.toLocaleString('en-IN')}</TableCell>
-                  <TableCell className="text-right">{data.deductionOld.toLocaleString('en-IN')}</TableCell>
+                  <TableCell className="text-right">{deductionNew.toLocaleString('en-IN')}</TableCell>
+                  <TableCell className="text-right">{deductionOld.toLocaleString('en-IN')}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Total Income</TableCell>
-                  <TableCell className="text-right">{(data.gti - data.deductionNew).toLocaleString('en-IN')}</TableCell>
-                  <TableCell className="text-right">{(data.gti - data.deductionOld).toLocaleString('en-IN')}</TableCell>
+                  <TableCell className="text-right">{taxableIncomeNew.toLocaleString('en-IN')}</TableCell>
+                  <TableCell className="text-right">{taxableIncomeOld.toLocaleString('en-IN')}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Tax on Slabs</TableCell>
-                  <TableCell className="text-right">{data.slabsNew.toLocaleString('en-IN')}</TableCell>
-                  <TableCell className="text-right">{data.slabsOld.toLocaleString('en-IN')}</TableCell>
+                  <TableCell className="text-right">{slabsNew.toLocaleString('en-IN')}</TableCell>
+                  <TableCell className="text-right">{slabsOld.toLocaleString('en-IN')}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell className="font-medium">Cess @ 4%</TableCell>
