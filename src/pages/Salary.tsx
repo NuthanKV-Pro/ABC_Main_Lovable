@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Save, Download, ExternalLink } from "lucide-react";
 import Chatbot from "@/components/Chatbot";
 import TaxBreakdownCharts from "@/components/TaxBreakdownCharts";
-import TaxPlanningCalendar from "@/components/TaxPlanningCalendar";
+import TaxDeadlineReminders from "@/components/TaxDeadlineReminders";
 import IncomeHistory from "@/components/IncomeHistory";
+import Form16Parser from "@/components/Form16Parser";
 import { exportSalaryReport } from "@/utils/pdfExport";
 import { useToast } from "@/hooks/use-toast";
 
@@ -290,11 +291,18 @@ const Salary = () => {
           </CardContent>
         </Card>
 
+        {/* Form 16 Parser */}
+        <div className="mt-6">
+          <Form16Parser />
+        </div>
+
         {/* Tax Breakdown Charts */}
         <TaxBreakdownCharts incomeData={chartIncomeData} />
 
-        {/* Tax Planning Calendar */}
-        <TaxPlanningCalendar />
+        {/* Tax Deadline Reminders */}
+        <div className="mt-6">
+          <TaxDeadlineReminders />
+        </div>
 
         {/* Income History */}
         <IncomeHistory />
