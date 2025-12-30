@@ -10,6 +10,13 @@ import TaxSavingsRecommendations from "@/components/TaxSavingsRecommendations";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import IncomeTaxCalendar from "@/components/IncomeTaxCalendar";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const incomeCategories = [
   {
@@ -150,6 +157,21 @@ const Dashboard = () => {
                 </div>
               )}
               <TaxHub />
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" title="Tax Calendar">
+                    <CalendarDays className="w-4 h-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle>Income Tax Calendar</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-4">
+                    <IncomeTaxCalendar />
+                  </div>
+                </SheetContent>
+              </Sheet>
               <ThemeToggle />
               <Button 
                 variant="ghost" 
@@ -369,11 +391,6 @@ const Dashboard = () => {
         {/* Tax Savings Recommendations */}
         <div className="mb-6">
           <TaxSavingsRecommendations incomeValues={incomeValues} />
-        </div>
-
-        {/* Income Tax Calendar */}
-        <div className="mb-6">
-          <IncomeTaxCalendar />
         </div>
       </main>
 
