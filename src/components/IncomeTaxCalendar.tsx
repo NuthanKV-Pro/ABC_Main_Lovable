@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, AlertCircle, CheckCircle2, Clock } from "lucide-react";
 
 interface TaxEvent {
   id: string;
@@ -278,99 +276,86 @@ export default function IncomeTaxCalendar() {
   });
 
   return (
-    <Card className="border-2">
-      <CardHeader>
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <CalendarDays className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <CardTitle>Income Tax Calendar</CardTitle>
-            <CardDescription>Important due dates for ITR, Advance Tax, TDS, and TCS</CardDescription>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-          <TabsList className="grid grid-cols-6 mb-6">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="itr">ITR</TabsTrigger>
-            <TabsTrigger value="advance-tax">Advance Tax</TabsTrigger>
-            <TabsTrigger value="tds">TDS</TabsTrigger>
-            <TabsTrigger value="tcs">TCS</TabsTrigger>
-            <TabsTrigger value="other">Other</TabsTrigger>
-          </TabsList>
+    <div className="space-y-4">
+      <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+        <TabsList className="grid grid-cols-6 mb-4">
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="itr">ITR</TabsTrigger>
+          <TabsTrigger value="advance-tax">Adv Tax</TabsTrigger>
+          <TabsTrigger value="tds">TDS</TabsTrigger>
+          <TabsTrigger value="tcs">TCS</TabsTrigger>
+          <TabsTrigger value="other">Other</TabsTrigger>
+        </TabsList>
 
-          <TabsContent value={selectedCategory} className="space-y-6">
-            {sortedMonths.map(month => (
-              <div key={month}>
-                <h3 className="text-lg font-semibold mb-3 text-primary">{month}</h3>
-                <div className="space-y-3">
-                  {groupedEvents[month].map(event => (
-                    <div 
-                      key={event.id}
-                      className="flex items-start gap-4 p-4 rounded-lg border bg-card hover:shadow-sm transition-shadow"
-                    >
-                      <div className="flex-shrink-0 w-20 text-center">
-                        <div className="text-sm font-medium text-muted-foreground">{event.date}</div>
-                        {event.percentage && (
-                          <Badge variant="outline" className="mt-1 text-xs">
-                            {event.percentage}
-                          </Badge>
-                        )}
+        <TabsContent value={selectedCategory} className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+          {sortedMonths.map(month => (
+            <div key={month}>
+              <h3 className="text-lg font-semibold mb-3 text-primary">{month}</h3>
+              <div className="space-y-3">
+                {groupedEvents[month].map(event => (
+                  <div 
+                    key={event.id}
+                    className="flex items-start gap-3 p-3 rounded-lg border bg-card hover:shadow-sm transition-shadow"
+                  >
+                    <div className="flex-shrink-0 w-16 text-center">
+                      <div className="text-xs font-medium text-muted-foreground">{event.date}</div>
+                      {event.percentage && (
+                        <Badge variant="outline" className="mt-1 text-xs">
+                          {event.percentage}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h4 className="font-medium text-sm text-foreground">{event.title}</h4>
+                        <Badge variant="outline" className={`text-xs ${getCategoryColor(event.category)}`}>
+                          {getCategoryLabel(event.category)}
+                        </Badge>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium text-foreground">{event.title}</h4>
-                          <Badge variant="outline" className={getCategoryColor(event.category)}>
-                            {getCategoryLabel(event.category)}
+                      <p className="text-xs text-muted-foreground mb-2">{event.description}</p>
+                      <div className="flex flex-wrap gap-1">
+                        {event.applicableTo.map(type => (
+                          <Badge key={type} variant="secondary" className="text-xs">
+                            {type}
                           </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">{event.description}</p>
-                        <div className="flex flex-wrap gap-1">
-                          {event.applicableTo.map(type => (
-                            <Badge key={type} variant="secondary" className="text-xs">
-                              {type}
-                            </Badge>
-                          ))}
-                        </div>
+                        ))}
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </TabsContent>
-        </Tabs>
+            </div>
+          ))}
+        </TabsContent>
+      </Tabs>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t">
-          <div className="text-center p-3 rounded-lg bg-blue-500/10">
-            <div className="text-2xl font-bold text-blue-700 dark:text-blue-400">
-              {taxCalendarEvents.filter(e => e.category === "itr").length}
-            </div>
-            <div className="text-sm text-muted-foreground">ITR Deadlines</div>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-4 border-t">
+        <div className="text-center p-2 rounded-lg bg-blue-500/10">
+          <div className="text-xl font-bold text-blue-700 dark:text-blue-400">
+            {taxCalendarEvents.filter(e => e.category === "itr").length}
           </div>
-          <div className="text-center p-3 rounded-lg bg-green-500/10">
-            <div className="text-2xl font-bold text-green-700 dark:text-green-400">
-              {taxCalendarEvents.filter(e => e.category === "advance-tax").length}
-            </div>
-            <div className="text-sm text-muted-foreground">Advance Tax Dates</div>
-          </div>
-          <div className="text-center p-3 rounded-lg bg-purple-500/10">
-            <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">
-              {taxCalendarEvents.filter(e => e.category === "tds").length}
-            </div>
-            <div className="text-sm text-muted-foreground">TDS Dates</div>
-          </div>
-          <div className="text-center p-3 rounded-lg bg-orange-500/10">
-            <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">
-              {taxCalendarEvents.filter(e => e.category === "tcs").length}
-            </div>
-            <div className="text-sm text-muted-foreground">TCS Dates</div>
-          </div>
+          <div className="text-xs text-muted-foreground">ITR Deadlines</div>
         </div>
-      </CardContent>
-    </Card>
+        <div className="text-center p-2 rounded-lg bg-green-500/10">
+          <div className="text-xl font-bold text-green-700 dark:text-green-400">
+            {taxCalendarEvents.filter(e => e.category === "advance-tax").length}
+          </div>
+          <div className="text-xs text-muted-foreground">Advance Tax</div>
+        </div>
+        <div className="text-center p-2 rounded-lg bg-purple-500/10">
+          <div className="text-xl font-bold text-purple-700 dark:text-purple-400">
+            {taxCalendarEvents.filter(e => e.category === "tds").length}
+          </div>
+          <div className="text-xs text-muted-foreground">TDS Dates</div>
+        </div>
+        <div className="text-center p-2 rounded-lg bg-orange-500/10">
+          <div className="text-xl font-bold text-orange-700 dark:text-orange-400">
+            {taxCalendarEvents.filter(e => e.category === "tcs").length}
+          </div>
+          <div className="text-xs text-muted-foreground">TCS Dates</div>
+        </div>
+      </div>
+    </div>
   );
 }
