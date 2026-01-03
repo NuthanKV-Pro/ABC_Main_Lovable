@@ -3,13 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, Home, Building2, Briefcase, TrendingUp, Wallet, LogOut, Pencil, Check, X, Settings, CalendarDays } from "lucide-react";
+import { Upload, Home, Building2, Briefcase, TrendingUp, Wallet, LogOut, Pencil, Check, X, Settings, CalendarDays, Download } from "lucide-react";
 import Chatbot from "@/components/Chatbot";
 import TaxHub from "@/components/TaxHub";
 import TaxSavingsRecommendations from "@/components/TaxSavingsRecommendations";
+import RealTimeTaxLiability from "@/components/RealTimeTaxLiability";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import IncomeTaxCalendar from "@/components/IncomeTaxCalendar";
+import { exportTaxRecommendationsPDF, exportTaxCalendarPDF } from "@/utils/recommendationsExport";
+import { useToast } from "@/hooks/use-toast";
 import {
   Sheet,
   SheetContent,
@@ -60,6 +63,7 @@ const previousYears = ["2026-27", "2025-26", "2024-25", "2023-24", "2022-23", "2
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { profile, updateProfile } = useUserProfile();
   const [selectedYear, setSelectedYear] = useState("2026-27");
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -72,6 +76,16 @@ const Dashboard = () => {
     cg: 0,
     os: 0
   });
+
+  const handleExportRecommendations = () => {
+    exportTaxRecommendationsPDF(incomeValues, { ...profile, assessmentYear: selectedYear });
+    toast({ title: "PDF Downloaded", description: "Tax recommendations exported successfully." });
+  };
+
+  const handleExportCalendar = () => {
+    exportTaxCalendarPDF({ ...profile, assessmentYear: selectedYear });
+    toast({ title: "PDF Downloaded", description: "Tax calendar exported successfully." });
+  };
 
   const handleSaveProfile = () => {
     updateProfile({ name: editName, pan: editPan.toUpperCase() });
@@ -165,7 +179,13 @@ const Dashboard = () => {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
                   <SheetHeader>
-                    <SheetTitle>Income Tax Calendar</SheetTitle>
+                    <div className="flex items-center justify-between">
+                      <SheetTitle>Income Tax Calendar</SheetTitle>
+                      <Button variant="outline" size="sm" onClick={handleExportCalendar} className="gap-2">
+                        <Download className="w-4 h-4" />
+                        Export PDF
+                      </Button>
+                    </div>
                   </SheetHeader>
                   <div className="mt-4">
                     <IncomeTaxCalendar />
@@ -388,8 +408,20 @@ const Dashboard = () => {
           </Card>
         </div>
 
+        {/* Real-Time Tax Liability */}
+        <div className="mb-6">
+          <RealTimeTaxLiability incomeValues={incomeValues} assessmentYear={selectedYear} />
+        </div>
+
         {/* Tax Savings Recommendations */}
         <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-lg font-semibold">Tax Savings Recommendations</h3>
+            <Button variant="outline" size="sm" onClick={handleExportRecommendations} className="gap-2">
+              <Download className="w-4 h-4" />
+              Export PDF
+            </Button>
+          </div>
           <TaxSavingsRecommendations incomeValues={incomeValues} />
         </div>
       </main>
