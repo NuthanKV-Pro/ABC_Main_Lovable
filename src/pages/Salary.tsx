@@ -1,16 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Save, Download, ExternalLink } from "lucide-react";
+import { ArrowLeft, Save, Download, ExternalLink, RefreshCw } from "lucide-react";
 import Chatbot from "@/components/Chatbot";
 import TaxBreakdownCharts from "@/components/TaxBreakdownCharts";
 import TaxDeadlineReminders from "@/components/TaxDeadlineReminders";
 import IncomeHistory from "@/components/IncomeHistory";
-import Form16Parser from "@/components/Form16Parser";
+import Form16Parser, { ParsedSalaryData } from "@/components/Form16Parser";
 import { exportSalaryReport } from "@/utils/pdfExport";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,6 +28,8 @@ const Salary = () => {
   const [employerName, setEmployerName] = useState("");
   const [officeAddress, setOfficeAddress] = useState("");
   const [employmentNature, setEmploymentNature] = useState("");
+  const [employerTAN, setEmployerTAN] = useState("");
+  const [employerPAN, setEmployerPAN] = useState("");
 
   const [incomeData, setIncomeData] = useState<IncomeRow[]>([
     { particulars: "Basic Salary", income: "", exemption: "", taxableIncome: "" },
@@ -46,6 +48,110 @@ const Salary = () => {
     const exemptionNum = parseFloat(exemption) || 0;
     return (incomeNum - exemptionNum).toFixed(2);
   };
+
+  // Function to apply Form 16 data to fields
+  const applyForm16Data = useCallback((data: ParsedSalaryData) => {
+    // Update employer details
+    setEmployerName(data.employerName || "");
+    setOfficeAddress(data.officeAddress || "");
+    setEmploymentNature(data.employmentNature || "");
+    setEmployerTAN(data.employerTAN || "");
+    setEmployerPAN(data.employerPAN || "");
+
+    // Map Form 16 data to income rows
+    const newIncomeData: IncomeRow[] = [
+      { 
+        particulars: "Basic Salary", 
+        income: data.basicSalary?.toString() || "", 
+        exemption: "", 
+        taxableIncome: data.basicSalary?.toString() || "" 
+      },
+      { 
+        particulars: "HRA", 
+        income: data.hra?.toString() || "", 
+        exemption: "", 
+        taxableIncome: data.hra?.toString() || "" 
+      },
+      { 
+        particulars: "Commission", 
+        income: data.commission?.toString() || "", 
+        exemption: "", 
+        taxableIncome: data.commission?.toString() || "" 
+      },
+      { 
+        particulars: "Dearness Allowance", 
+        income: data.dearnessAllowance?.toString() || "", 
+        exemption: "", 
+        taxableIncome: data.dearnessAllowance?.toString() || "" 
+      },
+      { 
+        particulars: "Travel Allowance", 
+        income: data.travelAllowance?.toString() || "", 
+        exemption: "", 
+        taxableIncome: data.travelAllowance?.toString() || "" 
+      },
+      { 
+        particulars: "ESOPs", 
+        income: data.esops?.toString() || "", 
+        exemption: "", 
+        taxableIncome: data.esops?.toString() || "" 
+      },
+      { 
+        particulars: "Gift", 
+        income: data.gift?.toString() || "", 
+        exemption: "", 
+        taxableIncome: data.gift?.toString() || "" 
+      },
+      { 
+        particulars: "Bonus", 
+        income: data.bonus?.toString() || "", 
+        exemption: "", 
+        taxableIncome: data.bonus?.toString() || "" 
+      },
+      { 
+        particulars: "Free Food", 
+        income: data.freeFood?.toString() || "", 
+        exemption: "", 
+        taxableIncome: data.freeFood?.toString() || "" 
+      },
+    ];
+
+    setIncomeData(newIncomeData);
+
+    toast({
+      title: "Salary Details Updated",
+      description: "Form 16 data has been auto-populated in all fields.",
+    });
+  }, [toast]);
+
+  // Load Form 16 data on mount if available
+  useEffect(() => {
+    const storedData = localStorage.getItem('form16_data');
+    const autoApplied = localStorage.getItem('form16_auto_applied');
+    
+    if (storedData && autoApplied === 'true') {
+      try {
+        const data = JSON.parse(storedData) as ParsedSalaryData;
+        applyForm16Data(data);
+        // Clear the auto-apply flag after applying
+        localStorage.removeItem('form16_auto_applied');
+      } catch (e) {
+        console.error('Failed to parse stored Form 16 data:', e);
+      }
+    }
+  }, [applyForm16Data]);
+
+  // Listen for Form 16 data updates
+  useEffect(() => {
+    const handleForm16Update = (event: CustomEvent<ParsedSalaryData>) => {
+      applyForm16Data(event.detail);
+    };
+
+    window.addEventListener('form16DataUpdated', handleForm16Update as EventListener);
+    return () => {
+      window.removeEventListener('form16DataUpdated', handleForm16Update as EventListener);
+    };
+  }, [applyForm16Data]);
 
   const updateIncomeRow = (index: number, field: keyof IncomeRow, value: string) => {
     const newData = [...incomeData];
@@ -93,6 +199,30 @@ const Salary = () => {
     });
   };
 
+  const handleClearForm = () => {
+    setEmployerName("");
+    setOfficeAddress("");
+    setEmploymentNature("");
+    setEmployerTAN("");
+    setEmployerPAN("");
+    setIncomeData([
+      { particulars: "Basic Salary", income: "", exemption: "", taxableIncome: "" },
+      { particulars: "HRA", income: "", exemption: "", taxableIncome: "" },
+      { particulars: "Commission", income: "", exemption: "", taxableIncome: "" },
+      { particulars: "Dearness Allowance", income: "", exemption: "", taxableIncome: "" },
+      { particulars: "Travel Allowance", income: "", exemption: "", taxableIncome: "" },
+      { particulars: "ESOPs", income: "", exemption: "", taxableIncome: "" },
+      { particulars: "Gift", income: "", exemption: "", taxableIncome: "" },
+      { particulars: "Bonus", income: "", exemption: "", taxableIncome: "" },
+      { particulars: "Free Food", income: "", exemption: "", taxableIncome: "" },
+    ]);
+    localStorage.removeItem('form16_data');
+    toast({
+      title: "Form Cleared",
+      description: "All salary details have been reset.",
+    });
+  };
+
   const totals = calculateTotals();
 
   // Prepare chart data
@@ -125,6 +255,15 @@ const Salary = () => {
             <div className="flex gap-3 flex-wrap">
               <Button 
                 variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={handleClearForm}
+              >
+                <RefreshCw className="w-4 h-4" />
+                Clear
+              </Button>
+              <Button 
+                variant="outline"
                 className="gap-2 border-2 border-primary/50 hover:bg-primary/10"
                 onClick={() => window.open('https://abcsalop.lovable.app', '_blank')}
               >
@@ -153,11 +292,19 @@ const Salary = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Form 16 Parser - Moved to top for prominence */}
+        <div className="mb-6">
+          <Form16Parser 
+            onDataParsed={applyForm16Data}
+            autoApply={true}
+          />
+        </div>
+
         {/* Basic Details */}
         <Card className="mb-6 border-2">
           <CardHeader>
             <CardTitle>Basic Details</CardTitle>
-            <CardDescription>Information about your employer</CardDescription>
+            <CardDescription>Information about your employer (auto-filled from Form 16)</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -189,6 +336,8 @@ const Salary = () => {
                 <Label htmlFor="tan">TAN of Employer</Label>
                 <Input
                   id="tan"
+                  value={employerTAN}
+                  onChange={(e) => setEmployerTAN(e.target.value)}
                   placeholder="Enter TAN"
                   maxLength={10}
                 />
@@ -197,6 +346,8 @@ const Salary = () => {
                 <Label htmlFor="pan">PAN of Employer</Label>
                 <Input
                   id="pan"
+                  value={employerPAN}
+                  onChange={(e) => setEmployerPAN(e.target.value)}
                   placeholder="Enter PAN"
                   maxLength={10}
                 />
@@ -219,7 +370,7 @@ const Salary = () => {
           <CardHeader>
             <CardTitle>Income Details</CardTitle>
             <CardDescription>
-              Enter your salary components and exemptions
+              Salary components (auto-filled from Form 16 or enter manually)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -290,11 +441,6 @@ const Salary = () => {
             </div>
           </CardContent>
         </Card>
-
-        {/* Form 16 Parser */}
-        <div className="mt-6">
-          <Form16Parser />
-        </div>
 
         {/* Tax Breakdown Charts */}
         <TaxBreakdownCharts incomeData={chartIncomeData} />
