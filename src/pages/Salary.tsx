@@ -11,6 +11,7 @@ import TaxBreakdownCharts from "@/components/TaxBreakdownCharts";
 import TaxDeadlineReminders from "@/components/TaxDeadlineReminders";
 import IncomeHistory from "@/components/IncomeHistory";
 import Form16Parser, { ParsedSalaryData } from "@/components/Form16Parser";
+import { HRACalculator } from "@/components/HRACalculator";
 import { exportSalaryReport } from "@/utils/pdfExport";
 import { useToast } from "@/hooks/use-toast";
 
@@ -252,7 +253,11 @@ const Salary = () => {
                 <p className="text-sm text-muted-foreground">Income from employment</p>
               </div>
             </div>
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex gap-3 flex-wrap items-center">
+              <HRACalculator 
+                basicSalary={parseFloat(incomeData.find(r => r.particulars === "Basic Salary")?.income || "0")}
+                hraReceived={parseFloat(incomeData.find(r => r.particulars === "HRA")?.income || "0")}
+              />
               <Button 
                 variant="outline"
                 size="sm"
