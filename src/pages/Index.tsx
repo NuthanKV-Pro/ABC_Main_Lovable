@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Phone, Mail, Linkedin, Twitter, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
 
 const modules = [
   {
@@ -152,22 +153,42 @@ const Index = () => {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 lg:py-24">
         <div className="text-center max-w-4xl mx-auto">
-          <div className="inline-block mb-6 px-6 py-2 rounded-full bg-primary/10 border border-primary/20">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-block mb-6 px-6 py-2 rounded-full bg-primary/10 border border-primary/20"
+          >
             <p className="text-primary font-medium flex items-center gap-2">
               <span className="text-xl">✨</span> AI-Powered Tax Consultation
             </p>
-          </div>
+          </motion.div>
           
-          <h1 className="text-5xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-5xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent"
+          >
             AnyBody Can Consult
-          </h1>
+          </motion.h1>
           
-          <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+          <motion.p 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto"
+          >
             Your intelligent co-pilot for legal and tax consultation.
             Analyze income, optimize deductions, and get expert AI guidance.
-          </p>
+          </motion.p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          >
             <Button 
               size="lg"
               className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white shadow-[var(--shadow-gold)] px-8 py-6 text-lg"
@@ -183,7 +204,7 @@ const Index = () => {
             >
               Learn More
             </Button>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -342,6 +363,101 @@ const Index = () => {
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t bg-card/50 backdrop-blur-sm mt-16">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Contact Information */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 text-primary">Contact Us</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-muted-foreground">
+                  <Phone className="w-4 h-4 text-primary" />
+                  <a href="tel:+919535951140" className="hover:text-primary transition-colors">
+                    +91 95-35-95-1140
+                  </a>
+                </div>
+                <div className="flex items-center gap-3 text-muted-foreground">
+                  <Mail className="w-4 h-4 text-primary" />
+                  <a href="mailto:contact@abcpro.com" className="hover:text-primary transition-colors">
+                    contact@abcpro.com
+                  </a>
+                </div>
+                <div className="flex items-center gap-3 text-muted-foreground">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <span>Nuthan Kaparthy</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Navigation */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 text-primary">Quick Links</h3>
+              <div className="space-y-2">
+                <button 
+                  onClick={() => navigate("/dashboard")}
+                  className="block text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Income Tax Dashboard
+                </button>
+                <button 
+                  onClick={() => navigate("/financial-ratios")}
+                  className="block text-muted-foreground hover:text-primary transition-colors"
+                >
+                  Financial Ratios
+                </button>
+                <button 
+                  onClick={() => navigate("/emi-calculator")}
+                  className="block text-muted-foreground hover:text-primary transition-colors"
+                >
+                  EMI Calculator
+                </button>
+                <a 
+                  href="https://abcpro1.odoo.com/about-us"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-muted-foreground hover:text-primary transition-colors"
+                >
+                  About Us
+                </a>
+              </div>
+            </div>
+
+            {/* Social Links */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 text-primary">Follow Us</h3>
+              <div className="flex gap-4">
+                <a 
+                  href="https://linkedin.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
+                >
+                  <Linkedin className="w-5 h-5 text-primary" />
+                </a>
+                <a 
+                  href="https://twitter.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
+                >
+                  <Twitter className="w-5 h-5 text-primary" />
+                </a>
+              </div>
+              <p className="text-sm text-muted-foreground mt-4">
+                Stay connected for updates on new features and tax tips.
+              </p>
+            </div>
+          </div>
+
+          <div className="border-t mt-8 pt-8 text-center">
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} ABC - AI Legal & Tax Co-pilot. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
