@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal } from "lucide-react";
 
 const modules = [
   {
@@ -57,6 +57,54 @@ const modules = [
     route: null,
     tag: "Coming Soon",
     tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
+  }
+];
+
+const amazingTools = [
+  {
+    id: "salary-optimisation",
+    title: "Salary Optimisation Engine",
+    description: "Optimize your salary structure",
+    icon: Wallet,
+    route: "external:https://abcsalop1.lovable.app",
+    tag: "WIP",
+    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+  },
+  {
+    id: "when-to-sell",
+    title: "When to Sell?",
+    description: "Investment exit timing analysis",
+    icon: HelpCircle,
+    route: null,
+    tag: "Coming Soon",
+    tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
+  },
+  {
+    id: "hra-calc",
+    title: "HRA Calc",
+    description: "House Rent Allowance calculator",
+    icon: Home,
+    route: "external:https://abcsalop1.lovable.app/hra-calc",
+    tag: "WIP",
+    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+  },
+  {
+    id: "advance-tax-calc",
+    title: "Advance Tax Calc",
+    description: "Calculate advance tax payments",
+    icon: DollarSign,
+    route: null,
+    tag: "Coming Soon",
+    tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
+  },
+  {
+    id: "more-calcs",
+    title: "More CalCs coming soon💖!",
+    description: "Exciting tools on the way",
+    icon: MoreHorizontal,
+    route: null,
+    tag: "",
+    tagColor: ""
   }
 ];
 
@@ -185,6 +233,94 @@ const Index = () => {
               </Card>
             );
           })}
+        </div>
+
+        {/* Amazing Tools Section */}
+        <div className="mt-16 max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <Sparkles className="w-6 h-6 text-primary" />
+              <h2 className="text-3xl font-bold">Amazing Tools</h2>
+              <Sparkles className="w-6 h-6 text-primary" />
+            </div>
+            <p className="text-lg text-muted-foreground">
+              Specialized calculators and utilities to simplify your finances
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {amazingTools.map((tool) => {
+              const Icon = tool.icon;
+              const isDisabled = !tool.route;
+              const isPlaceholder = tool.id === "more-calcs";
+              
+              if (isPlaceholder) {
+                return (
+                  <Card 
+                    key={tool.id}
+                    className="border-2 border-dashed border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center min-h-[200px]"
+                  >
+                    <div className="text-center p-6">
+                      <Icon className="w-10 h-10 text-primary/50 mx-auto mb-3" />
+                      <p className="text-lg font-medium text-primary/70">{tool.title}</p>
+                    </div>
+                  </Card>
+                );
+              }
+              
+              return (
+                <Card 
+                  key={tool.id}
+                  className={`hover:shadow-[var(--shadow-card)] transition-all cursor-pointer border-2 hover:border-primary/30 ${
+                    isDisabled ? 'opacity-75' : ''
+                  }`}
+                  onClick={() => {
+                    if (tool.route) {
+                      if (tool.route.startsWith('external:')) {
+                        window.open(tool.route.replace('external:', ''), '_blank');
+                      } else {
+                        navigate(tool.route);
+                      }
+                    }
+                  }}
+                >
+                  <CardHeader>
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="p-3 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10">
+                        <Icon className="w-8 h-8 text-primary" />
+                      </div>
+                      {tool.tag && (
+                        <div className={`px-3 py-1 rounded-full text-xs font-medium border ${tool.tagColor}`}>
+                          {tool.tag}
+                        </div>
+                      )}
+                    </div>
+                    <CardTitle className="text-xl">{tool.title}</CardTitle>
+                    <CardDescription className="text-base">{tool.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button 
+                      className="w-full"
+                      variant={isDisabled ? "outline" : "default"}
+                      disabled={isDisabled}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (tool.route) {
+                          if (tool.route.startsWith('external:')) {
+                            window.open(tool.route.replace('external:', ''), '_blank');
+                          } else {
+                            navigate(tool.route);
+                          }
+                        }
+                      }}
+                    >
+                      {isDisabled ? "Coming Soon" : "Open Tool"}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
       </main>
     </div>
