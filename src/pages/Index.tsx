@@ -42,8 +42,8 @@ const modules = [
     title: "GST",
     description: "Goods & Services Tax",
     icon: Receipt,
-    route: null,
-    comingSoon: true
+    route: "external:https://abcgst1.lovable.app",
+    comingSoon: false
   },
   {
     id: "income-tax",
@@ -137,7 +137,11 @@ const Index = () => {
                 } ${module.small ? 'md:col-span-1' : ''}`}
                 onClick={() => {
                   if (!module.comingSoon && module.route) {
-                    navigate(module.route);
+                    if (module.route.startsWith('external:')) {
+                      window.open(module.route.replace('external:', ''), '_blank');
+                    } else {
+                      navigate(module.route);
+                    }
                   }
                 }}
               >
@@ -163,7 +167,11 @@ const Index = () => {
                     onClick={(e) => {
                       e.stopPropagation();
                       if (!module.comingSoon && module.route) {
-                        navigate(module.route);
+                        if (module.route.startsWith('external:')) {
+                          window.open(module.route.replace('external:', ''), '_blank');
+                        } else {
+                          navigate(module.route);
+                        }
                       }
                     }}
                   >
