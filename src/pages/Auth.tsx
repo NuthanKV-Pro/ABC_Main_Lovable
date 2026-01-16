@@ -84,7 +84,7 @@ const Auth = () => {
 
           <Card className="border-2 shadow-[var(--shadow-card)]">
             <CardHeader>
-              <CardTitle className="text-2xl">Welcome</CardTitle>
+              <CardTitle className="text-2xl">Welcome to the Prototype</CardTitle>
               <CardDescription>
                 Sign in or create your account to continue
               </CardDescription>
