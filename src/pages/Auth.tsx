@@ -120,6 +120,14 @@ const Auth = () => {
                 >
                   {isLoading ? "Please wait..." : "Sign In / Sign Up"}
                 </Button>
+                <Button 
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => navigate("/dashboard")}
+                >
+                  Skip Login (Prototype Access)
+                </Button>
               </form>
             </CardContent>
           </Card>
