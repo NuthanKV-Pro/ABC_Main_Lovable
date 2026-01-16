@@ -8,11 +8,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Upload, FileSpreadsheet, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Lightbulb, BarChart3, Info, Download, Plus, Trash2, LineChart } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { ArrowLeft, Upload, FileSpreadsheet, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Lightbulb, BarChart3, Info, Download, Plus, Trash2, LineChart, Save, FolderOpen, Building2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 interface FinancialData {
   year?: string;
@@ -54,6 +56,15 @@ interface RatioResult {
   benchmark: string;
   industryBenchmark?: number;
   status: 'favorable' | 'unfavorable' | 'neutral';
+}
+
+interface SavedReport {
+  id: string;
+  companyName: string;
+  savedAt: string;
+  industry: string;
+  financialData: FinancialData;
+  multiYearData: FinancialData[];
 }
 
 interface IndustryBenchmarks {
@@ -298,6 +309,12 @@ const FinancialRatios = () => {
   const [inputMethod, setInputMethod] = useState<'manual' | 'excel' | 'tally'>('manual');
   const [selectedIndustry, setSelectedIndustry] = useState<string>('manufacturing');
   const [showTrendAnalysis, setShowTrendAnalysis] = useState(false);
+  
+  // Save/Load Reports State
+  const [savedReports, setSavedReports] = useState<SavedReport[]>([]);
+  const [companyName, setCompanyName] = useState<string>('');
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showLoadDialog, setShowLoadDialog] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('financialRatiosData');
@@ -312,6 +329,15 @@ const FinancialRatios = () => {
     if (savedIndustry) {
       setSelectedIndustry(savedIndustry);
     }
+    // Load saved reports
+    const reports = localStorage.getItem('financialRatiosSavedReports');
+    if (reports) {
+      setSavedReports(JSON.parse(reports));
+    }
+    const savedCompanyName = localStorage.getItem('financialRatiosCompanyName');
+    if (savedCompanyName) {
+      setCompanyName(savedCompanyName);
+    }
   }, []);
 
   const handleInputChange = (field: keyof FinancialData, value: string) => {
@@ -322,9 +348,66 @@ const FinancialRatios = () => {
   const loadSampleData = () => {
     setFinancialData(sampleFinancialData);
     setMultiYearData(sampleMultiYearData);
+    setCompanyName('ABC Manufacturing Ltd.');
     toast({
       title: "Sample Data Loaded",
       description: "Sample financial data for a manufacturing company has been loaded. Click 'Calculate All Ratios' to see the analysis.",
+    });
+  };
+
+  const saveReport = () => {
+    if (!companyName.trim()) {
+      toast({
+        title: "Company Name Required",
+        description: "Please enter a company name to save the report.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newReport: SavedReport = {
+      id: `report_${Date.now()}`,
+      companyName: companyName.trim(),
+      savedAt: new Date().toISOString(),
+      industry: selectedIndustry,
+      financialData: financialData,
+      multiYearData: multiYearData,
+    };
+
+    const updatedReports = [...savedReports, newReport];
+    setSavedReports(updatedReports);
+    localStorage.setItem('financialRatiosSavedReports', JSON.stringify(updatedReports));
+    localStorage.setItem('financialRatiosCompanyName', companyName);
+    setShowSaveDialog(false);
+    
+    toast({
+      title: "Report Saved",
+      description: `Financial analysis for "${companyName}" has been saved.`,
+    });
+  };
+
+  const loadReport = (report: SavedReport) => {
+    setFinancialData(report.financialData);
+    setMultiYearData(report.multiYearData);
+    setSelectedIndustry(report.industry);
+    setCompanyName(report.companyName);
+    setRatiosCalculated(false);
+    setShowLoadDialog(false);
+    
+    toast({
+      title: "Report Loaded",
+      description: `Financial data for "${report.companyName}" has been loaded. Click 'Calculate All Ratios' to see analysis.`,
+    });
+  };
+
+  const deleteReport = (reportId: string) => {
+    const updatedReports = savedReports.filter(r => r.id !== reportId);
+    setSavedReports(updatedReports);
+    localStorage.setItem('financialRatiosSavedReports', JSON.stringify(updatedReports));
+    
+    toast({
+      title: "Report Deleted",
+      description: "The saved report has been removed.",
     });
   };
 
@@ -332,6 +415,7 @@ const FinancialRatios = () => {
     localStorage.setItem('financialRatiosData', JSON.stringify(financialData));
     localStorage.setItem('financialRatiosMultiYear', JSON.stringify(multiYearData));
     localStorage.setItem('financialRatiosIndustry', selectedIndustry);
+    localStorage.setItem('financialRatiosCompanyName', companyName);
     setRatiosCalculated(true);
     toast({
       title: "Ratios Calculated",
@@ -1148,7 +1232,7 @@ const FinancialRatios = () => {
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background p-4 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
             <Button variant="ghost" onClick={() => navigate("/")}>
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -1159,15 +1243,116 @@ const FinancialRatios = () => {
                 <BarChart3 className="w-8 h-8 text-primary" />
                 Financial Ratios
               </h1>
-              <p className="text-muted-foreground">Comprehensive financial analysis</p>
+              <p className="text-muted-foreground">
+                {companyName ? `Analysis for ${companyName}` : 'Comprehensive financial analysis'}
+              </p>
             </div>
           </div>
-          {ratiosCalculated && (
-            <Button onClick={exportToPDF} className="gap-2">
-              <Download className="w-4 h-4" />
-              Export PDF
-            </Button>
-          )}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Save Report Button */}
+            <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Save className="w-4 h-4" />
+                  Save Report
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Save Financial Report</DialogTitle>
+                  <DialogDescription>
+                    Save the current financial analysis for future reference.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div>
+                    <Label htmlFor="companyNameSave">Company Name</Label>
+                    <Input
+                      id="companyNameSave"
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                      placeholder="Enter company name"
+                      className="mt-2"
+                    />
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Industry: {selectedIndustry.charAt(0).toUpperCase() + selectedIndustry.slice(1)}
+                  </div>
+                </div>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                  <Button onClick={saveReport}>Save Report</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            {/* Load Report Button */}
+            <Dialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <FolderOpen className="w-4 h-4" />
+                  Load Report
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Load Saved Report</DialogTitle>
+                  <DialogDescription>
+                    Select a previously saved financial analysis report.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-3 py-4">
+                  {savedReports.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <FolderOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                      <p>No saved reports yet.</p>
+                      <p className="text-sm">Save your first report to see it here.</p>
+                    </div>
+                  ) : (
+                    savedReports.map((report) => (
+                      <Card key={report.id} className="p-4 hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-primary/10">
+                              <Building2 className="w-5 h-5 text-primary" />
+                            </div>
+                            <div>
+                              <div className="font-semibold">{report.companyName}</div>
+                              <div className="text-sm text-muted-foreground">
+                                {report.industry.charAt(0).toUpperCase() + report.industry.slice(1)} • 
+                                Saved {new Date(report.savedAt).toLocaleDateString()}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={() => loadReport(report)}>
+                              Load
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              onClick={() => deleteReport(report.id)}
+                            >
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            {ratiosCalculated && (
+              <Button onClick={exportToPDF} className="gap-2">
+                <Download className="w-4 h-4" />
+                Export PDF
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Insights Panel - Always on top */}
@@ -1754,7 +1939,7 @@ const FinancialRatios = () => {
           </TabsContent>
 
           <TabsContent value="ratios" className="space-y-6">
-            {/* Trend Analysis Display */}
+            {/* Trend Analysis Display with Charts */}
             {trendData.length > 1 && (
               <Card className="mb-6">
                 <CardHeader>
@@ -1768,9 +1953,106 @@ const FinancialRatios = () => {
                     </Button>
                   </div>
                 </CardHeader>
-                {showTrendAnalysis && (
-                  <CardContent>
-                    <div className="overflow-x-auto">
+                <CardContent className="space-y-6">
+                  {/* Interactive Charts */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Profitability Trend Chart */}
+                    <Card className="p-4 border">
+                      <h4 className="font-semibold mb-4 flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-primary" />
+                        Profitability Trends
+                      </h4>
+                      <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RechartsLineChart data={trendData}>
+                            <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
+                            <XAxis dataKey="year" tick={{ fontSize: 12 }} />
+                            <YAxis tick={{ fontSize: 12 }} />
+                            <Tooltip 
+                              contentStyle={{ 
+                                backgroundColor: 'hsl(var(--card))', 
+                                border: '1px solid hsl(var(--border))',
+                                borderRadius: '8px'
+                              }} 
+                            />
+                            <Legend />
+                            <Line 
+                              type="monotone" 
+                              dataKey="grossProfitMargin" 
+                              name="Gross Margin %" 
+                              stroke="hsl(var(--primary))" 
+                              strokeWidth={2}
+                              dot={{ fill: 'hsl(var(--primary))' }}
+                            />
+                            <Line 
+                              type="monotone" 
+                              dataKey="netProfitMargin" 
+                              name="Net Margin %" 
+                              stroke="hsl(var(--accent))" 
+                              strokeWidth={2}
+                              dot={{ fill: 'hsl(var(--accent))' }}
+                            />
+                            <Line 
+                              type="monotone" 
+                              dataKey="returnOnEquity" 
+                              name="ROE %" 
+                              stroke="#22c55e" 
+                              strokeWidth={2}
+                              dot={{ fill: '#22c55e' }}
+                            />
+                          </RechartsLineChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </Card>
+
+                    {/* Liquidity & Leverage Trend Chart */}
+                    <Card className="p-4 border">
+                      <h4 className="font-semibold mb-4 flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-primary" />
+                        Liquidity & Leverage Trends
+                      </h4>
+                      <div className="h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={trendData}>
+                            <CartesianGrid strokeDasharray="3 3" className="opacity-50" />
+                            <XAxis dataKey="year" tick={{ fontSize: 12 }} />
+                            <YAxis tick={{ fontSize: 12 }} />
+                            <Tooltip 
+                              contentStyle={{ 
+                                backgroundColor: 'hsl(var(--card))', 
+                                border: '1px solid hsl(var(--border))',
+                                borderRadius: '8px'
+                              }} 
+                            />
+                            <Legend />
+                            <Bar 
+                              dataKey="currentRatio" 
+                              name="Current Ratio" 
+                              fill="hsl(var(--primary))" 
+                              radius={[4, 4, 0, 0]}
+                            />
+                            <Bar 
+                              dataKey="debtToEquity" 
+                              name="D/E Ratio" 
+                              fill="hsl(var(--accent))" 
+                              radius={[4, 4, 0, 0]}
+                            />
+                            <Bar 
+                              dataKey="assetTurnover" 
+                              name="Asset Turnover" 
+                              fill="#22c55e" 
+                              radius={[4, 4, 0, 0]}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </Card>
+                  </div>
+
+                  {/* Detailed Table - Shown when showTrendAnalysis is true */}
+                  {showTrendAnalysis && (
+                    <div className="overflow-x-auto mt-6">
+                      <h4 className="font-semibold mb-3">Detailed Comparison Table</h4>
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b">
@@ -1851,8 +2133,8 @@ const FinancialRatios = () => {
                         </tbody>
                       </table>
                     </div>
-                  </CardContent>
-                )}
+                  )}
+                </CardContent>
               </Card>
             )}
 
