@@ -179,6 +179,7 @@ const Index = () => {
               size="lg"
               variant="outline"
               className="px-8 py-6 text-lg"
+              onClick={() => window.open("https://abcpro1.odoo.com/about-us", "_blank")}
             >
               Learn More
             </Button>
