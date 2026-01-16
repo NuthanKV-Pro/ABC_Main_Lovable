@@ -5,37 +5,13 @@ import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator } from "
 
 const modules = [
   {
-    id: "financial-statements",
-    title: "Financial Statements",
-    description: "Balance Sheet, P&L, Cash Flow",
-    icon: FileText,
-    route: null,
-    comingSoon: true
-  },
-  {
-    id: "mis-reports",
-    title: "MIS Reports",
-    description: "Management Information System",
-    icon: BarChart3,
-    route: null,
-    comingSoon: true
-  },
-  {
-    id: "financial-ratios",
-    title: "Financial Ratios",
-    description: "Key performance metrics",
-    icon: TrendingUp,
-    route: "/financial-ratios",
-    comingSoon: false,
-    small: true
-  },
-  {
-    id: "mca",
-    title: "MCA",
-    description: "Ministry of Corporate Affairs",
-    icon: Building,
-    route: null,
-    comingSoon: true
+    id: "income-tax",
+    title: "Income Tax",
+    description: "Tax planning & filing",
+    icon: Calculator,
+    route: "/dashboard",
+    tag: "Kinda Built",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
   {
     id: "gst",
@@ -43,15 +19,44 @@ const modules = [
     description: "Goods & Services Tax",
     icon: Receipt,
     route: "external:https://abcgst1.lovable.app",
-    comingSoon: false
+    tag: "ok-ok built",
+    tagColor: "bg-amber-500/20 text-amber-400 border-amber-500/30"
   },
   {
-    id: "income-tax",
-    title: "Income Tax",
-    description: "Tax planning & filing",
-    icon: Calculator,
-    route: "/dashboard",
-    comingSoon: false
+    id: "financial-ratios",
+    title: "Financial Ratios",
+    description: "Key performance metrics",
+    icon: TrendingUp,
+    route: "/financial-ratios",
+    tag: "ok-ok built",
+    tagColor: "bg-amber-500/20 text-amber-400 border-amber-500/30"
+  },
+  {
+    id: "mca",
+    title: "MCA",
+    description: "Ministry of Corporate Affairs",
+    icon: Building,
+    route: "external:https://abcmca1.lovable.app",
+    tag: "WIP",
+    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+  },
+  {
+    id: "mis-reports",
+    title: "MIS Reports",
+    description: "Management Information System",
+    icon: BarChart3,
+    route: "external:https://abcmis1.lovable.app",
+    tag: "WIP",
+    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+  },
+  {
+    id: "financial-statements",
+    title: "Financial Statements",
+    description: "Balance Sheet, P&L, Cash Flow",
+    icon: FileText,
+    route: null,
+    tag: "Coming Soon",
+    tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
   }
 ];
 
@@ -128,15 +133,16 @@ const Index = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {modules.map((module) => {
             const Icon = module.icon;
+            const isDisabled = !module.route;
             
             return (
               <Card 
                 key={module.id}
                 className={`hover:shadow-[var(--shadow-card)] transition-all cursor-pointer border-2 hover:border-primary/30 ${
-                  module.comingSoon ? 'opacity-75' : ''
-                } ${module.small ? 'md:col-span-1' : ''}`}
+                  isDisabled ? 'opacity-75' : ''
+                }`}
                 onClick={() => {
-                  if (!module.comingSoon && module.route) {
+                  if (module.route) {
                     if (module.route.startsWith('external:')) {
                       window.open(module.route.replace('external:', ''), '_blank');
                     } else {
@@ -150,11 +156,9 @@ const Index = () => {
                     <div className="p-3 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10">
                       <Icon className="w-8 h-8 text-primary" />
                     </div>
-                    {module.comingSoon && (
-                      <div className="px-3 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium">
-                        Coming Soon
-                      </div>
-                    )}
+                    <div className={`px-3 py-1 rounded-full text-xs font-medium border ${module.tagColor}`}>
+                      {module.tag}
+                    </div>
                   </div>
                   <CardTitle className="text-2xl">{module.title}</CardTitle>
                   <CardDescription className="text-base">{module.description}</CardDescription>
@@ -162,11 +166,11 @@ const Index = () => {
                 <CardContent>
                   <Button 
                     className="w-full"
-                    variant={module.comingSoon ? "outline" : "default"}
-                    disabled={module.comingSoon}
+                    variant={isDisabled ? "outline" : "default"}
+                    disabled={isDisabled}
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (!module.comingSoon && module.route) {
+                      if (module.route) {
                         if (module.route.startsWith('external:')) {
                           window.open(module.route.replace('external:', ''), '_blank');
                         } else {
@@ -175,7 +179,7 @@ const Index = () => {
                       }
                     }}
                   >
-                    {module.comingSoon ? "Coming Soon" : "Open Module"}
+                    {isDisabled ? "Coming Soon" : "Open Module"}
                   </Button>
                 </CardContent>
               </Card>
