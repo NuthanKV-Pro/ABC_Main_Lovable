@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Salary from "./pages/Salary";
+import FinancialRatios from "./pages/FinancialRatios";
 import HouseProperty from "./pages/HouseProperty";
 import BusinessProfession from "./pages/BusinessProfession";
 import CapitalGains from "./pages/CapitalGains";
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/financial-ratios" element={<FinancialRatios />} />
           <Route path="/salary" element={<Salary />} />
           <Route path="/hp" element={<HouseProperty />} />
           <Route path="/pgbp" element={<BusinessProfession />} />
