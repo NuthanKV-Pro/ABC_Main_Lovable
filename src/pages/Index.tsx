@@ -90,12 +90,12 @@ const amazingTools = [
   },
   {
     id: "advance-tax-calc",
-    title: "Advance Tax Calc",
+    title: "Advance Tax CalC",
     description: "Calculate advance tax payments",
     icon: DollarSign,
-    route: null,
-    tag: "Coming Soon",
-    tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
+    route: "external:https://abcadv1.lovable.app",
+    tag: "WIP",
+    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
   },
   {
     id: "more-calcs",
