@@ -86,7 +86,7 @@ const Auth = () => {
             <CardHeader>
               <CardTitle className="text-2xl">Welcome to the Prototype</CardTitle>
               <CardDescription>
-                Sign in or create your account to continue
+                Dummy User Auth to allow seamless access to the Prototype
               </CardDescription>
             </CardHeader>
             <CardContent>
