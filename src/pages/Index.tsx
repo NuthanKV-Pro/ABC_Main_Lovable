@@ -25,8 +25,8 @@ const modules = [
     title: "Financial Ratios",
     description: "Key performance metrics",
     icon: TrendingUp,
-    route: null,
-    comingSoon: true,
+    route: "/financial-ratios",
+    comingSoon: false,
     small: true
   },
   {
