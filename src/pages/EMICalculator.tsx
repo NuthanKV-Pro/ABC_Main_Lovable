@@ -1,0 +1,239 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { ArrowLeft, Calculator, IndianRupee, Percent, Calendar } from "lucide-react";
+
+const EMICalculator = () => {
+  const navigate = useNavigate();
+  const [principal, setPrincipal] = useState(1000000);
+  const [rate, setRate] = useState(8.5);
+  const [tenure, setTenure] = useState(12);
+
+  // EMI Calculation
+  const monthlyRate = rate / 12 / 100;
+  const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, tenure) / (Math.pow(1 + monthlyRate, tenure) - 1);
+  const totalAmount = emi * tenure;
+  const totalInterest = totalAmount - principal;
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
+  const interestPercentage = (totalInterest / totalAmount) * 100;
+  const principalPercentage = (principal / totalAmount) * 100;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
+      {/* Header */}
+      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
+                <Calculator className="w-6 h-6" />
+                EMI Calculator
+              </h1>
+              <p className="text-sm text-muted-foreground">Calculate your Equated Monthly Installment</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
+        <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          {/* Input Section */}
+          <Card className="border-2">
+            <CardHeader>
+              <CardTitle>Loan Details</CardTitle>
+              <CardDescription>Enter your loan parameters</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-8">
+              {/* Principal Amount */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="flex items-center gap-2">
+                    <IndianRupee className="w-4 h-4" />
+                    Principal Amount
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">₹</span>
+                    <Input
+                      type="number"
+                      value={principal}
+                      onChange={(e) => setPrincipal(Number(e.target.value))}
+                      className="w-32 text-right"
+                    />
+                  </div>
+                </div>
+                <Slider
+                  value={[principal]}
+                  onValueChange={(v) => setPrincipal(v[0])}
+                  min={100000}
+                  max={50000000}
+                  step={50000}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>₹1L</span>
+                  <span>₹5Cr</span>
+                </div>
+              </div>
+
+              {/* Interest Rate */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="flex items-center gap-2">
+                    <Percent className="w-4 h-4" />
+                    Interest Rate (p.a.)
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      value={rate}
+                      onChange={(e) => setRate(Number(e.target.value))}
+                      className="w-20 text-right"
+                      step={0.1}
+                    />
+                    <span className="text-sm text-muted-foreground">%</span>
+                  </div>
+                </div>
+                <Slider
+                  value={[rate]}
+                  onValueChange={(v) => setRate(v[0])}
+                  min={1}
+                  max={30}
+                  step={0.1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>1%</span>
+                  <span>30%</span>
+                </div>
+              </div>
+
+              {/* Tenure */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    Loan Tenure
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      value={tenure}
+                      onChange={(e) => setTenure(Number(e.target.value))}
+                      className="w-20 text-right"
+                    />
+                    <span className="text-sm text-muted-foreground">months</span>
+                  </div>
+                </div>
+                <Slider
+                  value={[tenure]}
+                  onValueChange={(v) => setTenure(v[0])}
+                  min={1}
+                  max={360}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>1 month</span>
+                  <span>30 years</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Results Section */}
+          <div className="space-y-6">
+            {/* EMI Result Card */}
+            <Card className="border-2 bg-gradient-to-br from-primary/5 to-accent/5">
+              <CardHeader>
+                <CardTitle className="text-center">Monthly EMI</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-5xl font-bold text-center text-primary mb-2">
+                  {formatCurrency(emi)}
+                </div>
+                <p className="text-center text-muted-foreground">per month for {tenure} months</p>
+              </CardContent>
+            </Card>
+
+            {/* Breakdown Card */}
+            <Card className="border-2">
+              <CardHeader>
+                <CardTitle>Payment Breakdown</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Visual Bar */}
+                <div className="h-8 rounded-full overflow-hidden flex">
+                  <div 
+                    className="bg-primary transition-all duration-500"
+                    style={{ width: `${principalPercentage}%` }}
+                  />
+                  <div 
+                    className="bg-accent transition-all duration-500"
+                    style={{ width: `${interestPercentage}%` }}
+                  />
+                </div>
+
+                {/* Legend */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-3 h-3 rounded-full bg-primary" />
+                      <span className="text-sm text-muted-foreground">Principal</span>
+                    </div>
+                    <p className="text-xl font-bold">{formatCurrency(principal)}</p>
+                    <p className="text-xs text-muted-foreground">{principalPercentage.toFixed(1)}%</p>
+                  </div>
+                  <div className="p-4 rounded-lg bg-accent/10 border border-accent/20">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-3 h-3 rounded-full bg-accent" />
+                      <span className="text-sm text-muted-foreground">Interest</span>
+                    </div>
+                    <p className="text-xl font-bold">{formatCurrency(totalInterest)}</p>
+                    <p className="text-xs text-muted-foreground">{interestPercentage.toFixed(1)}%</p>
+                  </div>
+                </div>
+
+                {/* Total */}
+                <div className="p-4 rounded-lg bg-muted border">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Total Amount Payable</span>
+                    <span className="text-2xl font-bold">{formatCurrency(totalAmount)}</span>
+                  </div>
+                </div>
+
+                {/* Summary */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Tenure:</span>
+                    <span className="font-medium">{Math.floor(tenure / 12)} yrs {tenure % 12} months</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Interest Rate:</span>
+                    <span className="font-medium">{rate}% p.a.</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default EMICalculator;

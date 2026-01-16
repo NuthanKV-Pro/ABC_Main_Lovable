@@ -19,8 +19,8 @@ import YearComparison from "./pages/YearComparison";
 import TaxPayments from "./pages/TaxPayments";
 import TotalIncomeTax from "./pages/TotalIncomeTax";
 import ProfileSettings from "./pages/ProfileSettings";
+import EMICalculator from "./pages/EMICalculator";
 import NotFound from "./pages/NotFound";
-
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -46,6 +46,7 @@ const App = () => (
           <Route path="/tax-payments" element={<TaxPayments />} />
           <Route path="/total-income-tax" element={<TotalIncomeTax />} />
           <Route path="/profile" element={<ProfileSettings />} />
+          <Route path="/emi-calculator" element={<EMICalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
