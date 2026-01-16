@@ -429,7 +429,7 @@ const Index = () => {
               <h3 className="text-lg font-semibold mb-4 text-primary">Follow Us</h3>
               <div className="flex gap-4">
                 <a 
-                  href="https://linkedin.com" 
+                  href="https://www.linkedin.com/in/nuthankaparthy/" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="p-3 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
