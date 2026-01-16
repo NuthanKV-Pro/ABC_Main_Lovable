@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote } from "lucide-react";
 
 const modules = [
   {
@@ -96,6 +96,15 @@ const amazingTools = [
     route: "external:https://abcadv1.lovable.app",
     tag: "WIP",
     tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+  },
+  {
+    id: "emi-calc",
+    title: "EMI Calculator",
+    description: "Calculate loan EMI instantly",
+    icon: Banknote,
+    route: "/emi-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
   {
     id: "more-calcs",
