@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
@@ -205,6 +205,33 @@ const amazingTools = [
     description: "Sukanya Samriddhi Yojana calculator",
     icon: Heart,
     route: "/ssy-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "cagr-calc",
+    title: "CAGR CalC",
+    description: "Compound Annual Growth Rate",
+    icon: BarChart,
+    route: "/cagr-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "rd-calc",
+    title: "RD CalC",
+    description: "Recurring Deposit calculator",
+    icon: Repeat,
+    route: "/rd-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "scss-calc",
+    title: "SCSS CalC",
+    description: "Senior Citizen Savings Scheme",
+    icon: Users,
+    route: "/scss-calculator",
     tag: "Live",
     tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
