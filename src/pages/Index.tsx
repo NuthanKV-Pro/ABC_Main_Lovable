@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Phone, Mail, Linkedin, Twitter, MapPin, Gift, PiggyBank } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Phone, Mail, Linkedin, Twitter, MapPin, Gift, PiggyBank, LineChart, Landmark } from "lucide-react";
 import { motion } from "framer-motion";
 
 const modules = [
@@ -122,6 +122,24 @@ const amazingTools = [
     description: "Estimate savings needed for retirement",
     icon: PiggyBank,
     route: "/retirement-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "sip-calc",
+    title: "SIP CalC",
+    description: "Calculate SIP returns & maturity",
+    icon: LineChart,
+    route: "/sip-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "ppf-calc",
+    title: "PPF CalC",
+    description: "Calculate PPF maturity amount",
+    icon: Landmark,
+    route: "/ppf-calculator",
     tag: "Live",
     tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
