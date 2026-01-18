@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Phone, Mail, Linkedin, Twitter, MapPin } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Phone, Mail, Linkedin, Twitter, MapPin, Gift } from "lucide-react";
 import { motion } from "framer-motion";
 
 const modules = [
@@ -104,6 +104,15 @@ const amazingTools = [
     description: "Calculate loan EMI instantly",
     icon: Banknote,
     route: "/emi-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "gratuity-calc",
+    title: "Gratuity CalC",
+    description: "Calculate your gratuity entitlement",
+    icon: Gift,
+    route: "/gratuity-calculator",
     tag: "Live",
     tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
