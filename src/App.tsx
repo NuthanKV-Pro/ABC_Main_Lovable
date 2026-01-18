@@ -24,6 +24,8 @@ import GratuityCalculator from "./pages/GratuityCalculator";
 import RetirementCalculator from "./pages/RetirementCalculator";
 import SIPCalculator from "./pages/SIPCalculator";
 import PPFCalculator from "./pages/PPFCalculator";
+import FDCalculator from "./pages/FDCalculator";
+import LumpsumCalculator from "./pages/LumpsumCalculator";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -55,6 +57,8 @@ const App = () => (
           <Route path="/retirement-calculator" element={<RetirementCalculator />} />
           <Route path="/sip-calculator" element={<SIPCalculator />} />
           <Route path="/ppf-calculator" element={<PPFCalculator />} />
+          <Route path="/fd-calculator" element={<FDCalculator />} />
+          <Route path="/lumpsum-calculator" element={<LumpsumCalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

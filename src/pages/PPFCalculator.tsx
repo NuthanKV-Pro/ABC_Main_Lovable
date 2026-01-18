@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Landmark, ExternalLink } from "lucide-react";
+import Footer from "@/components/Footer";
 
 const PPFCalculator = () => {
   const navigate = useNavigate();
@@ -194,6 +195,7 @@ const PPFCalculator = () => {
           </Card>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

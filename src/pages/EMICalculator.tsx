@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { ArrowLeft, Calculator, IndianRupee, Percent, Calendar } from "lucide-react";
+import Footer from "@/components/Footer";
 
 const EMICalculator = () => {
   const navigate = useNavigate();
@@ -232,6 +233,7 @@ const EMICalculator = () => {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

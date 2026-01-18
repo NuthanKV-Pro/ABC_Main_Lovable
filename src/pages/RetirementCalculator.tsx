@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { ArrowLeft, Calculator, TrendingUp, Wallet, PiggyBank } from "lucide-react";
+import Footer from "@/components/Footer";
 
 const RetirementCalculator = () => {
   const navigate = useNavigate();
@@ -299,6 +300,7 @@ const RetirementCalculator = () => {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

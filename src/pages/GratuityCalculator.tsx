@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { ArrowLeft, Calculator, ExternalLink, IndianRupee } from "lucide-react";
+import Footer from "@/components/Footer";
 
 const GratuityCalculator = () => {
   const navigate = useNavigate();
@@ -203,6 +204,7 @@ const GratuityCalculator = () => {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };
