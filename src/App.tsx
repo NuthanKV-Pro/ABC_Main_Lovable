@@ -31,6 +31,9 @@ import NSCCalculator from "./pages/NSCCalculator";
 import PFCalculator from "./pages/PFCalculator";
 import TaxSavingComparison from "./pages/TaxSavingComparison";
 import SSYCalculator from "./pages/SSYCalculator";
+import CAGRCalculator from "./pages/CAGRCalculator";
+import RDCalculator from "./pages/RDCalculator";
+import SCSSCalculator from "./pages/SCSSCalculator";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -69,6 +72,9 @@ const App = () => (
           <Route path="/pf-calculator" element={<PFCalculator />} />
           <Route path="/tax-saving-comparison" element={<TaxSavingComparison />} />
           <Route path="/ssy-calculator" element={<SSYCalculator />} />
+          <Route path="/cagr-calculator" element={<CAGRCalculator />} />
+          <Route path="/rd-calculator" element={<RDCalculator />} />
+          <Route path="/scss-calculator" element={<SCSSCalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

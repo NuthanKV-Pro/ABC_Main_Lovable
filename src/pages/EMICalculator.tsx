@@ -10,14 +10,22 @@ import Footer from "@/components/Footer";
 
 const EMICalculator = () => {
   const navigate = useNavigate();
-  const [principal, setPrincipal] = useState(1000000);
+  const [loanAmount, setLoanAmount] = useState(1000000);
+  const [downPayment, setDownPayment] = useState(0);
   const [rate, setRate] = useState(8.5);
-  const [tenure, setTenure] = useState(12);
+  const [tenureYears, setTenureYears] = useState(1);
+  const [tenureMonths, setTenureMonths] = useState(0);
+
+  // Calculate actual principal after down payment
+  const principal = loanAmount - downPayment;
+  const totalTenureMonths = tenureYears * 12 + tenureMonths;
 
   // EMI Calculation
   const monthlyRate = rate / 12 / 100;
-  const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, tenure) / (Math.pow(1 + monthlyRate, tenure) - 1);
-  const totalAmount = emi * tenure;
+  const emi = principal > 0 && totalTenureMonths > 0
+    ? principal * monthlyRate * Math.pow(1 + monthlyRate, totalTenureMonths) / (Math.pow(1 + monthlyRate, totalTenureMonths) - 1)
+    : 0;
+  const totalAmount = emi * totalTenureMonths;
   const totalInterest = totalAmount - principal;
 
   const formatCurrency = (amount: number) => {
@@ -28,8 +36,8 @@ const EMICalculator = () => {
     }).format(amount);
   };
 
-  const interestPercentage = (totalInterest / totalAmount) * 100;
-  const principalPercentage = (principal / totalAmount) * 100;
+  const interestPercentage = totalAmount > 0 ? (totalInterest / totalAmount) * 100 : 0;
+  const principalPercentage = totalAmount > 0 ? (principal / totalAmount) * 100 : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
@@ -60,26 +68,26 @@ const EMICalculator = () => {
               <CardDescription>Enter your loan parameters</CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
-              {/* Principal Amount */}
+              {/* Loan Amount */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <Label className="flex items-center gap-2">
                     <IndianRupee className="w-4 h-4" />
-                    Principal Amount
+                    Total Loan Amount
                   </Label>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground">₹</span>
                     <Input
                       type="number"
-                      value={principal}
-                      onChange={(e) => setPrincipal(Number(e.target.value))}
+                      value={loanAmount}
+                      onChange={(e) => setLoanAmount(Number(e.target.value))}
                       className="w-32 text-right"
                     />
                   </div>
                 </div>
                 <Slider
-                  value={[principal]}
-                  onValueChange={(v) => setPrincipal(v[0])}
+                  value={[loanAmount]}
+                  onValueChange={(v) => setLoanAmount(v[0])}
                   min={100000}
                   max={50000000}
                   step={50000}
@@ -89,6 +97,42 @@ const EMICalculator = () => {
                   <span>₹1L</span>
                   <span>₹5Cr</span>
                 </div>
+              </div>
+
+              {/* Down Payment */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="flex items-center gap-2">
+                    <IndianRupee className="w-4 h-4" />
+                    Down Payment
+                  </Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">₹</span>
+                    <Input
+                      type="number"
+                      value={downPayment}
+                      onChange={(e) => setDownPayment(Math.min(loanAmount, Number(e.target.value)))}
+                      className="w-32 text-right"
+                    />
+                  </div>
+                </div>
+                <Slider
+                  value={[downPayment]}
+                  onValueChange={(v) => setDownPayment(v[0])}
+                  min={0}
+                  max={loanAmount}
+                  step={10000}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>₹0</span>
+                  <span>{formatCurrency(loanAmount)}</span>
+                </div>
+                {downPayment > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    Loan Principal: <span className="font-medium text-primary">{formatCurrency(principal)}</span>
+                  </p>
+                )}
               </div>
 
               {/* Interest Rate */}
@@ -130,28 +174,54 @@ const EMICalculator = () => {
                     <Calendar className="w-4 h-4" />
                     Loan Tenure
                   </Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      value={tenure}
-                      onChange={(e) => setTenure(Number(e.target.value))}
-                      className="w-20 text-right"
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        value={tenureYears}
+                        onChange={(e) => setTenureYears(Math.max(0, Math.min(30, Number(e.target.value))))}
+                        className="text-right"
+                        min={0}
+                        max={30}
+                      />
+                      <span className="text-sm text-muted-foreground whitespace-nowrap">Years</span>
+                    </div>
+                    <Slider
+                      value={[tenureYears]}
+                      onValueChange={(v) => setTenureYears(v[0])}
+                      min={0}
+                      max={30}
+                      step={1}
+                      className="w-full"
                     />
-                    <span className="text-sm text-muted-foreground">months</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        value={tenureMonths}
+                        onChange={(e) => setTenureMonths(Math.max(0, Math.min(11, Number(e.target.value))))}
+                        className="text-right"
+                        min={0}
+                        max={11}
+                      />
+                      <span className="text-sm text-muted-foreground whitespace-nowrap">Months</span>
+                    </div>
+                    <Slider
+                      value={[tenureMonths]}
+                      onValueChange={(v) => setTenureMonths(v[0])}
+                      min={0}
+                      max={11}
+                      step={1}
+                      className="w-full"
+                    />
                   </div>
                 </div>
-                <Slider
-                  value={[tenure]}
-                  onValueChange={(v) => setTenure(v[0])}
-                  min={1}
-                  max={360}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>1 month</span>
-                  <span>30 years</span>
-                </div>
+                <p className="text-xs text-muted-foreground text-center">
+                  Total: {tenureYears} years {tenureMonths} months ({totalTenureMonths} months)
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -167,7 +237,7 @@ const EMICalculator = () => {
                 <div className="text-5xl font-bold text-center text-primary mb-2">
                   {formatCurrency(emi)}
                 </div>
-                <p className="text-center text-muted-foreground">per month for {tenure} months</p>
+                <p className="text-center text-muted-foreground">per month for {totalTenureMonths} months</p>
               </CardContent>
             </Card>
 
@@ -209,19 +279,34 @@ const EMICalculator = () => {
                   </div>
                 </div>
 
+                {/* Down Payment Info */}
+                {downPayment > 0 && (
+                  <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Down Payment</span>
+                      <span className="text-lg font-bold text-green-600">{formatCurrency(downPayment)}</span>
+                    </div>
+                  </div>
+                )}
+
                 {/* Total */}
                 <div className="p-4 rounded-lg bg-muted border">
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Total Amount Payable</span>
-                    <span className="text-2xl font-bold">{formatCurrency(totalAmount)}</span>
+                    <span className="text-2xl font-bold">{formatCurrency(totalAmount + downPayment)}</span>
                   </div>
+                  {downPayment > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      (EMI Total: {formatCurrency(totalAmount)} + Down Payment: {formatCurrency(downPayment)})
+                    </p>
+                  )}
                 </div>
 
                 {/* Summary */}
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Tenure:</span>
-                    <span className="font-medium">{Math.floor(tenure / 12)} yrs {tenure % 12} months</span>
+                    <span className="font-medium">{tenureYears} yrs {tenureMonths} months</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Interest Rate:</span>
