@@ -34,6 +34,9 @@ import SSYCalculator from "./pages/SSYCalculator";
 import CAGRCalculator from "./pages/CAGRCalculator";
 import RDCalculator from "./pages/RDCalculator";
 import SCSSCalculator from "./pages/SCSSCalculator";
+import HomeLoanEligibility from "./pages/HomeLoanEligibility";
+import ELSSCalculator from "./pages/ELSSCalculator";
+import CreditScoreCalculator from "./pages/CreditScoreCalculator";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -75,6 +78,9 @@ const App = () => (
           <Route path="/cagr-calculator" element={<CAGRCalculator />} />
           <Route path="/rd-calculator" element={<RDCalculator />} />
           <Route path="/scss-calculator" element={<SCSSCalculator />} />
+          <Route path="/home-loan-eligibility" element={<HomeLoanEligibility />} />
+          <Route path="/elss-calculator" element={<ELSSCalculator />} />
+          <Route path="/credit-score-calculator" element={<CreditScoreCalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
