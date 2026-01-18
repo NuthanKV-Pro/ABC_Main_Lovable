@@ -219,7 +219,7 @@ const amazingTools = [
   },
   {
     id: "more-calcs",
-    title: "More CalCs coming soon💖!",
+    title: "More Amazing Tools🥂 Coming Sooooon💖!",
     description: "Exciting tools on the way",
     icon: MoreHorizontal,
     route: null,
