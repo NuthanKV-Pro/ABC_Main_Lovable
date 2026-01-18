@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
@@ -187,6 +187,24 @@ const amazingTools = [
     description: "Provident Fund corpus estimator",
     icon: Briefcase,
     route: "/pf-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "tax-saving-comparison",
+    title: "Tax Saving Comparison",
+    description: "Compare 80C investments side by side",
+    icon: Scale,
+    route: "/tax-saving-comparison",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "ssy-calc",
+    title: "SSY CalC",
+    description: "Sukanya Samriddhi Yojana calculator",
+    icon: Heart,
+    route: "/ssy-calculator",
     tag: "Live",
     tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },

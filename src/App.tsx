@@ -29,6 +29,8 @@ import LumpsumCalculator from "./pages/LumpsumCalculator";
 import NPSCalculator from "./pages/NPSCalculator";
 import NSCCalculator from "./pages/NSCCalculator";
 import PFCalculator from "./pages/PFCalculator";
+import TaxSavingComparison from "./pages/TaxSavingComparison";
+import SSYCalculator from "./pages/SSYCalculator";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -65,6 +67,8 @@ const App = () => (
           <Route path="/nps-calculator" element={<NPSCalculator />} />
           <Route path="/nsc-calculator" element={<NSCCalculator />} />
           <Route path="/pf-calculator" element={<PFCalculator />} />
+          <Route path="/tax-saving-comparison" element={<TaxSavingComparison />} />
+          <Route path="/ssy-calculator" element={<SSYCalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
