@@ -21,6 +21,7 @@ import TotalIncomeTax from "./pages/TotalIncomeTax";
 import ProfileSettings from "./pages/ProfileSettings";
 import EMICalculator from "./pages/EMICalculator";
 import GratuityCalculator from "./pages/GratuityCalculator";
+import RetirementCalculator from "./pages/RetirementCalculator";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
           <Route path="/profile" element={<ProfileSettings />} />
           <Route path="/emi-calculator" element={<EMICalculator />} />
           <Route path="/gratuity-calculator" element={<GratuityCalculator />} />
+          <Route path="/retirement-calculator" element={<RetirementCalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
