@@ -37,6 +37,8 @@ import SCSSCalculator from "./pages/SCSSCalculator";
 import HomeLoanEligibility from "./pages/HomeLoanEligibility";
 import ELSSCalculator from "./pages/ELSSCalculator";
 import CreditScoreCalculator from "./pages/CreditScoreCalculator";
+import StampDutyCalculator from "./pages/StampDutyCalculator";
+import CarLoanCalculator from "./pages/CarLoanCalculator";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -81,6 +83,8 @@ const App = () => (
           <Route path="/home-loan-eligibility" element={<HomeLoanEligibility />} />
           <Route path="/elss-calculator" element={<ELSSCalculator />} />
           <Route path="/credit-score-calculator" element={<CreditScoreCalculator />} />
+          <Route path="/stamp-duty-calculator" element={<StampDutyCalculator />} />
+          <Route path="/car-loan-calculator" element={<CarLoanCalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
