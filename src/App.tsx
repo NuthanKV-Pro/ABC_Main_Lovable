@@ -22,6 +22,8 @@ import ProfileSettings from "./pages/ProfileSettings";
 import EMICalculator from "./pages/EMICalculator";
 import GratuityCalculator from "./pages/GratuityCalculator";
 import RetirementCalculator from "./pages/RetirementCalculator";
+import SIPCalculator from "./pages/SIPCalculator";
+import PPFCalculator from "./pages/PPFCalculator";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -51,6 +53,8 @@ const App = () => (
           <Route path="/emi-calculator" element={<EMICalculator />} />
           <Route path="/gratuity-calculator" element={<GratuityCalculator />} />
           <Route path="/retirement-calculator" element={<RetirementCalculator />} />
+          <Route path="/sip-calculator" element={<SIPCalculator />} />
+          <Route path="/ppf-calculator" element={<PPFCalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
