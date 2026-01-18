@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Phone, Mail, Linkedin, Twitter, MapPin, Gift, PiggyBank, LineChart, Landmark } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins } from "lucide-react";
+import SearchBar from "@/components/SearchBar";
+import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 
 const modules = [
@@ -144,6 +146,24 @@ const amazingTools = [
     tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
   {
+    id: "fd-calc",
+    title: "FD Calculator",
+    description: "Calculate Fixed Deposit maturity",
+    icon: Banknote,
+    route: "/fd-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "lumpsum-calc",
+    title: "Lumpsum Calculator",
+    description: "Calculate one-time investment returns",
+    icon: Coins,
+    route: "/lumpsum-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
     id: "product-builder",
     title: "Product Builder",
     description: "Framework for idea-to-blueprint development",
@@ -176,12 +196,15 @@ const Index = () => {
               <h1 className="text-2xl font-bold text-primary">ABC</h1>
               <p className="text-sm text-muted-foreground">AI Legal & Tax Co-pilot</p>
             </div>
-            <Button 
-              variant="default" 
-              onClick={() => navigate("/auth")}
-            >
-              Sign-In/Sign-Up
-            </Button>
+            <div className="flex items-center gap-3">
+              <SearchBar />
+              <Button 
+                variant="default" 
+                onClick={() => navigate("/auth")}
+              >
+                Sign-In/Sign-Up
+              </Button>
+            </div>
           </div>
         </div>
       </header>
@@ -400,100 +423,7 @@ const Index = () => {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t bg-card/50 backdrop-blur-sm mt-16">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Contact Information */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-primary">Contact Us</h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-muted-foreground">
-                  <Phone className="w-4 h-4 text-primary" />
-                  <a href="tel:+919535951140" className="hover:text-primary transition-colors">
-                    +91 95-35-95-1140
-                  </a>
-                </div>
-                <div className="flex items-center gap-3 text-muted-foreground">
-                  <Mail className="w-4 h-4 text-primary" />
-                  <a href="mailto:nuthankaparthy@gmail.com" className="hover:text-primary transition-colors">
-                    nuthankaparthy@gmail.com
-                  </a>
-                </div>
-                <div className="flex items-center gap-3 text-muted-foreground">
-                  <MapPin className="w-4 h-4 text-primary" />
-                  <span>Nuthan Kaparthy</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Navigation */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-primary">Quick Links</h3>
-              <div className="space-y-2">
-                <button 
-                  onClick={() => navigate("/dashboard")}
-                  className="block text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Income Tax Dashboard
-                </button>
-                <button 
-                  onClick={() => navigate("/financial-ratios")}
-                  className="block text-muted-foreground hover:text-primary transition-colors"
-                >
-                  Financial Ratios
-                </button>
-                <button 
-                  onClick={() => navigate("/emi-calculator")}
-                  className="block text-muted-foreground hover:text-primary transition-colors"
-                >
-                  EMI Calculator
-                </button>
-                <a 
-                  href="https://abcpro1.odoo.com/about-us"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-muted-foreground hover:text-primary transition-colors"
-                >
-                  About Us
-                </a>
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-primary">Follow Us</h3>
-              <div className="flex gap-4">
-                <a 
-                  href="https://www.linkedin.com/in/nuthankaparthy/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
-                >
-                  <Linkedin className="w-5 h-5 text-primary" />
-                </a>
-                <a 
-                  href="https://twitter.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
-                >
-                  <Twitter className="w-5 h-5 text-primary" />
-                </a>
-              </div>
-              <p className="text-sm text-muted-foreground mt-4">
-                Stay connected for updates on new features and tax tips.
-              </p>
-            </div>
-          </div>
-
-          <div className="border-t mt-8 pt-8 text-center">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} ABC - AI Legal & Tax Co-pilot. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

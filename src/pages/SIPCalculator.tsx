@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, TrendingUp, ExternalLink } from "lucide-react";
+import Footer from "@/components/Footer";
 
 const SIPCalculator = () => {
   const navigate = useNavigate();
@@ -178,6 +179,7 @@ const SIPCalculator = () => {
           </Card>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };
