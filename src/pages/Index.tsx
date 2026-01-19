@@ -426,6 +426,51 @@ const amazingTools = [
     tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
   {
+    id: "insurance-premium-calc",
+    title: "Insurance Premium Calculator",
+    description: "Term life & health insurance premiums",
+    icon: ShieldCheck,
+    route: "/insurance-premium-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "mf-overlap-analyzer",
+    title: "MF Overlap Analyzer",
+    description: "Find duplicate holdings in MF portfolio",
+    icon: Layers,
+    route: "/mf-overlap-analyzer",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "cashflow-budgeting",
+    title: "Cash Flow Budgeting Tool",
+    description: "Comprehensive cash flow planning",
+    icon: Workflow,
+    route: "/cashflow-budgeting",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "factoring-tool",
+    title: "Factoring Tool",
+    description: "Evaluate factoring cost vs benefits",
+    icon: Factory,
+    route: "/factoring-tool",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "dividend-decision",
+    title: "Dividend Decision Tool",
+    description: "Gordon's, Lintner's & dividend theories",
+    icon: Split,
+    route: "/dividend-decision",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
     id: "more-calcs",
     title: "More Amazing Tools🥂 Coming Sooooon💖!",
     description: "Exciting tools on the way",
