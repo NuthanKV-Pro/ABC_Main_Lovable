@@ -59,6 +59,8 @@ import MutualFundOverlapAnalyzer from "./pages/MutualFundOverlapAnalyzer";
 import CashFlowBudgetingTool from "./pages/CashFlowBudgetingTool";
 import FactoringTool from "./pages/FactoringTool";
 import DividendDecisionTool from "./pages/DividendDecisionTool";
+import StockPortfolioTracker from "./pages/StockPortfolioTracker";
+import GoalBasedSIPCalculator from "./pages/GoalBasedSIPCalculator";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -125,6 +127,8 @@ const App = () => (
           <Route path="/cash-flow-budgeting" element={<CashFlowBudgetingTool />} />
           <Route path="/factoring-tool" element={<FactoringTool />} />
           <Route path="/dividend-decision" element={<DividendDecisionTool />} />
+          <Route path="/stock-portfolio" element={<StockPortfolioTracker />} />
+          <Route path="/goal-sip-calculator" element={<GoalBasedSIPCalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
