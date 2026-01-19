@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap } from "lucide-react";
+import { useRef } from "react";
 import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
@@ -290,6 +291,24 @@ const amazingTools = [
     tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
   },
   {
+    id: "gold-loan-calc",
+    title: "Gold Loan CalC",
+    description: "Estimate loan on your gold",
+    icon: Coins,
+    route: "/gold-loan-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "education-loan-calc",
+    title: "Education Loan CalC",
+    description: "Plan your education financing",
+    icon: GraduationCap,
+    route: "/education-loan-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
     id: "more-calcs",
     title: "More Amazing Tools🥂 Coming Sooooon💖!",
     description: "Exciting tools on the way",
@@ -302,6 +321,11 @@ const amazingTools = [
 
 const Index = () => {
   const navigate = useNavigate();
+  const mainContentRef = useRef<HTMLElement>(null);
+
+  const scrollToContent = () => {
+    mainContentRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
@@ -315,12 +339,6 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-3">
               <SearchBar />
-              <Button 
-                variant="default" 
-                onClick={() => navigate("/auth")}
-              >
-                Sign-In/Sign-Up
-              </Button>
             </div>
           </div>
         </div>
@@ -368,9 +386,9 @@ const Index = () => {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white shadow-[var(--shadow-gold)] px-8 py-6 text-lg"
-              onClick={() => navigate("/dashboard")}
+              onClick={scrollToContent}
             >
-              Get Started →
+              Explore ↓
             </Button>
             <Button 
               size="lg"
@@ -385,7 +403,7 @@ const Index = () => {
       </section>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 pb-12">
+      <main ref={mainContentRef} className="container mx-auto px-4 pb-12">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Choose Your Module</h2>
           <p className="text-lg text-muted-foreground">
