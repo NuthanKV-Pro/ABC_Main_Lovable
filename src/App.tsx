@@ -61,6 +61,7 @@ import FactoringTool from "./pages/FactoringTool";
 import DividendDecisionTool from "./pages/DividendDecisionTool";
 import StockPortfolioTracker from "./pages/StockPortfolioTracker";
 import GoalBasedSIPCalculator from "./pages/GoalBasedSIPCalculator";
+import CompoundInterestCalculator from "./pages/CompoundInterestCalculator";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -129,6 +130,7 @@ const App = () => (
           <Route path="/dividend-decision" element={<DividendDecisionTool />} />
           <Route path="/stock-portfolio" element={<StockPortfolioTracker />} />
           <Route path="/goal-sip-calculator" element={<GoalBasedSIPCalculator />} />
+          <Route path="/compound-interest" element={<CompoundInterestCalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

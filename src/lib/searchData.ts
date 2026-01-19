@@ -88,6 +88,7 @@ export const advancedTools: SearchItem[] = [
   { name: "Dividend Decision Tool", route: "/dividend-decision", category: "Advanced Tools", keywords: ["dividend", "gordon", "lintner", "payout", "retention", "policy"] },
   { name: "Stock Portfolio Tracker", route: "/stock-portfolio", category: "Advanced Tools", keywords: ["stock", "portfolio", "equity", "shares", "p&l", "allocation"] },
   { name: "Goal-Based SIP Calculator", route: "/goal-sip-calculator", category: "Advanced Tools", keywords: ["goal", "sip", "target", "financial goal", "planning"] },
+  { name: "Compound Interest Calculator", route: "/compound-interest", category: "Advanced Tools", keywords: ["compound", "interest", "step-up", "sip", "growth", "yearly"] },
 ];
 
 // Pages & Settings
