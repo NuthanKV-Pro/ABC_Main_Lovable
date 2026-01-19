@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign } from "lucide-react";
-import { useRef } from "react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
@@ -530,6 +530,17 @@ const Index = () => {
   const navigate = useNavigate();
   const modulesRef = useRef<HTMLDivElement>(null);
   const amazingToolsRef = useRef<HTMLDivElement>(null);
+  const [showFloatingNav, setShowFloatingNav] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show floating nav after scrolling past hero (approximately 400px)
+      setShowFloatingNav(window.scrollY > 400);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const scrollToModules = () => {
     const headerHeight = 80;
@@ -553,6 +564,13 @@ const Index = () => {
     }
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       {/* Header */}
@@ -569,6 +587,49 @@ const Index = () => {
           </div>
         </div>
       </header>
+
+      {/* Floating Navigation Bar */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ 
+          opacity: showFloatingNav ? 1 : 0, 
+          y: showFloatingNav ? 0 : -20,
+          pointerEvents: showFloatingNav ? 'auto' : 'none'
+        }}
+        transition={{ duration: 0.3 }}
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+      >
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-card/95 backdrop-blur-md border shadow-lg">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="rounded-full gap-2 hover:bg-primary/10"
+            onClick={scrollToTop}
+          >
+            <ArrowUp className="w-4 h-4" />
+            <span className="hidden sm:inline">Top</span>
+          </Button>
+          <div className="w-px h-6 bg-border" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="rounded-full gap-2 hover:bg-primary/10"
+            onClick={scrollToModules}
+          >
+            <Calculator className="w-4 h-4 text-primary" />
+            <span className="hidden sm:inline">Modules</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="rounded-full gap-2 hover:bg-primary/10"
+            onClick={scrollToAmazingTools}
+          >
+            <Wrench className="w-4 h-4 text-primary" />
+            <span className="hidden sm:inline">Amazing Tools</span>
+          </Button>
+        </div>
+      </motion.div>
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 lg:py-24">
