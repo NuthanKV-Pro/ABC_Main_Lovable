@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, X } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -16,43 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
-interface SearchItem {
-  name: string;
-  route: string;
-  category: string;
-}
-
-const searchItems: SearchItem[] = [
-  // Income Modules
-  { name: "Salary Income", route: "/salary", category: "Income Modules" },
-  { name: "House Property", route: "/house-property", category: "Income Modules" },
-  { name: "Business & Profession", route: "/business-profession", category: "Income Modules" },
-  { name: "Capital Gains", route: "/capital-gains", category: "Income Modules" },
-  { name: "Other Sources", route: "/other-sources", category: "Income Modules" },
-  
-  // Tax Modules
-  { name: "Deductions", route: "/deductions", category: "Tax Modules" },
-  { name: "Exempt Income", route: "/exempt-income", category: "Tax Modules" },
-  { name: "Regime Comparison", route: "/regime-comparison", category: "Tax Modules" },
-  { name: "Year Comparison", route: "/year-comparison", category: "Tax Modules" },
-  { name: "Tax Payments", route: "/tax-payments", category: "Tax Modules" },
-  { name: "Total Income & Tax", route: "/total-income-tax", category: "Tax Modules" },
-  
-  // Amazing Tools
-  { name: "Gratuity Calculator", route: "/gratuity-calculator", category: "Amazing Tools" },
-  { name: "Retirement Calculator", route: "/retirement-calculator", category: "Amazing Tools" },
-  { name: "SIP Calculator", route: "/sip-calculator", category: "Amazing Tools" },
-  { name: "PPF Calculator", route: "/ppf-calculator", category: "Amazing Tools" },
-  { name: "FD Calculator", route: "/fd-calculator", category: "Amazing Tools" },
-  { name: "Lumpsum Calculator", route: "/lumpsum-calculator", category: "Amazing Tools" },
-  { name: "EMI Calculator", route: "/emi-calculator", category: "Amazing Tools" },
-  { name: "Financial Ratios", route: "/financial-ratios", category: "Amazing Tools" },
-  
-  // Other Pages
-  { name: "Dashboard", route: "/dashboard", category: "Pages" },
-  { name: "Profile Settings", route: "/profile-settings", category: "Pages" },
-];
+import { getAllSearchItems, getGroupedSearchItems, SearchItem } from "@/lib/searchData";
 
 const SearchBar = () => {
   const [open, setOpen] = useState(false);
@@ -65,11 +28,19 @@ const SearchBar = () => {
     navigate(route);
   };
 
-  const filteredItems = searchItems.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase()) ||
-    item.category.toLowerCase().includes(search.toLowerCase())
-  );
+  // Get all search items from centralized data
+  const allSearchItems = getAllSearchItems();
 
+  // Filter items based on search query (name, category, or keywords)
+  const filteredItems = search.trim() === "" 
+    ? allSearchItems 
+    : allSearchItems.filter((item) =>
+        item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.category.toLowerCase().includes(search.toLowerCase()) ||
+        (item.keywords && item.keywords.some(kw => kw.toLowerCase().includes(search.toLowerCase())))
+      );
+
+  // Group filtered items by category
   const groupedItems = filteredItems.reduce((acc, item) => {
     if (!acc[item.category]) {
       acc[item.category] = [];
