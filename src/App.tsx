@@ -48,6 +48,7 @@ import RentVsBuyCalculator from "./pages/RentVsBuyCalculator";
 import HomeAffordabilityCalculator from "./pages/HomeAffordabilityCalculator";
 import DebtToIncomeCalculator from "./pages/DebtToIncomeCalculator";
 import EmergencyFundCalculator from "./pages/EmergencyFundCalculator";
+import FinancialGoalTracker from "./pages/FinancialGoalTracker";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -103,6 +104,7 @@ const App = () => (
           <Route path="/home-affordability" element={<HomeAffordabilityCalculator />} />
           <Route path="/debt-to-income" element={<DebtToIncomeCalculator />} />
           <Route path="/emergency-fund" element={<EmergencyFundCalculator />} />
+          <Route path="/financial-goal-tracker" element={<FinancialGoalTracker />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
