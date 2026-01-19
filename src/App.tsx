@@ -54,6 +54,11 @@ import NetWorthCalculator from "./pages/NetWorthCalculator";
 import CapitalBudgeting from "./pages/CapitalBudgeting";
 import TaxLossHarvestingCalculator from "./pages/TaxLossHarvestingCalculator";
 import PersonalLoanCalculator from "./pages/PersonalLoanCalculator";
+import InsurancePremiumCalculator from "./pages/InsurancePremiumCalculator";
+import MutualFundOverlapAnalyzer from "./pages/MutualFundOverlapAnalyzer";
+import CashFlowBudgetingTool from "./pages/CashFlowBudgetingTool";
+import FactoringTool from "./pages/FactoringTool";
+import DividendDecisionTool from "./pages/DividendDecisionTool";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -115,6 +120,11 @@ const App = () => (
           <Route path="/capital-budgeting" element={<CapitalBudgeting />} />
           <Route path="/tax-loss-harvesting" element={<TaxLossHarvestingCalculator />} />
           <Route path="/personal-loan-calculator" element={<PersonalLoanCalculator />} />
+          <Route path="/insurance-premium-calculator" element={<InsurancePremiumCalculator />} />
+          <Route path="/mf-overlap-analyzer" element={<MutualFundOverlapAnalyzer />} />
+          <Route path="/cash-flow-budgeting" element={<CashFlowBudgetingTool />} />
+          <Route path="/factoring-tool" element={<FactoringTool />} />
+          <Route path="/dividend-decision" element={<DividendDecisionTool />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
