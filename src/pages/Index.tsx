@@ -345,6 +345,15 @@ const amazingTools = [
     tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
   {
+    id: "home-affordability",
+    title: "Home Affordability CalC",
+    description: "How much house can you afford?",
+    icon: Home,
+    route: "/home-affordability",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
     id: "more-calcs",
     title: "More Amazing Tools🥂 Coming Sooooon💖!",
     description: "Exciting tools on the way",
