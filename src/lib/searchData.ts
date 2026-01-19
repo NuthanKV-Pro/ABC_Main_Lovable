@@ -89,6 +89,8 @@ export const advancedTools: SearchItem[] = [
   { name: "Stock Portfolio Tracker", route: "/stock-portfolio", category: "Advanced Tools", keywords: ["stock", "portfolio", "equity", "shares", "p&l", "allocation"] },
   { name: "Goal-Based SIP Calculator", route: "/goal-sip-calculator", category: "Advanced Tools", keywords: ["goal", "sip", "target", "financial goal", "planning"] },
   { name: "Compound Interest Calculator", route: "/compound-interest", category: "Advanced Tools", keywords: ["compound", "interest", "step-up", "sip", "growth", "yearly"] },
+  { name: "Inflation Impact Calculator", route: "/inflation-calculator", category: "Advanced Tools", keywords: ["inflation", "purchasing power", "real return", "nominal", "erosion"] },
+  { name: "Tax Saver 80C Optimizer", route: "/80c-optimizer", category: "Advanced Tools", keywords: ["80c", "tax saver", "elss", "ppf", "nps", "deduction", "optimizer"] },
 ];
 
 // Pages & Settings
