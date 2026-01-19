@@ -39,6 +39,8 @@ import ELSSCalculator from "./pages/ELSSCalculator";
 import CreditScoreCalculator from "./pages/CreditScoreCalculator";
 import StampDutyCalculator from "./pages/StampDutyCalculator";
 import CarLoanCalculator from "./pages/CarLoanCalculator";
+import GoldLoanCalculator from "./pages/GoldLoanCalculator";
+import EducationLoanCalculator from "./pages/EducationLoanCalculator";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -50,7 +52,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<Auth />} />
+          
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/financial-ratios" element={<FinancialRatios />} />
           <Route path="/salary" element={<Salary />} />
@@ -85,6 +87,8 @@ const App = () => (
           <Route path="/credit-score-calculator" element={<CreditScoreCalculator />} />
           <Route path="/stamp-duty-calculator" element={<StampDutyCalculator />} />
           <Route path="/car-loan-calculator" element={<CarLoanCalculator />} />
+          <Route path="/gold-loan-calculator" element={<GoldLoanCalculator />} />
+          <Route path="/education-loan-calculator" element={<EducationLoanCalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
