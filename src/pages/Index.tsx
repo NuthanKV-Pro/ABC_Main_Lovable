@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart } from "lucide-react";
 import { useRef } from "react";
 import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
@@ -377,6 +377,33 @@ const amazingTools = [
     description: "Set, track & achieve financial goals",
     icon: Flag,
     route: "/financial-goal-tracker",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "budget-planner",
+    title: "Budget Planner",
+    description: "Create & track monthly budgets",
+    icon: ClipboardList,
+    route: "/budget-planner",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "net-worth-calculator",
+    title: "Net Worth Calculator",
+    description: "Track assets vs liabilities",
+    icon: BadgeDollarSign,
+    route: "/net-worth-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "capital-budgeting",
+    title: "Capital Budgeting",
+    description: "NPV, IRR, MIRR & more techniques",
+    icon: PieChart,
+    route: "/capital-budgeting",
     tag: "Live",
     tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
