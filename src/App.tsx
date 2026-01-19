@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
-import Auth from "./pages/Auth";
+
 import Dashboard from "./pages/Dashboard";
 import Salary from "./pages/Salary";
 import FinancialRatios from "./pages/FinancialRatios";
@@ -41,6 +41,7 @@ import StampDutyCalculator from "./pages/StampDutyCalculator";
 import CarLoanCalculator from "./pages/CarLoanCalculator";
 import GoldLoanCalculator from "./pages/GoldLoanCalculator";
 import EducationLoanCalculator from "./pages/EducationLoanCalculator";
+import SWPCalculator from "./pages/SWPCalculator";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -89,6 +90,7 @@ const App = () => (
           <Route path="/car-loan-calculator" element={<CarLoanCalculator />} />
           <Route path="/gold-loan-calculator" element={<GoldLoanCalculator />} />
           <Route path="/education-loan-calculator" element={<EducationLoanCalculator />} />
+          <Route path="/swp-calculator" element={<SWPCalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
