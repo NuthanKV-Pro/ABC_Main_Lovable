@@ -528,12 +528,24 @@ const amazingTools = [
 
 const Index = () => {
   const navigate = useNavigate();
-  const mainContentRef = useRef<HTMLElement>(null);
+  const modulesRef = useRef<HTMLDivElement>(null);
+  const amazingToolsRef = useRef<HTMLDivElement>(null);
 
-  const scrollToContent = () => {
-    const headerHeight = 80; // Approximate header height
-    if (mainContentRef.current) {
-      const elementPosition = mainContentRef.current.getBoundingClientRect().top + window.scrollY;
+  const scrollToModules = () => {
+    const headerHeight = 80;
+    if (modulesRef.current) {
+      const elementPosition = modulesRef.current.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementPosition - headerHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const scrollToAmazingTools = () => {
+    const headerHeight = 80;
+    if (amazingToolsRef.current) {
+      const elementPosition = amazingToolsRef.current.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({
         top: elementPosition - headerHeight,
         behavior: 'smooth'
@@ -600,9 +612,16 @@ const Index = () => {
             <Button 
               size="lg"
               className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white shadow-[var(--shadow-gold)] px-8 py-6 text-lg"
-              onClick={scrollToContent}
+              onClick={scrollToModules}
             >
-              Explore ↓
+              Explore Modules ↓
+            </Button>
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white shadow-[var(--shadow-gold)] px-8 py-6 text-lg"
+              onClick={scrollToAmazingTools}
+            >
+              Explore Amazing Tools ↓
             </Button>
             <Button 
               size="lg"
@@ -617,8 +636,8 @@ const Index = () => {
       </section>
 
       {/* Main Content */}
-      <main ref={mainContentRef} className="container mx-auto px-4 pb-12">
-        <div className="text-center mb-12">
+      <main className="container mx-auto px-4 pb-12">
+        <div ref={modulesRef} className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Choose Your Module</h2>
           <p className="text-lg text-muted-foreground">
             Select a module to get started with your consultation
@@ -684,7 +703,7 @@ const Index = () => {
         </div>
 
         {/* Amazing Tools Section */}
-        <div className="mt-16 max-w-6xl mx-auto">
+        <div ref={amazingToolsRef} className="mt-16 max-w-6xl mx-auto">
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 mb-4">
               <Sparkles className="w-6 h-6 text-primary" />
