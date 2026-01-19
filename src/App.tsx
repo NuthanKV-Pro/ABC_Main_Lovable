@@ -62,6 +62,8 @@ import DividendDecisionTool from "./pages/DividendDecisionTool";
 import StockPortfolioTracker from "./pages/StockPortfolioTracker";
 import GoalBasedSIPCalculator from "./pages/GoalBasedSIPCalculator";
 import CompoundInterestCalculator from "./pages/CompoundInterestCalculator";
+import InflationImpactCalculator from "./pages/InflationImpactCalculator";
+import TaxSaver80COptimizer from "./pages/TaxSaver80COptimizer";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -131,6 +133,8 @@ const App = () => (
           <Route path="/stock-portfolio" element={<StockPortfolioTracker />} />
           <Route path="/goal-sip-calculator" element={<GoalBasedSIPCalculator />} />
           <Route path="/compound-interest" element={<CompoundInterestCalculator />} />
+          <Route path="/inflation-calculator" element={<InflationImpactCalculator />} />
+          <Route path="/80c-optimizer" element={<TaxSaver80COptimizer />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
