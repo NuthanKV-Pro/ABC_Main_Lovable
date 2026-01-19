@@ -83,9 +83,11 @@ export const advancedTools: SearchItem[] = [
   { name: "Financial Ratios", route: "/financial-ratios", category: "Advanced Tools", keywords: ["financial", "ratios", "analysis", "metrics"] },
   { name: "Insurance Premium Calculator", route: "/insurance-premium-calculator", category: "Advanced Tools", keywords: ["insurance", "premium", "term life", "health", "coverage"] },
   { name: "MF Overlap Analyzer", route: "/mf-overlap-analyzer", category: "Advanced Tools", keywords: ["mutual fund", "overlap", "portfolio", "duplicate", "holdings"] },
-  { name: "Cash Flow Budgeting", route: "/cashflow-budgeting", category: "Advanced Tools", keywords: ["cash flow", "budgeting", "inflow", "outflow", "projection"] },
+  { name: "Cash Flow Budgeting", route: "/cash-flow-budgeting", category: "Advanced Tools", keywords: ["cash flow", "budgeting", "inflow", "outflow", "projection"] },
   { name: "Factoring Tool", route: "/factoring-tool", category: "Advanced Tools", keywords: ["factoring", "receivables", "invoice", "discount", "financing"] },
   { name: "Dividend Decision Tool", route: "/dividend-decision", category: "Advanced Tools", keywords: ["dividend", "gordon", "lintner", "payout", "retention", "policy"] },
+  { name: "Stock Portfolio Tracker", route: "/stock-portfolio", category: "Advanced Tools", keywords: ["stock", "portfolio", "equity", "shares", "p&l", "allocation"] },
+  { name: "Goal-Based SIP Calculator", route: "/goal-sip-calculator", category: "Advanced Tools", keywords: ["goal", "sip", "target", "financial goal", "planning"] },
 ];
 
 // Pages & Settings
