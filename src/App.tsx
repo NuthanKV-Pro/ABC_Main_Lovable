@@ -43,6 +43,7 @@ import GoldLoanCalculator from "./pages/GoldLoanCalculator";
 import EducationLoanCalculator from "./pages/EducationLoanCalculator";
 import SWPCalculator from "./pages/SWPCalculator";
 import LoanAdvisor from "./pages/LoanAdvisor";
+import LoanComparison from "./pages/LoanComparison";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -93,6 +94,7 @@ const App = () => (
           <Route path="/education-loan-calculator" element={<EducationLoanCalculator />} />
           <Route path="/swp-calculator" element={<SWPCalculator />} />
           <Route path="/loan-advisor" element={<LoanAdvisor />} />
+          <Route path="/loan-comparison" element={<LoanComparison />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
