@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare } from "lucide-react";
 import { useRef } from "react";
 import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
@@ -323,6 +323,15 @@ const amazingTools = [
     description: "EMI vs Tenure reduction guidance",
     icon: MessageSquare,
     route: "/loan-advisor",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "loan-comparison",
+    title: "Loan Comparison Tool",
+    description: "Compare multiple loan offers side-by-side",
+    icon: GitCompare,
+    route: "/loan-comparison",
     tag: "Live",
     tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
