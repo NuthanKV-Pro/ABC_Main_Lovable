@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck } from "lucide-react";
 import { useRef } from "react";
 import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
@@ -73,6 +73,15 @@ const amazingTools = [
     route: "external:https://abcsalop1.lovable.app",
     tag: "WIP",
     tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+  },
+  {
+    id: "tax-loss-harvesting",
+    title: "Tax Loss Harvesting",
+    description: "Offset capital gains with losses",
+    icon: Scissors,
+    route: "/tax-loss-harvesting",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
   {
     id: "when-to-sell",
@@ -404,6 +413,15 @@ const amazingTools = [
     description: "NPV, IRR, MIRR & more techniques",
     icon: PieChart,
     route: "/capital-budgeting",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
+    id: "personal-loan-calc",
+    title: "Personal Loan CalC",
+    description: "Credit score based EMI & eligibility",
+    icon: UserCheck,
+    route: "/personal-loan-calculator",
     tag: "Live",
     tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },

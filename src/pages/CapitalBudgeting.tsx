@@ -4,9 +4,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Calculator, Plus, Trash2, Info, CheckCircle, AlertTriangle, TrendingUp, Lightbulb } from "lucide-react";
+import { ArrowLeft, Calculator, Plus, Trash2, Info, CheckCircle, AlertTriangle, TrendingUp, Lightbulb, HelpCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+interface CashFlowInput {
+  revenue: number;
+  operatingCosts: number;
+  depreciation: number;
+  otherExpenses: number;
+  taxRate: number;
+  workingCapitalChange: number;
+  capitalExpenditure: number;
+}
 
 const CapitalBudgeting = () => {
   const navigate = useNavigate();
@@ -17,6 +28,50 @@ const CapitalBudgeting = () => {
   const [averageProfit, setAverageProfit] = useState<number>(200000);
   const [projectLife, setProjectLife] = useState<number>(5);
   const [selectedTechnique, setSelectedTechnique] = useState<string>("npv");
+  
+  // Cash flow calculator state
+  const [showCFCalculator, setShowCFCalculator] = useState<boolean>(false);
+  const [cfInputs, setCfInputs] = useState<CashFlowInput[]>([
+    { revenue: 500000, operatingCosts: 150000, depreciation: 50000, otherExpenses: 20000, taxRate: 30, workingCapitalChange: 10000, capitalExpenditure: 0 },
+  ]);
+
+  const addCFYear = () => {
+    setCfInputs([...cfInputs, { revenue: 500000, operatingCosts: 150000, depreciation: 50000, otherExpenses: 20000, taxRate: 30, workingCapitalChange: 0, capitalExpenditure: 0 }]);
+  };
+
+  const removeCFYear = (index: number) => {
+    if (cfInputs.length > 1) {
+      setCfInputs(cfInputs.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateCFInput = (index: number, field: keyof CashFlowInput, value: number) => {
+    const updated = [...cfInputs];
+    updated[index] = { ...updated[index], [field]: value };
+    setCfInputs(updated);
+  };
+
+  // Calculate cash flow for each year
+  const calculateCashFlow = (input: CashFlowInput) => {
+    const ebit = input.revenue - input.operatingCosts - input.depreciation - input.otherExpenses;
+    const tax = ebit * (input.taxRate / 100);
+    const ebitAfterTax = ebit - tax;
+    const operatingCashFlow = ebitAfterTax + input.depreciation; // Add back depreciation (non-cash)
+    const freeCashFlow = operatingCashFlow - input.workingCapitalChange - input.capitalExpenditure;
+    return {
+      ebit,
+      tax,
+      ebitAfterTax,
+      operatingCashFlow,
+      freeCashFlow
+    };
+  };
+
+  const applyCashFlows = () => {
+    const calculatedCFs = cfInputs.map(input => calculateCashFlow(input).freeCashFlow);
+    setCashFlows(calculatedCFs);
+    setShowCFCalculator(false);
+  };
 
   const addCashFlow = () => setCashFlows([...cashFlows, 0]);
   const removeCashFlow = (index: number) => setCashFlows(cashFlows.filter((_, i) => i !== index));
@@ -249,9 +304,14 @@ const CapitalBudgeting = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <Label className="text-base font-semibold">Annual Cash Flows</Label>
-                  <Button onClick={addCashFlow} size="sm" variant="outline">
-                    <Plus className="h-4 w-4 mr-1" /> Add Year
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button onClick={() => setShowCFCalculator(!showCFCalculator)} size="sm" variant="secondary">
+                      <HelpCircle className="h-4 w-4 mr-1" /> {showCFCalculator ? 'Hide' : 'Calculate'} Cash Flows
+                    </Button>
+                    <Button onClick={addCashFlow} size="sm" variant="outline">
+                      <Plus className="h-4 w-4 mr-1" /> Add Year
+                    </Button>
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                   {cashFlows.map((cf, index) => (
@@ -278,6 +338,159 @@ const CapitalBudgeting = () => {
                   ))}
                 </div>
               </div>
+
+              {/* Cash Flow Calculator */}
+              {showCFCalculator && (
+                <div className="mt-6 p-4 border rounded-lg bg-muted/30 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-primary flex items-center gap-2">
+                        <Calculator className="h-4 w-4" />
+                        Cash Flow Calculator
+                      </h4>
+                      <p className="text-sm text-muted-foreground">Enter details to calculate Free Cash Flow for each year</p>
+                    </div>
+                    <Button onClick={addCFYear} size="sm" variant="outline">
+                      <Plus className="h-4 w-4 mr-1" /> Add Year
+                    </Button>
+                  </div>
+
+                  <Accordion type="multiple" className="w-full">
+                    {cfInputs.map((input, index) => {
+                      const cf = calculateCashFlow(input);
+                      return (
+                        <AccordionItem key={index} value={`year-${index}`}>
+                          <AccordionTrigger className="hover:no-underline">
+                            <div className="flex items-center justify-between w-full pr-4">
+                              <span className="font-medium">Year {index + 1}</span>
+                              <span className={`text-sm font-semibold ${cf.freeCashFlow >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                FCF: {formatCurrency(cf.freeCashFlow)}
+                              </span>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
+                              <div className="space-y-1">
+                                <Label className="text-xs">Revenue (₹)</Label>
+                                <Input
+                                  type="number"
+                                  value={input.revenue}
+                                  onChange={(e) => updateCFInput(index, 'revenue', Number(e.target.value))}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs">Operating Costs (₹)</Label>
+                                <Input
+                                  type="number"
+                                  value={input.operatingCosts}
+                                  onChange={(e) => updateCFInput(index, 'operatingCosts', Number(e.target.value))}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs">Depreciation (₹)</Label>
+                                <Input
+                                  type="number"
+                                  value={input.depreciation}
+                                  onChange={(e) => updateCFInput(index, 'depreciation', Number(e.target.value))}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs">Other Expenses (₹)</Label>
+                                <Input
+                                  type="number"
+                                  value={input.otherExpenses}
+                                  onChange={(e) => updateCFInput(index, 'otherExpenses', Number(e.target.value))}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs">Tax Rate (%)</Label>
+                                <Input
+                                  type="number"
+                                  value={input.taxRate}
+                                  onChange={(e) => updateCFInput(index, 'taxRate', Number(e.target.value))}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs">Working Capital Change (₹)</Label>
+                                <Input
+                                  type="number"
+                                  value={input.workingCapitalChange}
+                                  onChange={(e) => updateCFInput(index, 'workingCapitalChange', Number(e.target.value))}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs">Capital Expenditure (₹)</Label>
+                                <Input
+                                  type="number"
+                                  value={input.capitalExpenditure}
+                                  onChange={(e) => updateCFInput(index, 'capitalExpenditure', Number(e.target.value))}
+                                />
+                              </div>
+                              <div className="flex items-end">
+                                {cfInputs.length > 1 && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeCFYear(index)}
+                                    className="text-red-500"
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-1" /> Remove
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {/* Cash Flow Breakdown */}
+                            <div className="mt-4 p-3 bg-card rounded-lg space-y-2">
+                              <h5 className="text-sm font-semibold">Cash Flow Breakdown - Year {index + 1}</h5>
+                              <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
+                                <div className="p-2 bg-muted/50 rounded">
+                                  <p className="text-xs text-muted-foreground">EBIT</p>
+                                  <p className="font-medium">{formatCurrency(cf.ebit)}</p>
+                                </div>
+                                <div className="p-2 bg-muted/50 rounded">
+                                  <p className="text-xs text-muted-foreground">Tax</p>
+                                  <p className="font-medium text-red-500">-{formatCurrency(cf.tax)}</p>
+                                </div>
+                                <div className="p-2 bg-muted/50 rounded">
+                                  <p className="text-xs text-muted-foreground">EBIT After Tax</p>
+                                  <p className="font-medium">{formatCurrency(cf.ebitAfterTax)}</p>
+                                </div>
+                                <div className="p-2 bg-muted/50 rounded">
+                                  <p className="text-xs text-muted-foreground">Operating CF</p>
+                                  <p className="font-medium">{formatCurrency(cf.operatingCashFlow)}</p>
+                                </div>
+                                <div className="p-2 bg-primary/10 rounded border border-primary/30">
+                                  <p className="text-xs text-muted-foreground">Free Cash Flow</p>
+                                  <p className={`font-bold ${cf.freeCashFlow >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                    {formatCurrency(cf.freeCashFlow)}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      );
+                    })}
+                  </Accordion>
+
+                  {/* Formula Reference */}
+                  <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                    <h5 className="text-sm font-semibold text-amber-600 mb-2">Cash Flow Formulas</h5>
+                    <div className="text-xs text-muted-foreground space-y-1">
+                      <p><strong>EBIT</strong> = Revenue - Operating Costs - Depreciation - Other Expenses</p>
+                      <p><strong>Tax</strong> = EBIT × Tax Rate</p>
+                      <p><strong>Operating Cash Flow</strong> = EBIT After Tax + Depreciation (add back non-cash)</p>
+                      <p><strong>Free Cash Flow (FCF)</strong> = Operating CF - Working Capital Change - CapEx</p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setShowCFCalculator(false)}>Cancel</Button>
+                    <Button onClick={applyCashFlows}>Apply Cash Flows</Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 

@@ -52,6 +52,8 @@ import FinancialGoalTracker from "./pages/FinancialGoalTracker";
 import BudgetPlanner from "./pages/BudgetPlanner";
 import NetWorthCalculator from "./pages/NetWorthCalculator";
 import CapitalBudgeting from "./pages/CapitalBudgeting";
+import TaxLossHarvestingCalculator from "./pages/TaxLossHarvestingCalculator";
+import PersonalLoanCalculator from "./pages/PersonalLoanCalculator";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -111,6 +113,8 @@ const App = () => (
           <Route path="/budget-planner" element={<BudgetPlanner />} />
           <Route path="/net-worth-calculator" element={<NetWorthCalculator />} />
           <Route path="/capital-budgeting" element={<CapitalBudgeting />} />
+          <Route path="/tax-loss-harvesting" element={<TaxLossHarvestingCalculator />} />
+          <Route path="/personal-loan-calculator" element={<PersonalLoanCalculator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
