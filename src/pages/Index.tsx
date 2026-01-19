@@ -309,6 +309,15 @@ const amazingTools = [
     tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
   {
+    id: "swp-calc",
+    title: "SWP CalC",
+    description: "Plan regular income from MF",
+    icon: TrendingUp,
+    route: "/swp-calculator",
+    tag: "Live",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+  },
+  {
     id: "more-calcs",
     title: "More Amazing Tools🥂 Coming Sooooon💖!",
     description: "Exciting tools on the way",
@@ -324,7 +333,14 @@ const Index = () => {
   const mainContentRef = useRef<HTMLElement>(null);
 
   const scrollToContent = () => {
-    mainContentRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const headerHeight = 80; // Approximate header height
+    if (mainContentRef.current) {
+      const elementPosition = mainContentRef.current.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementPosition - headerHeight,
+        behavior: 'smooth'
+      });
+    }
   };
 
   return (
