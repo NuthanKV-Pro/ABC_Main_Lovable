@@ -81,6 +81,11 @@ export const advancedTools: SearchItem[] = [
   { name: "Capital Budgeting", route: "/capital-budgeting", category: "Advanced Tools", keywords: ["capital", "budgeting", "npv", "irr", "mirr", "payback"] },
   { name: "Tax Loss Harvesting", route: "/tax-loss-harvesting", category: "Advanced Tools", keywords: ["tax", "loss", "harvesting", "capital gains", "offset"] },
   { name: "Financial Ratios", route: "/financial-ratios", category: "Advanced Tools", keywords: ["financial", "ratios", "analysis", "metrics"] },
+  { name: "Insurance Premium Calculator", route: "/insurance-premium-calculator", category: "Advanced Tools", keywords: ["insurance", "premium", "term life", "health", "coverage"] },
+  { name: "MF Overlap Analyzer", route: "/mf-overlap-analyzer", category: "Advanced Tools", keywords: ["mutual fund", "overlap", "portfolio", "duplicate", "holdings"] },
+  { name: "Cash Flow Budgeting", route: "/cashflow-budgeting", category: "Advanced Tools", keywords: ["cash flow", "budgeting", "inflow", "outflow", "projection"] },
+  { name: "Factoring Tool", route: "/factoring-tool", category: "Advanced Tools", keywords: ["factoring", "receivables", "invoice", "discount", "financing"] },
+  { name: "Dividend Decision Tool", route: "/dividend-decision", category: "Advanced Tools", keywords: ["dividend", "gordon", "lintner", "payout", "retention", "policy"] },
 ];
 
 // Pages & Settings
