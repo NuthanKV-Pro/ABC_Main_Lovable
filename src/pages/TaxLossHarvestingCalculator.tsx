@@ -263,7 +263,7 @@ const TaxLossHarvestingCalculator = () => {
                 </div>
                 <div className="p-4 bg-card rounded-lg">
                   <h4 className="font-semibold text-primary mb-2">Step 4: Buy Back</h4>
-                  <p className="text-sm text-muted-foreground">Repurchase shares after 30+ days to maintain strategy</p>
+                  <p className="text-sm text-muted-foreground">Repurchase sold shares/securities to maintain strategy</p>
                 </div>
               </div>
             </CardContent>
