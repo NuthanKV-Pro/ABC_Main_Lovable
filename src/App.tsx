@@ -64,6 +64,7 @@ import GoalBasedSIPCalculator from "./pages/GoalBasedSIPCalculator";
 import CompoundInterestCalculator from "./pages/CompoundInterestCalculator";
 import InflationImpactCalculator from "./pages/InflationImpactCalculator";
 import TaxSaver80COptimizer from "./pages/TaxSaver80COptimizer";
+import FinancialStatements from "./pages/FinancialStatements";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -135,6 +136,7 @@ const App = () => (
           <Route path="/compound-interest" element={<CompoundInterestCalculator />} />
           <Route path="/inflation-calculator" element={<InflationImpactCalculator />} />
           <Route path="/80c-optimizer" element={<TaxSaver80COptimizer />} />
+          <Route path="/financial-statements" element={<FinancialStatements />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
