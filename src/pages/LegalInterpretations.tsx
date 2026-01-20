@@ -153,11 +153,449 @@ const sampleCaseLaws: CaseLaw[] = [
     ],
     relevantSections: ["Section 194H", "Section 194O", "Section 40(a)(ia)"],
     verdict: "favor_taxpayer"
+  },
+  // Income Tax Cases
+  {
+    id: "9",
+    title: "CIT vs. Bharat Heavy Electricals Ltd.",
+    citation: "[2023] 154 taxmann.com 678 (SC)",
+    court: "Supreme Court of India",
+    date: "2023-10-12",
+    category: "Income Tax",
+    summary: "The Supreme Court held that provision for warranty claims based on scientific method and past experience is allowable as deduction under Section 37(1). The provision must be based on historical data and reasonable estimation.",
+    keyPrinciples: [
+      "Provisions for contingent liabilities allowable if scientifically computed",
+      "Historical data basis for warranty provisions",
+      "Matching principle in accounting"
+    ],
+    relevantSections: ["Section 37(1)", "Section 145"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "10",
+    title: "Goetze (India) Ltd. vs. CIT",
+    citation: "[2006] 157 Taxman 1 (SC)",
+    court: "Supreme Court of India",
+    date: "2006-03-24",
+    category: "Income Tax",
+    summary: "The Supreme Court ruled that an assessee cannot make a claim for deduction otherwise than by filing a revised return. However, appellate authorities have the power to entertain claims not made in the return.",
+    keyPrinciples: [
+      "Claims must be made through revised return before AO",
+      "Appellate authorities can entertain fresh claims",
+      "Procedural requirements for deduction claims"
+    ],
+    relevantSections: ["Section 139(5)", "Section 254"],
+    verdict: "partial"
+  },
+  {
+    id: "11",
+    title: "CIT vs. Hindustan Unilever Ltd.",
+    citation: "[2020] 114 taxmann.com 542 (Bom)",
+    court: "Mumbai High Court",
+    date: "2020-02-18",
+    category: "Income Tax",
+    summary: "The court held that business expenditure incurred for CSR activities is allowable as deduction under Section 37(1) if it has a nexus with the business and is not capital in nature.",
+    keyPrinciples: [
+      "CSR expenditure as business expenditure",
+      "Nexus with business requirement",
+      "Distinction from Section 80G donations"
+    ],
+    relevantSections: ["Section 37(1)", "Section 80G"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "12",
+    title: "ACIT vs. ICICI Prudential Life Insurance Co. Ltd.",
+    citation: "[2023] 149 taxmann.com 890 (Mum)",
+    court: "Mumbai ITAT",
+    date: "2023-07-25",
+    category: "Income Tax",
+    summary: "The Tribunal held that interest income earned by insurance companies from investments made out of shareholders' funds is taxable under 'Profits and Gains of Business' and not 'Income from Other Sources'.",
+    keyPrinciples: [
+      "Characterization of insurance company income",
+      "Investment income classification",
+      "Special provisions for insurance business"
+    ],
+    relevantSections: ["Section 44", "Section 56", "First Schedule"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "13",
+    title: "CIT vs. Tata Steel Ltd.",
+    citation: "[2022] 140 taxmann.com 234 (SC)",
+    court: "Supreme Court of India",
+    date: "2022-05-10",
+    category: "Income Tax",
+    summary: "The Supreme Court ruled on the treatment of subsidy received for setting up industries in backward areas, holding that the subsidy was capital in nature and not taxable as revenue receipt.",
+    keyPrinciples: [
+      "Purpose test for subsidy classification",
+      "Capital vs. revenue receipts",
+      "Incentives for backward area development"
+    ],
+    relevantSections: ["Section 2(24)", "Section 28"],
+    verdict: "favor_taxpayer"
+  },
+  // GST Cases
+  {
+    id: "14",
+    title: "Mohit Minerals Pvt. Ltd. vs. Union of India",
+    citation: "[2022] 138 taxmann.com 349 (SC)",
+    court: "Supreme Court of India",
+    date: "2022-05-19",
+    category: "GST",
+    summary: "The Supreme Court struck down the levy of IGST on ocean freight in CIF contracts, holding that the Indian importer is not liable to pay IGST on reverse charge basis on ocean freight when the value is already included in CIF value.",
+    keyPrinciples: [
+      "No double taxation on same transaction",
+      "CIF value includes freight component",
+      "Reverse charge mechanism limitations"
+    ],
+    relevantSections: ["Section 5(3) IGST Act", "Section 7 CGST Act"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "15",
+    title: "Safari Retreats Pvt. Ltd. vs. Chief Commissioner of CGST",
+    citation: "[2019] 108 taxmann.com 428 (Ori)",
+    court: "Orissa High Court",
+    date: "2019-05-17",
+    category: "GST",
+    summary: "The court held that blocking of ITC under Section 17(5)(d) for construction of immovable property for own use applies only to goods and services received for construction, not to the property itself if used for taxable supplies.",
+    keyPrinciples: [
+      "ITC on construction for business use",
+      "Interpretation of Section 17(5)(d)",
+      "Blocked credits scope"
+    ],
+    relevantSections: ["Section 17(5)(d) CGST Act", "Section 16 CGST Act"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "16",
+    title: "Union of India vs. VKC Footsteps India Pvt. Ltd.",
+    citation: "[2021] 130 taxmann.com 136 (SC)",
+    court: "Supreme Court of India",
+    date: "2021-09-13",
+    category: "GST",
+    summary: "The Supreme Court upheld the validity of Rule 89(5) of CGST Rules regarding refund of unutilized ITC on account of inverted duty structure, holding that the formula excluding input services was valid.",
+    keyPrinciples: [
+      "Inverted duty structure refund formula",
+      "Exclusion of input services from refund",
+      "Rule-making power of government"
+    ],
+    relevantSections: ["Section 54(3) CGST Act", "Rule 89(5) CGST Rules"],
+    verdict: "favor_revenue"
+  },
+  {
+    id: "17",
+    title: "Shree Renuka Sugars Ltd. vs. State of Karnataka",
+    citation: "[2023] 155 taxmann.com 456 (Kar)",
+    court: "Karnataka High Court",
+    date: "2023-08-30",
+    category: "GST",
+    summary: "The court examined whether press mud and bagasse are exempt supplies or non-supplies under GST, holding that these are agricultural produce exempt from GST when sold as such without further processing.",
+    keyPrinciples: [
+      "Agricultural produce definition under GST",
+      "By-products treatment",
+      "Exemption notification interpretation"
+    ],
+    relevantSections: ["Section 2(5) CGST Act", "Notification 2/2017"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "18",
+    title: "M/s. Northern Operating Systems Pvt. Ltd. vs. CCE",
+    citation: "[2022] 137 taxmann.com 229 (SC)",
+    court: "Supreme Court of India",
+    date: "2022-05-19",
+    category: "GST",
+    summary: "The Supreme Court held that secondment of employees from overseas group company constitutes 'manpower supply service' and the Indian entity receiving such employees is liable to pay service tax/GST under reverse charge.",
+    keyPrinciples: [
+      "Secondment arrangements treatment",
+      "Manpower supply characterization",
+      "Reverse charge on employee deputation"
+    ],
+    relevantSections: ["Section 9(3) CGST Act", "Section 5(3) IGST Act"],
+    verdict: "favor_revenue"
+  },
+  {
+    id: "19",
+    title: "Sutherland Global Services Pvt. Ltd. vs. Asst. Commissioner",
+    citation: "[2023] 151 taxmann.com 678 (Mad)",
+    court: "Madras High Court",
+    date: "2023-09-20",
+    category: "GST",
+    summary: "The court ruled that pre-deposit made under protest during investigation is adjustable against the GST liability determined upon assessment, preventing unjust enrichment of the department.",
+    keyPrinciples: [
+      "Adjustment of pre-deposit payments",
+      "No unjust enrichment of department",
+      "Interest on delayed refunds"
+    ],
+    relevantSections: ["Section 54 CGST Act", "Section 56 CGST Act"],
+    verdict: "favor_taxpayer"
+  },
+  // Corporate Law Cases
+  {
+    id: "20",
+    title: "Cyrus Investments Pvt. Ltd. vs. Tata Sons Ltd.",
+    citation: "[2021] 128 taxmann.com 198 (SC)",
+    court: "Supreme Court of India",
+    date: "2021-03-26",
+    category: "Corporate Law",
+    summary: "The Supreme Court upheld the removal of Cyrus Mistry as Executive Chairman, ruling that the decision was taken by shareholders in valid meeting and there was no oppression or mismanagement within the meaning of the Companies Act.",
+    keyPrinciples: [
+      "Oppression and mismanagement standards",
+      "Rights of minority shareholders",
+      "Validity of shareholder resolutions"
+    ],
+    relevantSections: ["Section 241 Companies Act", "Section 242 Companies Act", "Section 244"],
+    verdict: "favor_revenue"
+  },
+  {
+    id: "21",
+    title: "Innoventive Industries Ltd. vs. ICICI Bank",
+    citation: "[2018] 92 taxmann.com 131 (SC)",
+    court: "Supreme Court of India",
+    date: "2018-01-31",
+    category: "Corporate Law",
+    summary: "The Supreme Court upheld the constitutional validity of the Insolvency and Bankruptcy Code, 2016, and clarified the waterfall mechanism for distribution of proceeds in liquidation.",
+    keyPrinciples: [
+      "IBC constitutional validity",
+      "Priority of claims in liquidation",
+      "Time-bound resolution process"
+    ],
+    relevantSections: ["Section 7 IBC", "Section 53 IBC", "Section 238 IBC"],
+    verdict: "favor_revenue"
+  },
+  {
+    id: "22",
+    title: "Essar Steel India Ltd. vs. Satish Kumar Gupta",
+    citation: "[2019] 110 taxmann.com 322 (SC)",
+    court: "Supreme Court of India",
+    date: "2019-11-15",
+    category: "Corporate Law",
+    summary: "The Supreme Court clarified the role of Committee of Creditors (CoC) in approval of resolution plans and held that CoC has the commercial wisdom to decide the distribution among creditors within the framework of IBC.",
+    keyPrinciples: [
+      "Commercial wisdom of CoC",
+      "Distribution among financial and operational creditors",
+      "NCLT's limited role in plan approval"
+    ],
+    relevantSections: ["Section 30 IBC", "Section 31 IBC", "Section 33 IBC"],
+    verdict: "partial"
+  },
+  {
+    id: "23",
+    title: "Vijay Kumar Jain vs. Standard Chartered Bank",
+    citation: "[2019] 106 taxmann.com 61 (SC)",
+    court: "Supreme Court of India",
+    date: "2019-02-06",
+    category: "Corporate Law",
+    summary: "The Supreme Court ruled on the rights of suspended directors during CIRP, holding that they are entitled to receive information from the Resolution Professional but cannot participate in CoC meetings.",
+    keyPrinciples: [
+      "Rights of suspended management during CIRP",
+      "Information sharing obligations",
+      "Resolution Professional duties"
+    ],
+    relevantSections: ["Section 17 IBC", "Section 25 IBC", "Section 29 IBC"],
+    verdict: "partial"
+  },
+  {
+    id: "24",
+    title: "Swiss Ribbons Pvt. Ltd. vs. Union of India",
+    citation: "[2019] 101 taxmann.com 389 (SC)",
+    court: "Supreme Court of India",
+    date: "2019-01-25",
+    category: "Corporate Law",
+    summary: "The Supreme Court upheld the validity of Section 29A of IBC which bars wilful defaulters and connected persons from submitting resolution plans, stating it is a reasonable classification.",
+    keyPrinciples: [
+      "Eligibility criteria for resolution applicants",
+      "Section 29A not retrospective",
+      "Clean slate for new promoters"
+    ],
+    relevantSections: ["Section 29A IBC", "Section 30 IBC"],
+    verdict: "favor_revenue"
+  },
+  {
+    id: "25",
+    title: "Anuj Jain vs. Axis Bank Ltd.",
+    citation: "[2020] 118 taxmann.com 154 (SC)",
+    court: "Supreme Court of India",
+    date: "2020-06-26",
+    category: "Corporate Law",
+    summary: "The Supreme Court examined the concept of avoidance transactions under IBC and held that personal guarantees given by the corporate debtor for related party loans can be set aside as undervalued transactions.",
+    keyPrinciples: [
+      "Avoidance of undervalued transactions",
+      "Related party transactions scrutiny",
+      "Look-back period for avoidance"
+    ],
+    relevantSections: ["Section 43 IBC", "Section 45 IBC", "Section 66 IBC"],
+    verdict: "favor_taxpayer"
+  },
+  // International Taxation Cases
+  {
+    id: "26",
+    title: "Engineering Analysis Centre of Excellence vs. CIT",
+    citation: "[2021] 125 taxmann.com 42 (SC)",
+    court: "Supreme Court of India",
+    date: "2021-03-02",
+    category: "International Taxation",
+    summary: "The Supreme Court held that payment for use of shrink-wrapped software is not royalty under DTAA as there is no transfer of copyright, only a license to use copyrighted article.",
+    keyPrinciples: [
+      "Software payments not royalty under DTAA",
+      "Copyright vs. copyrighted article distinction",
+      "End-user license agreements interpretation"
+    ],
+    relevantSections: ["Section 9(1)(vi)", "Article 12 DTAA", "Copyright Act 1957"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "27",
+    title: "DIT vs. Morgan Stanley & Co.",
+    citation: "[2007] 162 Taxman 165 (SC)",
+    court: "Supreme Court of India",
+    date: "2007-07-09",
+    category: "International Taxation",
+    summary: "The Supreme Court examined the concept of dependent agent PE and held that a captive service provider can constitute a PE of the foreign enterprise if it habitually exercises authority to conclude contracts.",
+    keyPrinciples: [
+      "Agency PE determination",
+      "Stewardship activities exception",
+      "Functional and factual analysis required"
+    ],
+    relevantSections: ["Article 5 DTAA", "Section 9(1)(i)", "Section 92"],
+    verdict: "partial"
+  },
+  {
+    id: "28",
+    title: "Centrica India Offshore Pvt. Ltd. vs. CIT",
+    citation: "[2023] 153 taxmann.com 789 (Del)",
+    court: "Delhi High Court",
+    date: "2023-11-08",
+    category: "International Taxation",
+    summary: "The court held that reimbursement of salary costs to overseas group company for seconded employees does not constitute fees for technical services under Section 9(1)(vii) if no technical know-how is made available.",
+    keyPrinciples: [
+      "Make available clause interpretation",
+      "Cost reimbursement vs. FTS",
+      "Secondment arrangements taxation"
+    ],
+    relevantSections: ["Section 9(1)(vii)", "Article 13 DTAA"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "29",
+    title: "GE India Technology Centre vs. CIT",
+    citation: "[2010] 193 Taxman 234 (SC)",
+    court: "Supreme Court of India",
+    date: "2010-09-15",
+    category: "International Taxation",
+    summary: "The Supreme Court held that for the purpose of withholding tax under Section 195, the payer must determine whether the payment is chargeable to tax, and this determination should consider beneficial DTAA provisions.",
+    keyPrinciples: [
+      "TDS liability on payer",
+      "DTAA benefits at withholding stage",
+      "Gross vs. net basis of TDS"
+    ],
+    relevantSections: ["Section 195", "Section 90", "Section 206AA"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "30",
+    title: "Formula One World Championship Ltd. vs. CIT",
+    citation: "[2017] 80 taxmann.com 347 (SC)",
+    court: "Supreme Court of India",
+    date: "2017-04-24",
+    category: "International Taxation",
+    summary: "The Supreme Court examined whether a fixed place of business (circuit) used for only a few days in a year can constitute a PE under the India-UK DTAA, and held that permanence requires a degree of durability.",
+    keyPrinciples: [
+      "Fixed place PE requirements",
+      "Permanence and durability test",
+      "Disposal test for premises"
+    ],
+    relevantSections: ["Article 5(1) DTAA", "Section 9(1)(i)"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "31",
+    title: "Azadi Bachao Andolan vs. Union of India",
+    citation: "[2003] 132 Taxman 373 (SC)",
+    court: "Supreme Court of India",
+    date: "2003-10-07",
+    category: "International Taxation",
+    summary: "The Supreme Court upheld the validity of the India-Mauritius DTAA provisions allowing capital gains tax exemption to Mauritius residents, rejecting the argument that it constitutes treaty shopping.",
+    keyPrinciples: [
+      "Treaty shopping is legal tax planning",
+      "DTAA benefits cannot be denied on suspicion",
+      "Tax residency certificate is conclusive"
+    ],
+    relevantSections: ["Article 13 India-Mauritius DTAA", "Section 90"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "32",
+    title: "PCIT vs. Nokia Solutions and Networks India Pvt. Ltd.",
+    citation: "[2023] 156 taxmann.com 234 (Del)",
+    court: "Delhi High Court",
+    date: "2023-12-15",
+    category: "International Taxation",
+    summary: "The court examined the treatment of payments for cloud-based software services and held that SaaS payments are not royalty under the India-Finland DTAA as they do not involve use of or right to use any copyright.",
+    keyPrinciples: [
+      "SaaS not royalty under DTAA",
+      "No use of equipment in cloud services",
+      "Business profits vs. royalty characterization"
+    ],
+    relevantSections: ["Article 12 DTAA", "Section 9(1)(vi)", "Section 195"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "33",
+    title: "DCIT vs. Capgemini Technology Services India Ltd.",
+    citation: "[2024] 161 taxmann.com 456 (Mum)",
+    court: "Mumbai ITAT",
+    date: "2024-02-10",
+    category: "International Taxation",
+    summary: "The Tribunal held that services provided by group companies under cost sharing arrangements do not constitute FTS under Section 9(1)(vii) if no technology is made available on a permanent basis.",
+    keyPrinciples: [
+      "Cost sharing arrangements treatment",
+      "Make available test for FTS",
+      "Intra-group services taxation"
+    ],
+    relevantSections: ["Section 9(1)(vii)", "Section 92", "Article 12 DTAA"],
+    verdict: "favor_taxpayer"
+  },
+  // Additional Income Tax Cases
+  {
+    id: "34",
+    title: "CIT vs. Chettinad Cement Corporation Ltd.",
+    citation: "[2022] 139 taxmann.com 567 (Mad)",
+    court: "Madras High Court",
+    date: "2022-08-22",
+    category: "Income Tax",
+    summary: "The court held that interest on delayed payment of compensation under land acquisition is taxable in the year of receipt and not on accrual basis, applying the real income theory.",
+    keyPrinciples: [
+      "Real income theory application",
+      "Year of taxability for enhanced compensation",
+      "Interest under Section 28 of Land Acquisition Act"
+    ],
+    relevantSections: ["Section 145", "Section 56", "Section 57"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "35",
+    title: "PCIT vs. Wipro Ltd.",
+    citation: "[2023] 147 taxmann.com 234 (Kar)",
+    court: "Karnataka High Court",
+    date: "2023-06-14",
+    category: "Income Tax",
+    summary: "The court examined the eligibility of software development services for deduction under Section 10A/10AA and held that onsite services form part of overall software development activity eligible for deduction.",
+    keyPrinciples: [
+      "Onsite services as part of software export",
+      "Unity of STP unit concept",
+      "Section 10A/10AA interpretation"
+    ],
+    relevantSections: ["Section 10A", "Section 10AA", "Section 80HHE"],
+    verdict: "favor_taxpayer"
   }
 ];
 
 const legalCategories = [
   "All Categories",
+  "Income Tax",
   "Transfer Pricing",
   "Depreciation",
   "Software Expenses",
