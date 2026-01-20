@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useRef, useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
@@ -571,6 +572,34 @@ const Index = () => {
     });
   };
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (e.key.toLowerCase()) {
+        case 'm':
+          scrollToModules();
+          break;
+        case 't':
+          scrollToAmazingTools();
+          break;
+        case 'h':
+          scrollToTop();
+          break;
+        case '?':
+          // Toggle shortcuts help - handled by popover
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       {/* Header */}
@@ -628,6 +657,36 @@ const Index = () => {
             <Wrench className="w-4 h-4 text-primary" />
             <span className="hidden sm:inline">Amazing Tools</span>
           </Button>
+          <div className="w-px h-6 bg-border" />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full gap-2 hover:bg-primary/10"
+              >
+                <Keyboard className="w-4 h-4" />
+                <span className="hidden sm:inline">Shortcuts</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-3" side="top" align="end">
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm mb-3">Keyboard Shortcuts</h4>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Go to Top</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">H</kbd>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Modules</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">M</kbd>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Amazing Tools</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">T</kbd>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </motion.div>
 
