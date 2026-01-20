@@ -29,6 +29,9 @@ const contractTypes = [
   { value: "vendor", label: "Vendor Agreement" },
   { value: "licensing", label: "Licensing Agreement" },
   { value: "mou", label: "Memorandum of Understanding (MOU)" },
+  { value: "joint-venture", label: "Joint Venture Agreement" },
+  { value: "share-purchase", label: "Share Purchase Agreement" },
+  { value: "power-of-attorney", label: "Power of Attorney" },
 ];
 
 interface ContractDetails {

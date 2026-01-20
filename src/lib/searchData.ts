@@ -79,6 +79,7 @@ export const financialPlanningTools: SearchItem[] = [
 // Advanced Tools
 export const advancedTools: SearchItem[] = [
   { name: "Capital Budgeting", route: "/capital-budgeting", category: "Advanced Tools", keywords: ["capital", "budgeting", "npv", "irr", "mirr", "payback"] },
+  { name: "Contract Drafter", route: "/contract-drafter", category: "Advanced Tools", keywords: ["contract", "drafter", "agreement", "legal", "nda", "employment"] },
   { name: "Tax Loss Harvesting", route: "/tax-loss-harvesting", category: "Advanced Tools", keywords: ["tax", "loss", "harvesting", "capital gains", "offset"] },
   { name: "Financial Ratios", route: "/financial-ratios", category: "Advanced Tools", keywords: ["financial", "ratios", "analysis", "metrics"] },
   { name: "Insurance Premium Calculator", route: "/insurance-premium-calculator", category: "Advanced Tools", keywords: ["insurance", "premium", "term life", "health", "coverage"] },
