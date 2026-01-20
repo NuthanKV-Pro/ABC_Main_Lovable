@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Calculator, Plus, Trash2, Info, CheckCircle, AlertTriangle, TrendingUp, Lightbulb, Scale, Percent, IndianRupee } from "lucide-react";
+import { ArrowLeft, Calculator, Plus, Trash2, Info, CheckCircle, AlertTriangle, TrendingUp, Lightbulb, Scale, Percent, IndianRupee, Upload, FileSpreadsheet, RefreshCw } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
+import * as XLSX from "xlsx";
 
 interface Holding {
   id: string;
@@ -20,11 +22,13 @@ interface Holding {
 
 const TaxLossHarvestingCalculator = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [holdings, setHoldings] = useState<Holding[]>([
     { id: '1', name: 'Stock A', purchasePrice: 1000, currentPrice: 1200, quantity: 100, type: 'equity', holdingPeriod: 'long' },
     { id: '2', name: 'Stock B', purchasePrice: 500, currentPrice: 350, quantity: 200, type: 'equity', holdingPeriod: 'short' },
     { id: '3', name: 'MF - Debt', purchasePrice: 2000, currentPrice: 1800, quantity: 50, type: 'debt', holdingPeriod: 'long' },
   ]);
+  const [isParsingFile, setIsParsingFile] = useState(false);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -55,6 +59,103 @@ const TaxLossHarvestingCalculator = () => {
     setHoldings(holdings.map(h => h.id === id ? { ...h, [field]: value } : h));
   };
 
+  // Parse Zerodha Holding Statement Excel
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsParsingFile(true);
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+
+      // Find header row - Zerodha format typically has headers like: Instrument, Qty., Avg. cost, LTP, Cur. val, P&L, Net chg., Day chg.
+      let headerRowIndex = -1;
+      const possibleHeaders = ['instrument', 'symbol', 'stock', 'name', 'qty', 'quantity'];
+      
+      for (let i = 0; i < Math.min(jsonData.length, 20); i++) {
+        const row = jsonData[i];
+        if (row && row.some((cell: any) => 
+          typeof cell === 'string' && 
+          possibleHeaders.some(h => cell.toLowerCase().includes(h))
+        )) {
+          headerRowIndex = i;
+          break;
+        }
+      }
+
+      if (headerRowIndex === -1) {
+        toast.error("Could not identify column headers. Please ensure the file has columns like Instrument, Qty, Avg. cost, LTP.");
+        setIsParsingFile(false);
+        return;
+      }
+
+      const headers = jsonData[headerRowIndex].map((h: any) => 
+        String(h || '').toLowerCase().trim()
+      );
+
+      // Map column indices
+      const getColumnIndex = (keywords: string[]) => {
+        return headers.findIndex((h: string) => 
+          keywords.some(k => h.includes(k))
+        );
+      };
+
+      const nameCol = getColumnIndex(['instrument', 'symbol', 'stock', 'name', 'scrip']);
+      const qtyCol = getColumnIndex(['qty', 'quantity', 'units']);
+      const avgCostCol = getColumnIndex(['avg', 'average', 'buy', 'cost', 'purchase']);
+      const ltpCol = getColumnIndex(['ltp', 'current', 'cmp', 'market', 'close', 'price']);
+
+      if (nameCol === -1 || qtyCol === -1 || avgCostCol === -1 || ltpCol === -1) {
+        toast.error("Missing required columns. Expected: Instrument/Symbol, Qty, Avg. cost, LTP/Current Price");
+        setIsParsingFile(false);
+        return;
+      }
+
+      const parsedHoldings: Holding[] = [];
+      
+      for (let i = headerRowIndex + 1; i < jsonData.length; i++) {
+        const row = jsonData[i];
+        if (!row || row.length === 0) continue;
+
+        const name = String(row[nameCol] || '').trim();
+        const qty = parseFloat(String(row[qtyCol] || '0').replace(/,/g, ''));
+        const avgCost = parseFloat(String(row[avgCostCol] || '0').replace(/,/g, ''));
+        const ltp = parseFloat(String(row[ltpCol] || '0').replace(/,/g, ''));
+
+        if (name && !isNaN(qty) && qty > 0 && !isNaN(avgCost) && !isNaN(ltp)) {
+          parsedHoldings.push({
+            id: Date.now().toString() + i,
+            name: name,
+            purchasePrice: avgCost,
+            currentPrice: ltp,
+            quantity: qty,
+            type: 'equity',
+            holdingPeriod: 'short' // Default to short term - user can adjust
+          });
+        }
+      }
+
+      if (parsedHoldings.length === 0) {
+        toast.error("No valid holdings found in the file.");
+      } else {
+        setHoldings(parsedHoldings);
+        toast.success(`Successfully imported ${parsedHoldings.length} holdings from Zerodha statement!`);
+      }
+    } catch (error) {
+      console.error("Error parsing file:", error);
+      toast.error("Error parsing file. Please check the format and try again.");
+    }
+    
+    setIsParsingFile(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   // Calculate gains/losses
   const calculateGainLoss = (holding: Holding) => {
     const totalPurchase = holding.purchasePrice * holding.quantity;
@@ -79,7 +180,7 @@ const TaxLossHarvestingCalculator = () => {
   const totalLosses = Math.abs(lossHoldings.reduce((sum, h) => sum + calculateGainLoss(h), 0));
   const netGainLoss = totalGains - totalLosses;
 
-  // Categorize by type and period
+  // Categorize by type and period for equity
   const shortTermEquityGains = holdings.filter(h => h.type === 'equity' && h.holdingPeriod === 'short' && calculateGainLoss(h) > 0)
     .reduce((sum, h) => sum + calculateGainLoss(h), 0);
   const shortTermEquityLosses = Math.abs(holdings.filter(h => h.type === 'equity' && h.holdingPeriod === 'short' && calculateGainLoss(h) < 0)
@@ -91,13 +192,30 @@ const TaxLossHarvestingCalculator = () => {
 
   // LTCG exemption (₹1.25 Lakh for equity)
   const ltcgExemption = 125000;
-  const taxableLTCG = Math.max(0, longTermEquityGains - ltcgExemption);
+  
+  // CORRECT TAX SAVINGS CALCULATION
+  // As per Indian tax law:
+  // - STCL can be set off against both STCG and LTCG
+  // - LTCL can ONLY be set off against LTCG
 
-  // Tax savings from harvesting
-  const potentialTaxOnGains = (shortTermEquityGains * 0.20) + (taxableLTCG * 0.125);
-  const taxAfterHarvesting = Math.max(0, (shortTermEquityGains - shortTermEquityLosses) * 0.20) + 
-    Math.max(0, (taxableLTCG - longTermEquityLosses) * 0.125);
-  const taxSavings = potentialTaxOnGains - taxAfterHarvesting;
+  // Tax WITHOUT harvesting (if we didn't book any losses)
+  const taxableLTCGWithoutHarvesting = Math.max(0, longTermEquityGains - ltcgExemption);
+  const taxWithoutHarvesting = (shortTermEquityGains * 0.20) + (taxableLTCGWithoutHarvesting * 0.125);
+
+  // Tax WITH harvesting (after booking losses)
+  // Step 1: STCL first offsets STCG
+  let remainingSTCL = shortTermEquityLosses;
+  const netSTCG = Math.max(0, shortTermEquityGains - remainingSTCL);
+  remainingSTCL = Math.max(0, remainingSTCL - shortTermEquityGains);
+
+  // Step 2: LTCL offsets LTCG (after exemption consideration)
+  // Step 3: Any remaining STCL also offsets LTCG
+  const taxableLTCGBeforeOffset = Math.max(0, longTermEquityGains - ltcgExemption);
+  const totalLTCGOffset = longTermEquityLosses + remainingSTCL;
+  const netTaxableLTCG = Math.max(0, taxableLTCGBeforeOffset - totalLTCGOffset);
+
+  const taxWithHarvesting = (netSTCG * 0.20) + (netTaxableLTCG * 0.125);
+  const taxSavings = Math.max(0, taxWithoutHarvesting - taxWithHarvesting);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
@@ -130,7 +248,7 @@ const TaxLossHarvestingCalculator = () => {
                 Tax Loss Harvesting is a strategy where you sell investments that are at a loss to offset the capital gains 
                 from profitable investments. This reduces your overall tax liability while maintaining your investment strategy.
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="p-4 bg-card rounded-lg">
                   <h4 className="font-semibold text-primary mb-2">Step 1: Identify Losses</h4>
                   <p className="text-sm text-muted-foreground">Find investments trading below your purchase price</p>
@@ -143,6 +261,66 @@ const TaxLossHarvestingCalculator = () => {
                   <h4 className="font-semibold text-primary mb-2">Step 3: Offset Gains</h4>
                   <p className="text-sm text-muted-foreground">Use booked losses to reduce taxable capital gains</p>
                 </div>
+                <div className="p-4 bg-card rounded-lg">
+                  <h4 className="font-semibold text-primary mb-2">Step 4: Buy Back</h4>
+                  <p className="text-sm text-muted-foreground">Repurchase shares after 30+ days to maintain strategy</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Zerodha Upload Section */}
+          <Card className="border-primary/30">
+            <CardHeader>
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileSpreadsheet className="h-5 w-5 text-primary" />
+                    Import Zerodha Holdings
+                  </CardTitle>
+                  <CardDescription>Upload your Zerodha Holding Statement (Excel) to auto-analyze</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    accept=".xlsx,.xls,.csv"
+                    className="hidden"
+                  />
+                  <Button 
+                    onClick={() => fileInputRef.current?.click()} 
+                    variant="outline"
+                    disabled={isParsingFile}
+                  >
+                    {isParsingFile ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        Parsing...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload Excel
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="p-4 bg-muted/50 rounded-lg">
+                <h4 className="font-medium mb-2">How to get your Zerodha Holdings:</h4>
+                <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                  <li>Login to <a href="https://kite.zerodha.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">kite.zerodha.com</a></li>
+                  <li>Go to <strong>Holdings</strong> tab</li>
+                  <li>Click on <strong>Download</strong> icon (top right) → Select <strong>Excel</strong></li>
+                  <li>Upload the downloaded file here</li>
+                </ol>
+                <p className="text-xs text-muted-foreground mt-3">
+                  <Info className="h-3 w-3 inline mr-1" />
+                  Supported formats: .xlsx, .xls, .csv. Columns needed: Instrument, Qty, Avg. cost, LTP
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -357,12 +535,12 @@ const TaxLossHarvestingCalculator = () => {
                     </div>
                     <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
                       <span>Taxable LTCG</span>
-                      <span className="font-bold">{formatCurrency(Math.max(0, taxableLTCG - longTermEquityLosses))}</span>
+                      <span className="font-bold">{formatCurrency(netTaxableLTCG)}</span>
                     </div>
                     <div className="flex justify-between items-center p-3 bg-primary/10 rounded-lg">
                       <span>Tax @ 12.5%</span>
                       <span className="font-bold text-primary">
-                        {formatCurrency(Math.max(0, (taxableLTCG - longTermEquityLosses) * 0.125))}
+                        {formatCurrency(netTaxableLTCG * 0.125)}
                       </span>
                     </div>
                   </CardContent>
