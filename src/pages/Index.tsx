@@ -117,8 +117,8 @@ const amazingTools = [
     description: "Draft professional contracts instantly",
     icon: ScrollText,
     route: "/contract-drafter",
-    tag: "Works",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+    tag: "Kinda Works",
+    tagColor: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
   },
   {
     id: "emi-calc",
