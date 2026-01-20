@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Building2, FileText, TrendingUp, Wallet, Plus, Trash2, Save, FolderOpen, Download, RefreshCw, Calculator, BarChart3, ArrowUpDown } from "lucide-react";
 import { motion } from "framer-motion";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 // Types
 interface LedgerEntry {
@@ -269,6 +271,249 @@ const FinancialStatements = () => {
     const totalRevenue = getCategoryTotal('revenue');
     const totalExpenses = getCategoryTotal('expense');
     return totalRevenue - totalExpenses;
+  };
+
+  // Format currency for PDF (without symbol issues)
+  const formatCurrencyPdf = (amount: number) => {
+    return 'Rs. ' + new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(amount);
+  };
+
+  // Export Balance Sheet to PDF
+  const exportBalanceSheetPDF = () => {
+    const doc = new jsPDF();
+    const totalAssets = getCategoryTotal('asset');
+    const totalLiabilities = getCategoryTotal('liability');
+    const totalEquity = getCategoryTotal('equity');
+    const netProfit = getNetProfit();
+    const retainedEarnings = getGroupTotal('eq_retained') + netProfit;
+    const totalEquityWithProfit = totalEquity - getGroupTotal('eq_retained') + retainedEarnings;
+
+    // Header
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(data.companyName || 'Company Name', 105, 20, { align: 'center' });
+    doc.setFontSize(14);
+    doc.text('Balance Sheet', 105, 30, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`As at ${data.asOfDate} | FY ${data.financialYear}`, 105, 38, { align: 'center' });
+
+    let yPos = 50;
+
+    // Assets Section
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('ASSETS', 14, yPos);
+    yPos += 8;
+
+    const assetRows: any[] = [];
+    ['Current Assets', 'Fixed Assets'].forEach(subCat => {
+      assetRows.push([{ content: subCat, styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } }, '']);
+      data.accountGroups.filter(g => g.category === 'asset' && g.subCategory === subCat).forEach(group => {
+        const total = getGroupTotal(group.id);
+        if (total > 0) {
+          assetRows.push([`    ${group.name}`, formatCurrencyPdf(total)]);
+        }
+      });
+      assetRows.push([{ content: `Total ${subCat}`, styles: { fontStyle: 'bold' } }, { content: formatCurrencyPdf(getSubCategoryTotal(subCat)), styles: { fontStyle: 'bold' } }]);
+    });
+    assetRows.push([{ content: 'TOTAL ASSETS', styles: { fontStyle: 'bold', fillColor: [200, 230, 255] } }, { content: formatCurrencyPdf(totalAssets), styles: { fontStyle: 'bold', fillColor: [200, 230, 255] } }]);
+
+    autoTable(doc, {
+      startY: yPos,
+      head: [['Particulars', 'Amount']],
+      body: assetRows,
+      theme: 'grid',
+      headStyles: { fillColor: [59, 130, 246] },
+      margin: { left: 14, right: 105 },
+      tableWidth: 85,
+    });
+
+    // Liabilities & Equity Section
+    const liabRows: any[] = [];
+    ['Current Liabilities', 'Non-Current Liabilities'].forEach(subCat => {
+      liabRows.push([{ content: subCat, styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } }, '']);
+      data.accountGroups.filter(g => g.category === 'liability' && g.subCategory === subCat).forEach(group => {
+        const total = getGroupTotal(group.id);
+        if (total > 0) {
+          liabRows.push([`    ${group.name}`, formatCurrencyPdf(total)]);
+        }
+      });
+      liabRows.push([{ content: `Total ${subCat}`, styles: { fontStyle: 'bold' } }, { content: formatCurrencyPdf(getSubCategoryTotal(subCat)), styles: { fontStyle: 'bold' } }]);
+    });
+    
+    liabRows.push([{ content: "Shareholders' Equity", styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } }, '']);
+    data.accountGroups.filter(g => g.category === 'equity').forEach(group => {
+      let total = getGroupTotal(group.id);
+      if (group.id === 'eq_retained') total += netProfit;
+      if (total > 0 || group.id === 'eq_retained') {
+        liabRows.push([`    ${group.name}${group.id === 'eq_retained' && netProfit !== 0 ? ' (incl. Net Profit)' : ''}`, formatCurrencyPdf(total)]);
+      }
+    });
+    liabRows.push([{ content: 'Total Equity', styles: { fontStyle: 'bold' } }, { content: formatCurrencyPdf(totalEquityWithProfit), styles: { fontStyle: 'bold' } }]);
+    liabRows.push([{ content: 'TOTAL LIABILITIES & EQUITY', styles: { fontStyle: 'bold', fillColor: [200, 230, 255] } }, { content: formatCurrencyPdf(totalLiabilities + totalEquityWithProfit), styles: { fontStyle: 'bold', fillColor: [200, 230, 255] } }]);
+
+    autoTable(doc, {
+      startY: 50,
+      head: [['Particulars', 'Amount']],
+      body: liabRows,
+      theme: 'grid',
+      headStyles: { fillColor: [59, 130, 246] },
+      margin: { left: 110, right: 14 },
+      tableWidth: 85,
+    });
+
+    doc.save(`Balance_Sheet_${data.companyName || 'Company'}_${data.financialYear}.pdf`);
+    toast({ title: "PDF Exported", description: "Balance Sheet has been downloaded." });
+  };
+
+  // Export Profit & Loss to PDF
+  const exportProfitLossPDF = () => {
+    const doc = new jsPDF();
+    const operatingRevenue = getSubCategoryTotal('Operating Revenue');
+    const otherRevenue = getSubCategoryTotal('Other Revenue');
+    const totalRevenue = operatingRevenue + otherRevenue;
+    const cogs = getGroupTotal('exp_cogs');
+    const grossProfit = operatingRevenue - cogs;
+    const operatingExpenses = data.accountGroups
+      .filter(g => g.category === 'expense' && g.subCategory === 'Operating Expenses' && g.id !== 'exp_cogs')
+      .reduce((sum, g) => sum + g.entries.reduce((s, e) => s + e.amount, 0), 0);
+    const operatingProfit = grossProfit - operatingExpenses;
+    const financeCosts = getSubCategoryTotal('Finance Costs');
+    const profitBeforeTax = operatingProfit + otherRevenue - financeCosts;
+    const taxExpense = getSubCategoryTotal('Tax');
+    const netProfit = profitBeforeTax - taxExpense;
+
+    // Header
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(data.companyName || 'Company Name', 105, 20, { align: 'center' });
+    doc.setFontSize(14);
+    doc.text('Profit & Loss Account', 105, 30, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`For the year ended ${data.asOfDate} | FY ${data.financialYear}`, 105, 38, { align: 'center' });
+
+    const rows: any[] = [];
+    
+    // Revenue
+    rows.push([{ content: 'Revenue', styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } }, '']);
+    data.accountGroups.filter(g => g.category === 'revenue').forEach(group => {
+      const total = getGroupTotal(group.id);
+      if (total > 0) {
+        rows.push([`    ${group.name}`, formatCurrencyPdf(total)]);
+      }
+    });
+    rows.push([{ content: 'Total Revenue', styles: { fontStyle: 'bold' } }, { content: formatCurrencyPdf(totalRevenue), styles: { fontStyle: 'bold' } }]);
+    
+    // COGS & Gross Profit
+    rows.push(['Less: Cost of Goods Sold', `(${formatCurrencyPdf(cogs)})`]);
+    rows.push([{ content: 'Gross Profit', styles: { fontStyle: 'bold', fillColor: [200, 255, 200] } }, { content: formatCurrencyPdf(grossProfit), styles: { fontStyle: 'bold', fillColor: [200, 255, 200] } }]);
+    
+    // Operating Expenses
+    rows.push([{ content: 'Less: Operating Expenses', styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } }, '']);
+    data.accountGroups.filter(g => g.category === 'expense' && g.subCategory === 'Operating Expenses' && g.id !== 'exp_cogs').forEach(group => {
+      const total = getGroupTotal(group.id);
+      if (total > 0) {
+        rows.push([`    ${group.name}`, formatCurrencyPdf(total)]);
+      }
+    });
+    rows.push([{ content: 'Operating Profit (EBIT)', styles: { fontStyle: 'bold' } }, { content: formatCurrencyPdf(operatingProfit), styles: { fontStyle: 'bold' } }]);
+    
+    if (otherRevenue > 0) rows.push(['Add: Other Income', formatCurrencyPdf(otherRevenue)]);
+    if (financeCosts > 0) rows.push(['Less: Finance Costs', `(${formatCurrencyPdf(financeCosts)})`]);
+    rows.push([{ content: 'Profit Before Tax', styles: { fontStyle: 'bold' } }, { content: formatCurrencyPdf(profitBeforeTax), styles: { fontStyle: 'bold' } }]);
+    rows.push(['Less: Income Tax Expense', `(${formatCurrencyPdf(taxExpense)})`]);
+    rows.push([{ content: 'Net Profit / (Loss)', styles: { fontStyle: 'bold', fillColor: [200, 230, 255] } }, { content: formatCurrencyPdf(netProfit), styles: { fontStyle: 'bold', fillColor: [200, 230, 255] } }]);
+
+    autoTable(doc, {
+      startY: 50,
+      head: [['Particulars', 'Amount (Rs.)']],
+      body: rows,
+      theme: 'grid',
+      headStyles: { fillColor: [59, 130, 246] },
+    });
+
+    doc.save(`Profit_Loss_${data.companyName || 'Company'}_${data.financialYear}.pdf`);
+    toast({ title: "PDF Exported", description: "Profit & Loss Account has been downloaded." });
+  };
+
+  // Export Cash Flow Statement to PDF
+  const exportCashFlowPDF = () => {
+    const doc = new jsPDF();
+    const netProfit = getNetProfit();
+    const depreciation = getGroupTotal('exp_depreciation');
+    const receivablesChange = -getGroupTotal('ca_receivables');
+    const inventoryChange = -getGroupTotal('ca_inventory');
+    const payablesChange = getGroupTotal('cl_payables');
+    const operatingCashFlow = netProfit + depreciation + receivablesChange + inventoryChange + payablesChange - getGroupTotal('exp_tax');
+    const ppeInvestment = -getGroupTotal('fa_ppe');
+    const intangibleInvestment = -getGroupTotal('fa_intangible');
+    const investmentsChange = -getGroupTotal('fa_investments');
+    const investingCashFlow = ppeInvestment + intangibleInvestment + investmentsChange;
+    const shortTermBorrowing = getGroupTotal('cl_shortterm');
+    const longTermBorrowing = getGroupTotal('ncl_longterm');
+    const shareCapital = getGroupTotal('eq_capital');
+    const financingCashFlow = shortTermBorrowing + longTermBorrowing + shareCapital;
+    const netCashChange = operatingCashFlow + investingCashFlow + financingCashFlow;
+    const closingCash = getGroupTotal('ca_cash');
+
+    // Header
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(data.companyName || 'Company Name', 105, 20, { align: 'center' });
+    doc.setFontSize(14);
+    doc.text('Cash Flow Statement', 105, 30, { align: 'center' });
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`For the year ended ${data.asOfDate} | FY ${data.financialYear}`, 105, 38, { align: 'center' });
+
+    const rows: any[] = [];
+    
+    // Operating Activities
+    rows.push([{ content: 'A. Cash Flow from Operating Activities', styles: { fontStyle: 'bold', fillColor: [219, 234, 254] } }, '']);
+    rows.push(['    Net Profit Before Tax', formatCurrencyPdf(netProfit + getGroupTotal('exp_tax'))]);
+    rows.push(['    Add: Depreciation', formatCurrencyPdf(depreciation)]);
+    rows.push(['    (Increase)/Decrease in Receivables', formatCurrencyPdf(receivablesChange)]);
+    rows.push(['    (Increase)/Decrease in Inventory', formatCurrencyPdf(inventoryChange)]);
+    rows.push(['    Increase/(Decrease) in Payables', formatCurrencyPdf(payablesChange)]);
+    rows.push(['    Less: Tax Paid', `(${formatCurrencyPdf(getGroupTotal('exp_tax'))})`]);
+    rows.push([{ content: 'Net Cash from Operating Activities', styles: { fontStyle: 'bold' } }, { content: formatCurrencyPdf(operatingCashFlow), styles: { fontStyle: 'bold' } }]);
+    
+    // Investing Activities
+    rows.push([{ content: 'B. Cash Flow from Investing Activities', styles: { fontStyle: 'bold', fillColor: [254, 243, 199] } }, '']);
+    rows.push(['    Purchase of PPE', `(${formatCurrencyPdf(Math.abs(ppeInvestment))})`]);
+    rows.push(['    Purchase of Intangible Assets', `(${formatCurrencyPdf(Math.abs(intangibleInvestment))})`]);
+    rows.push(['    Purchase of Investments', `(${formatCurrencyPdf(Math.abs(investmentsChange))})`]);
+    rows.push([{ content: 'Net Cash from Investing Activities', styles: { fontStyle: 'bold' } }, { content: formatCurrencyPdf(investingCashFlow), styles: { fontStyle: 'bold' } }]);
+    
+    // Financing Activities
+    rows.push([{ content: 'C. Cash Flow from Financing Activities', styles: { fontStyle: 'bold', fillColor: [243, 232, 255] } }, '']);
+    rows.push(['    Proceeds from Share Capital', formatCurrencyPdf(shareCapital)]);
+    rows.push(['    Proceeds from Short-term Borrowings', formatCurrencyPdf(shortTermBorrowing)]);
+    rows.push(['    Proceeds from Long-term Borrowings', formatCurrencyPdf(longTermBorrowing)]);
+    rows.push([{ content: 'Net Cash from Financing Activities', styles: { fontStyle: 'bold' } }, { content: formatCurrencyPdf(financingCashFlow), styles: { fontStyle: 'bold' } }]);
+    
+    rows.push([{ content: 'Net Change in Cash (A+B+C)', styles: { fontStyle: 'bold', fillColor: [200, 230, 255] } }, { content: formatCurrencyPdf(netCashChange), styles: { fontStyle: 'bold', fillColor: [200, 230, 255] } }]);
+    rows.push([{ content: 'Closing Cash & Bank Balance', styles: { fontStyle: 'bold' } }, { content: formatCurrencyPdf(closingCash), styles: { fontStyle: 'bold' } }]);
+
+    autoTable(doc, {
+      startY: 50,
+      head: [['Particulars', 'Amount (Rs.)']],
+      body: rows,
+      theme: 'grid',
+      headStyles: { fillColor: [59, 130, 246] },
+    });
+
+    doc.save(`Cash_Flow_${data.companyName || 'Company'}_${data.financialYear}.pdf`);
+    toast({ title: "PDF Exported", description: "Cash Flow Statement has been downloaded." });
+  };
+
+  // Export All Statements to PDF
+  const exportAllStatementsPDF = () => {
+    exportBalanceSheetPDF();
+    setTimeout(() => exportProfitLossPDF(), 500);
+    setTimeout(() => exportCashFlowPDF(), 1000);
   };
 
   // Get groups by category
@@ -730,12 +975,15 @@ const FinancialStatements = () => {
                 <h1 className="text-xl font-bold">Financial Statements</h1>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Button variant="outline" size="sm" onClick={loadSampleData}>
                 <Calculator className="h-4 w-4 mr-2" /> Sample Data
               </Button>
               <Button variant="outline" size="sm" onClick={resetData}>
                 <RefreshCw className="h-4 w-4 mr-2" /> Reset
+              </Button>
+              <Button variant="default" size="sm" onClick={exportAllStatementsPDF}>
+                <Download className="h-4 w-4 mr-2" /> Export All PDFs
               </Button>
               <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
                 <DialogTrigger asChild>
@@ -912,17 +1160,32 @@ const FinancialStatements = () => {
           </TabsContent>
 
           {/* Balance Sheet Tab */}
-          <TabsContent value="bs">
+          <TabsContent value="bs" className="space-y-4">
+            <div className="flex justify-end">
+              <Button onClick={exportBalanceSheetPDF} className="gap-2">
+                <Download className="h-4 w-4" /> Export Balance Sheet PDF
+              </Button>
+            </div>
             {renderBalanceSheet()}
           </TabsContent>
 
           {/* Profit & Loss Tab */}
-          <TabsContent value="pl">
+          <TabsContent value="pl" className="space-y-4">
+            <div className="flex justify-end">
+              <Button onClick={exportProfitLossPDF} className="gap-2">
+                <Download className="h-4 w-4" /> Export P&L PDF
+              </Button>
+            </div>
             {renderProfitLoss()}
           </TabsContent>
 
           {/* Cash Flow Statement Tab */}
-          <TabsContent value="cfs">
+          <TabsContent value="cfs" className="space-y-4">
+            <div className="flex justify-end">
+              <Button onClick={exportCashFlowPDF} className="gap-2">
+                <Download className="h-4 w-4" /> Export Cash Flow PDF
+              </Button>
+            </div>
             {renderCashFlow()}
           </TabsContent>
         </Tabs>
