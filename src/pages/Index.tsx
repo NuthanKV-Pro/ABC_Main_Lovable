@@ -59,9 +59,9 @@ const modules = [
     title: "Financial Statements",
     description: "Balance Sheet, P&L, Cash Flow",
     icon: FileText,
-    route: null,
-    tag: "Coming Soon",
-    tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
+    route: "/financial-statements",
+    tag: "WIP",
+    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
   }
 ];
 
