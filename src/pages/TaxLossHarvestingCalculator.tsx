@@ -4,11 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Calculator, Plus, Trash2, Info, CheckCircle, AlertTriangle, TrendingUp, Lightbulb, Scale, Percent, IndianRupee, Upload, FileSpreadsheet, RefreshCw } from "lucide-react";
+import { ArrowLeft, Calculator, Plus, Trash2, Info, CheckCircle, AlertTriangle, TrendingUp, Lightbulb, Scale, Percent, IndianRupee, Upload, FileSpreadsheet, RefreshCw, Download } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 interface Holding {
   id: string;
@@ -59,7 +61,7 @@ const TaxLossHarvestingCalculator = () => {
     setHoldings(holdings.map(h => h.id === id ? { ...h, [field]: value } : h));
   };
 
-  // Parse Zerodha Holding Statement Excel
+  // Parse Holding Statement Excel (Zerodha, Groww, Upstox)
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -72,9 +74,15 @@ const TaxLossHarvestingCalculator = () => {
       const worksheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
 
-      // Find header row - Zerodha format typically has headers like: Instrument, Qty., Avg. cost, LTP, Cur. val, P&L, Net chg., Day chg.
+      // Find header row - supports Zerodha, Groww, Upstox formats
+      // Zerodha: Instrument, Qty., Avg. cost, LTP
+      // Groww: Company Name, Quantity, Avg Buy Price, Current Price
+      // Upstox: Symbol, Quantity, Average Price, LTP
       let headerRowIndex = -1;
-      const possibleHeaders = ['instrument', 'symbol', 'stock', 'name', 'qty', 'quantity'];
+      const possibleHeaders = [
+        'instrument', 'symbol', 'stock', 'name', 'qty', 'quantity', 
+        'company', 'scrip', 'security', 'holding'
+      ];
       
       for (let i = 0; i < Math.min(jsonData.length, 20); i++) {
         const row = jsonData[i];
@@ -88,7 +96,7 @@ const TaxLossHarvestingCalculator = () => {
       }
 
       if (headerRowIndex === -1) {
-        toast.error("Could not identify column headers. Please ensure the file has columns like Instrument, Qty, Avg. cost, LTP.");
+        toast.error("Could not identify column headers. Please ensure the file has columns like Instrument/Symbol/Company, Qty, Avg. cost, LTP.");
         setIsParsingFile(false);
         return;
       }
@@ -97,20 +105,38 @@ const TaxLossHarvestingCalculator = () => {
         String(h || '').toLowerCase().trim()
       );
 
-      // Map column indices
+      // Map column indices - supports multiple broker formats
       const getColumnIndex = (keywords: string[]) => {
         return headers.findIndex((h: string) => 
           keywords.some(k => h.includes(k))
         );
       };
 
-      const nameCol = getColumnIndex(['instrument', 'symbol', 'stock', 'name', 'scrip']);
-      const qtyCol = getColumnIndex(['qty', 'quantity', 'units']);
-      const avgCostCol = getColumnIndex(['avg', 'average', 'buy', 'cost', 'purchase']);
-      const ltpCol = getColumnIndex(['ltp', 'current', 'cmp', 'market', 'close', 'price']);
+      // Name column - Zerodha: Instrument, Groww: Company Name, Upstox: Symbol
+      const nameCol = getColumnIndex(['instrument', 'symbol', 'stock', 'name', 'scrip', 'company', 'security']);
+      
+      // Quantity column - all brokers similar
+      const qtyCol = getColumnIndex(['qty', 'quantity', 'units', 'shares']);
+      
+      // Average cost - Zerodha: Avg. cost, Groww: Avg Buy Price, Upstox: Average Price
+      const avgCostCol = getColumnIndex(['avg', 'average', 'buy', 'cost', 'purchase', 'invested']);
+      
+      // Current price - Zerodha: LTP, Groww: Current Price, Upstox: LTP
+      const ltpCol = getColumnIndex(['ltp', 'current', 'cmp', 'market', 'close', 'price', 'last']);
+
+      // Detect broker from header patterns
+      let detectedBroker = 'Unknown';
+      const headerString = headers.join(' ');
+      if (headerString.includes('instrument') && headerString.includes('avg')) {
+        detectedBroker = 'Zerodha';
+      } else if (headerString.includes('company') || headerString.includes('avg buy')) {
+        detectedBroker = 'Groww';
+      } else if (headerString.includes('average price') || (headerString.includes('symbol') && headerString.includes('ltp'))) {
+        detectedBroker = 'Upstox';
+      }
 
       if (nameCol === -1 || qtyCol === -1 || avgCostCol === -1 || ltpCol === -1) {
-        toast.error("Missing required columns. Expected: Instrument/Symbol, Qty, Avg. cost, LTP/Current Price");
+        toast.error("Missing required columns. Expected: Instrument/Symbol/Company, Qty, Avg. cost/Buy Price, LTP/Current Price");
         setIsParsingFile(false);
         return;
       }
@@ -122,11 +148,11 @@ const TaxLossHarvestingCalculator = () => {
         if (!row || row.length === 0) continue;
 
         const name = String(row[nameCol] || '').trim();
-        const qty = parseFloat(String(row[qtyCol] || '0').replace(/,/g, ''));
-        const avgCost = parseFloat(String(row[avgCostCol] || '0').replace(/,/g, ''));
-        const ltp = parseFloat(String(row[ltpCol] || '0').replace(/,/g, ''));
+        const qty = parseFloat(String(row[qtyCol] || '0').replace(/,/g, '').replace(/₹/g, ''));
+        const avgCost = parseFloat(String(row[avgCostCol] || '0').replace(/,/g, '').replace(/₹/g, ''));
+        const ltp = parseFloat(String(row[ltpCol] || '0').replace(/,/g, '').replace(/₹/g, ''));
 
-        if (name && !isNaN(qty) && qty > 0 && !isNaN(avgCost) && !isNaN(ltp)) {
+        if (name && !isNaN(qty) && qty > 0 && !isNaN(avgCost) && avgCost > 0 && !isNaN(ltp)) {
           parsedHoldings.push({
             id: Date.now().toString() + i,
             name: name,
@@ -143,7 +169,7 @@ const TaxLossHarvestingCalculator = () => {
         toast.error("No valid holdings found in the file.");
       } else {
         setHoldings(parsedHoldings);
-        toast.success(`Successfully imported ${parsedHoldings.length} holdings from Zerodha statement!`);
+        toast.success(`Successfully imported ${parsedHoldings.length} holdings from ${detectedBroker} statement!`);
       }
     } catch (error) {
       console.error("Error parsing file:", error);
@@ -154,6 +180,198 @@ const TaxLossHarvestingCalculator = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  // PDF Export Function
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Header
+    doc.setFillColor(212, 175, 55);
+    doc.rect(0, 0, pageWidth, 35, 'F');
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Tax Loss Harvesting Analysis', pageWidth / 2, 15, { align: 'center' });
+    
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}`, pageWidth / 2, 25, { align: 'center' });
+    doc.text(`Financial Year: ${new Date().getFullYear()}-${new Date().getFullYear() + 1}`, pageWidth / 2, 31, { align: 'center' });
+
+    doc.setTextColor(0, 0, 0);
+
+    // Summary Section
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Portfolio Summary', 14, 45);
+
+    const summaryData = [
+      ['Total Gains', formatCurrency(totalGains)],
+      ['Total Losses', `-${formatCurrency(totalLosses)}`],
+      ['Net Position', formatCurrency(netGainLoss)],
+      ['Potential Tax Savings', formatCurrency(Math.max(0, taxSavings))],
+    ];
+
+    autoTable(doc, {
+      startY: 50,
+      body: summaryData,
+      theme: 'grid',
+      styles: { fontSize: 11, cellPadding: 4 },
+      columnStyles: {
+        0: { fontStyle: 'bold', cellWidth: 60 },
+        1: { halign: 'right', cellWidth: 50 }
+      }
+    });
+
+    // STCG/LTCG Breakdown
+    let currentY = (doc as any).lastAutoTable?.finalY + 15 || 90;
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Capital Gains Breakdown', 14, currentY);
+
+    const breakdownData = [
+      ['Short Term Equity Gains (STCG)', formatCurrency(shortTermEquityGains), '20%', formatCurrency(netSTCG * 0.20)],
+      ['Short Term Equity Losses', `-${formatCurrency(shortTermEquityLosses)}`, '-', '-'],
+      ['Long Term Equity Gains (LTCG)', formatCurrency(longTermEquityGains), '12.5%', '-'],
+      ['LTCG Exemption (₹1.25L)', `-${formatCurrency(Math.min(longTermEquityGains, ltcgExemption))}`, '-', '-'],
+      ['Long Term Equity Losses', `-${formatCurrency(longTermEquityLosses)}`, '-', '-'],
+      ['Taxable LTCG', formatCurrency(netTaxableLTCG), '12.5%', formatCurrency(netTaxableLTCG * 0.125)],
+    ];
+
+    autoTable(doc, {
+      startY: currentY + 5,
+      head: [['Category', 'Amount', 'Tax Rate', 'Tax']],
+      body: breakdownData,
+      theme: 'striped',
+      headStyles: { fillColor: [212, 175, 55], textColor: [255, 255, 255] },
+      styles: { fontSize: 9, cellPadding: 3 },
+    });
+
+    // Holdings Table
+    currentY = (doc as any).lastAutoTable?.finalY + 15 || 160;
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Holdings Details', 14, currentY);
+
+    const holdingsData = holdings.map(h => {
+      const gainLoss = calculateGainLoss(h);
+      return [
+        h.name,
+        h.type.charAt(0).toUpperCase() + h.type.slice(1),
+        h.holdingPeriod === 'short' ? 'STCG' : 'LTCG',
+        h.quantity.toString(),
+        formatCurrency(h.purchasePrice),
+        formatCurrency(h.currentPrice),
+        formatCurrency(gainLoss)
+      ];
+    });
+
+    autoTable(doc, {
+      startY: currentY + 5,
+      head: [['Asset', 'Type', 'Period', 'Qty', 'Buy Price', 'Current Price', 'Gain/Loss']],
+      body: holdingsData,
+      theme: 'striped',
+      headStyles: { fillColor: [59, 130, 246], textColor: [255, 255, 255] },
+      styles: { fontSize: 8, cellPadding: 2 },
+    });
+
+    // Recommendations
+    currentY = (doc as any).lastAutoTable?.finalY + 15 || 220;
+    
+    if (currentY > 240) {
+      doc.addPage();
+      currentY = 20;
+    }
+
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Harvesting Recommendations', 14, currentY);
+
+    if (lossHoldings.length > 0) {
+      const lossData = lossHoldings.map(h => [
+        h.name,
+        h.holdingPeriod === 'short' ? 'STCG' : 'LTCG',
+        formatCurrency(calculateGainLoss(h))
+      ]);
+
+      autoTable(doc, {
+        startY: currentY + 5,
+        head: [['Consider Selling', 'Category', 'Loss Amount']],
+        body: lossData,
+        theme: 'grid',
+        headStyles: { fillColor: [239, 68, 68], textColor: [255, 255, 255] },
+        styles: { fontSize: 9, cellPadding: 3 },
+      });
+
+      currentY = (doc as any).lastAutoTable?.finalY + 10 || currentY + 40;
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Action Items:', 14, currentY);
+      
+      doc.setFont('helvetica', 'normal');
+      const actions = [
+        '• Sell losing positions before 31st March',
+        '• Wait 30+ days before repurchasing (wash sale rule)',
+        '• Document all transactions properly',
+        '• Consider transaction costs (STT, brokerage) in your decision'
+      ];
+      
+      actions.forEach((action, i) => {
+        doc.text(action, 14, currentY + 6 + (i * 5));
+      });
+    } else {
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('All your holdings are in profit! No tax loss harvesting opportunities available.', 14, currentY + 5);
+    }
+
+    // Disclaimer
+    doc.addPage();
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Important Disclaimer', 14, 20);
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    const disclaimerText = [
+      'This Tax Loss Harvesting Analysis is provided for educational and informational purposes only.',
+      '',
+      'Tax laws are complex and subject to change. The tax rates shown are based on Union Budget 2024.',
+      '',
+      'Surcharge and cess (4% health & education cess) are not included in calculations.',
+      '',
+      'Securities Transaction Tax (STT), brokerage, and other transaction costs are not considered.',
+      '',
+      'This tool does not constitute tax advice. Please consult a qualified tax professional.',
+      '',
+      'Set-off Rules Applied:',
+      '• Short Term Capital Loss (STCL) can offset both STCG and LTCG',
+      '• Long Term Capital Loss (LTCL) can ONLY offset LTCG',
+      '• Unabsorbed losses can be carried forward for 8 years'
+    ];
+    
+    disclaimerText.forEach((line, i) => {
+      doc.text(line, 14, 30 + (i * 5));
+    });
+
+    // Footer on all pages
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.text(`Page ${i} of ${pageCount}`, pageWidth / 2, 285, { align: 'center' });
+      doc.text('Generated by ABC - AI Legal & Tax Co-pilot', pageWidth / 2, 290, { align: 'center' });
+    }
+
+    doc.save(`Tax_Loss_Harvesting_Analysis_${new Date().toISOString().split('T')[0]}.pdf`);
+    toast.success("PDF exported successfully!");
   };
 
   // Calculate gains/losses
@@ -221,14 +439,20 @@ const TaxLossHarvestingCalculator = () => {
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-primary">Tax Loss Harvesting Calculator</h1>
-              <p className="text-sm text-muted-foreground">Offset capital gains with losses for tax optimization</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-primary">Tax Loss Harvesting Calculator</h1>
+                <p className="text-sm text-muted-foreground">Offset capital gains with losses for tax optimization</p>
+              </div>
             </div>
+            <Button onClick={exportToPDF} className="gap-2">
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Export PDF</span>
+            </Button>
           </div>
         </div>
       </header>
@@ -269,16 +493,16 @@ const TaxLossHarvestingCalculator = () => {
             </CardContent>
           </Card>
 
-          {/* Zerodha Upload Section */}
+          {/* Broker Upload Section */}
           <Card className="border-primary/30">
             <CardHeader>
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <FileSpreadsheet className="h-5 w-5 text-primary" />
-                    Import Zerodha Holdings
+                    Import Broker Holdings
                   </CardTitle>
-                  <CardDescription>Upload your Zerodha Holding Statement (Excel) to auto-analyze</CardDescription>
+                  <CardDescription>Upload your Holding Statement (Excel) from Zerodha, Groww, or Upstox</CardDescription>
                 </div>
                 <div className="flex gap-2">
                   <input
@@ -309,19 +533,36 @@ const TaxLossHarvestingCalculator = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <h4 className="font-medium mb-2">How to get your Zerodha Holdings:</h4>
-                <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-                  <li>Login to <a href="https://kite.zerodha.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">kite.zerodha.com</a></li>
-                  <li>Go to <strong>Holdings</strong> tab</li>
-                  <li>Click on <strong>Download</strong> icon (top right) → Select <strong>Excel</strong></li>
-                  <li>Upload the downloaded file here</li>
-                </ol>
-                <p className="text-xs text-muted-foreground mt-3">
-                  <Info className="h-3 w-3 inline mr-1" />
-                  Supported formats: .xlsx, .xls, .csv. Columns needed: Instrument, Qty, Avg. cost, LTP
-                </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <h4 className="font-medium mb-2 text-primary">Zerodha (Kite)</h4>
+                  <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+                    <li>Login to <a href="https://kite.zerodha.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">kite.zerodha.com</a></li>
+                    <li>Go to <strong>Holdings</strong> tab</li>
+                    <li>Click <strong>Download</strong> icon → <strong>Excel</strong></li>
+                  </ol>
+                </div>
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <h4 className="font-medium mb-2 text-green-600">Groww</h4>
+                  <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+                    <li>Login to <a href="https://groww.in" target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">groww.in</a></li>
+                    <li>Go to <strong>Stocks → Holdings</strong></li>
+                    <li>Click <strong>Download Report</strong></li>
+                  </ol>
+                </div>
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <h4 className="font-medium mb-2 text-purple-600">Upstox</h4>
+                  <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+                    <li>Login to <a href="https://upstox.com" target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline">upstox.com</a></li>
+                    <li>Go to <strong>Portfolio → Holdings</strong></li>
+                    <li>Click <strong>Export</strong> button</li>
+                  </ol>
+                </div>
               </div>
+              <p className="text-xs text-muted-foreground mt-3 text-center">
+                <Info className="h-3 w-3 inline mr-1" />
+                Supported formats: .xlsx, .xls, .csv | Required columns: Symbol/Instrument, Qty, Avg Cost, LTP/Current Price
+              </p>
             </CardContent>
           </Card>
 
