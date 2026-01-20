@@ -62,6 +62,15 @@ const modules = [
     route: "/financial-statements",
     tag: "WIP",
     tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+  },
+  {
+    id: "legal-interpretations",
+    title: "Legal Interpretations",
+    description: "Case laws & legal analysis",
+    icon: Scale,
+    route: null,
+    tag: "Coming Soon",
+    tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
   }
 ];
 
@@ -103,11 +112,11 @@ const amazingTools = [
     tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
   },
   {
-    id: "advance-tax-calc",
-    title: "Advance Tax CalC",
-    description: "Calculate advance tax payments",
-    icon: DollarSign,
-    route: "external:https://abcadv1.lovable.app",
+    id: "contract-drafter",
+    title: "Contract Drafter",
+    description: "Draft professional contracts instantly",
+    icon: ScrollText,
+    route: "/contract-drafter",
     tag: "WIP",
     tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
   },
@@ -517,6 +526,15 @@ const amazingTools = [
     tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   },
   {
+    id: "advance-tax-calc",
+    title: "Advance Tax CalC",
+    description: "Calculate advance tax payments",
+    icon: DollarSign,
+    route: "external:https://abcadv1.lovable.app",
+    tag: "WIP",
+    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+  },
+  {
     id: "more-calcs",
     title: "More Amazing Tools🥂 Coming Sooooon💖!",
     description: "Exciting tools on the way",
@@ -606,9 +624,15 @@ const Index = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-primary">ABC</h1>
-              <p className="text-sm text-muted-foreground">AI Legal & Tax Co-pilot</p>
+            <div className="flex items-center gap-4">
+              <div>
+                <h1 className="text-2xl font-bold text-primary">ABC</h1>
+                <p className="text-sm text-muted-foreground">AI Legal & Tax Co-pilot</p>
+              </div>
+              <div className="hidden sm:block h-8 w-px bg-border" />
+              <p className="hidden sm:block text-sm text-muted-foreground">
+                by <span className="font-medium text-foreground">Nuthan Kaparthy</span>
+              </p>
             </div>
             <div className="flex items-center gap-3">
               <SearchBar />
