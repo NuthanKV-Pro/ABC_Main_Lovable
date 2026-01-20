@@ -92,6 +92,7 @@ export const advancedTools: SearchItem[] = [
   { name: "Compound Interest Calculator", route: "/compound-interest", category: "Advanced Tools", keywords: ["compound", "interest", "step-up", "sip", "growth", "yearly"] },
   { name: "Inflation Impact Calculator", route: "/inflation-calculator", category: "Advanced Tools", keywords: ["inflation", "purchasing power", "real return", "nominal", "erosion"] },
   { name: "Tax Saver 80C Optimizer", route: "/80c-optimizer", category: "Advanced Tools", keywords: ["80c", "tax saver", "elss", "ppf", "nps", "deduction", "optimizer"] },
+  { name: "Legal Interpretations", route: "/legal-interpretations", category: "Advanced Tools", keywords: ["legal", "case law", "court", "judgment", "precedent", "tribunal", "tax law", "analysis"] },
 ];
 
 // Pages & Settings

@@ -68,9 +68,9 @@ const modules = [
     title: "Legal Interpretations",
     description: "Case laws & legal analysis",
     icon: Scale,
-    route: null,
-    tag: "Coming Soon",
-    tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
+    route: "/legal-interpretations",
+    tag: "Works",
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
   }
 ];
 

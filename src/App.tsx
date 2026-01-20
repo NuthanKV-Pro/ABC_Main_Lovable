@@ -66,6 +66,7 @@ import InflationImpactCalculator from "./pages/InflationImpactCalculator";
 import TaxSaver80COptimizer from "./pages/TaxSaver80COptimizer";
 import FinancialStatements from "./pages/FinancialStatements";
 import ContractDrafter from "./pages/ContractDrafter";
+import LegalInterpretations from "./pages/LegalInterpretations";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -139,6 +140,7 @@ const App = () => (
           <Route path="/80c-optimizer" element={<TaxSaver80COptimizer />} />
           <Route path="/financial-statements" element={<FinancialStatements />} />
           <Route path="/contract-drafter" element={<ContractDrafter />} />
+          <Route path="/legal-interpretations" element={<LegalInterpretations />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
