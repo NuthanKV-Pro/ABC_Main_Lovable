@@ -624,15 +624,12 @@ const Index = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div>
-                <h1 className="text-2xl font-bold text-primary">ABC</h1>
-                <p className="text-sm text-muted-foreground">AI Legal & Tax Co-pilot</p>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <h1 className="text-xl sm:text-2xl font-bold text-primary">ABC</h1>
+                <span className="text-xs sm:text-sm text-muted-foreground">•</span>
+                <span className="text-xs sm:text-sm font-medium text-foreground">Nuthan Kaparthy</span>
               </div>
-              <div className="hidden sm:block h-8 w-px bg-border" />
-              <p className="hidden sm:block text-sm text-muted-foreground">
-                by <span className="font-medium text-foreground">Nuthan Kaparthy</span>
-              </p>
             </div>
             <div className="flex items-center gap-3">
               <SearchBar />
