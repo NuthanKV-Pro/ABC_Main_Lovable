@@ -103,6 +103,15 @@ const amazingTools = [
     tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
   },
   {
+    id: "deduction-playground",
+    title: "Deduction Playground",
+    description: "Explore deductions, compare regimes & ROI",
+    icon: Calculator,
+    route: "/deduction-playground",
+    tag: "WIP",
+    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+  },
+  {
     id: "hra-calc",
     title: "HRA Calc",
     description: "House Rent Allowance calculator",

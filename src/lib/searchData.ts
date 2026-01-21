@@ -93,6 +93,7 @@ export const advancedTools: SearchItem[] = [
   { name: "Inflation Impact Calculator", route: "/inflation-calculator", category: "Advanced Tools", keywords: ["inflation", "purchasing power", "real return", "nominal", "erosion"] },
   { name: "Tax Saver 80C Optimizer", route: "/80c-optimizer", category: "Advanced Tools", keywords: ["80c", "tax saver", "elss", "ppf", "nps", "deduction", "optimizer"] },
   { name: "Legal Interpretations", route: "/legal-interpretations", category: "Advanced Tools", keywords: ["legal", "case law", "court", "judgment", "precedent", "tribunal", "tax law", "analysis"] },
+  { name: "Deduction Playground", route: "/deduction-playground", category: "Advanced Tools", keywords: ["deduction", "playground", "80c", "80d", "tax saving", "regime", "comparison", "roi"] },
 ];
 
 // Pages & Settings
