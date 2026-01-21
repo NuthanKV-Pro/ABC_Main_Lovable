@@ -224,12 +224,15 @@ const Form16Parser = ({ onDataParsed, autoApply = false }: Form16ParserProps) =>
   return (
     <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 flex-wrap">
           <FileText className="w-5 h-5 text-primary" />
           Smart Document Parser
           <Badge variant="secondary" className="ml-2">
             AI Powered
           </Badge>
+          <span className="text-sm font-normal text-muted-foreground">
+            (Prefer Manual Data Entry)
+          </span>
         </CardTitle>
         <CardDescription>
           Upload Form 16 or Salary Slip(s) - data will be automatically extracted and filled
