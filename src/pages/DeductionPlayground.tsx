@@ -21,6 +21,17 @@ import Form16Parser, { ParsedSalaryData } from "@/components/Form16Parser";
 import PerquisitesCalculator from "@/components/PerquisitesCalculator";
 import SmartDeductionOptimizer from "@/components/SmartDeductionOptimizer";
 import DeductionPlaygroundCalendar from "@/components/DeductionPlaygroundCalendar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 // ================== TYPE DEFINITIONS ==================
 
@@ -116,31 +127,106 @@ const defaultSalaryComponents: SalaryComponent[] = [
   { id: 'moveable_transfer', name: 'Transfer of Moveable Assets', category: 'perquisite', amount: 0, exemptAmount: 0, description: 'Cost minus wear & tear minus recovery from employee' },
 ];
 
-// Sample data for demonstration
-const sampleUserData = {
-  userName: "Rahul Sharma",
-  userState: "Maharashtra",
-  stateOfEmployment: "Maharashtra",
-  financialYear: "2025-26",
-  employmentType: "private" as const,
-  rentPaid: 240000,
-  professionalTax: 2500,
-};
+// Sample data presets for demonstration
+type SamplePreset = 'entry' | 'mid' | 'senior';
 
-const sampleSalaryData: Partial<Record<string, number>> = {
-  basic: 600000,
-  da: 60000,
-  hra: 300000,
-  bonus: 50000,
-  travel_conveyance: 24000,
-  other_allowances: 36000,
-};
+interface SampleDataPreset {
+  label: string;
+  description: string;
+  userData: {
+    userName: string;
+    userState: string;
+    stateOfEmployment: string;
+    financialYear: string;
+    employmentType: "private" | "government";
+    rentPaid: number;
+    professionalTax: number;
+  };
+  salaryData: Partial<Record<string, number>>;
+  deductions: Record<string, number>;
+}
 
-const sampleDeductions: Record<string, number> = {
-  "80c": 150000,
-  "80d": 25000,
-  "80ccd1b": 50000,
-  "24b": 100000,
+const samplePresets: Record<SamplePreset, SampleDataPreset> = {
+  entry: {
+    label: "Entry Level",
+    description: "₹4-6 LPA - Fresh graduate / Junior role",
+    userData: {
+      userName: "Priya Singh",
+      userState: "Karnataka",
+      stateOfEmployment: "Karnataka",
+      financialYear: "2025-26",
+      employmentType: "private",
+      rentPaid: 120000,
+      professionalTax: 2400,
+    },
+    salaryData: {
+      basic: 240000,
+      da: 24000,
+      hra: 120000,
+      bonus: 20000,
+      travel_conveyance: 12000,
+      other_allowances: 24000,
+    },
+    deductions: {
+      "80c": 50000,
+      "80d": 15000,
+    },
+  },
+  mid: {
+    label: "Mid-Level",
+    description: "₹10-15 LPA - 5-8 years experience",
+    userData: {
+      userName: "Rahul Sharma",
+      userState: "Maharashtra",
+      stateOfEmployment: "Maharashtra",
+      financialYear: "2025-26",
+      employmentType: "private",
+      rentPaid: 300000,
+      professionalTax: 2500,
+    },
+    salaryData: {
+      basic: 600000,
+      da: 60000,
+      hra: 300000,
+      bonus: 100000,
+      travel_conveyance: 30000,
+      other_allowances: 60000,
+    },
+    deductions: {
+      "80c": 150000,
+      "80d": 25000,
+      "80ccd1b": 50000,
+      "24b": 100000,
+    },
+  },
+  senior: {
+    label: "Senior Professional",
+    description: "₹25-40 LPA - 10+ years / Leadership role",
+    userData: {
+      userName: "Vikram Mehta",
+      userState: "Delhi",
+      stateOfEmployment: "Delhi",
+      financialYear: "2025-26",
+      employmentType: "private",
+      rentPaid: 600000,
+      professionalTax: 2500,
+    },
+    salaryData: {
+      basic: 1200000,
+      da: 120000,
+      hra: 600000,
+      bonus: 300000,
+      travel_conveyance: 60000,
+      other_allowances: 120000,
+    },
+    deductions: {
+      "80c": 150000,
+      "80d": 50000,
+      "80ccd1b": 50000,
+      "24b": 200000,
+      "80e": 50000,
+    },
+  },
 };
 
 // ================== MAIN COMPONENT ==================
@@ -179,7 +265,10 @@ const DeductionPlayground = () => {
   const [calculatedPerquisites, setCalculatedPerquisites] = useState(0);
   
   // Sample data state
-  const [isSampleDataEnabled, setIsSampleDataEnabled] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState<SamplePreset | "">("");
+  
+  // Reset confirmation dialog state
+  const [showResetDialog, setShowResetDialog] = useState(false);
   
   // Reset all data to default
   const handleReset = () => {
@@ -198,7 +287,8 @@ const DeductionPlayground = () => {
     setCustomDeductions([]);
     setNewCustomDeduction({ section: '', name: '', amount: 0 });
     setCalculatedPerquisites(0);
-    setIsSampleDataEnabled(false);
+    setSelectedPreset("");
+    setShowResetDialog(false);
     
     toast({
       title: "Data Cleared",
@@ -206,42 +296,58 @@ const DeductionPlayground = () => {
     });
   };
   
-  // Load sample data
-  const loadSampleData = () => {
-    setUserName(sampleUserData.userName);
-    setUserState(sampleUserData.userState);
-    setStateOfEmployment(sampleUserData.stateOfEmployment);
-    setFinancialYear(sampleUserData.financialYear);
-    setEmploymentType(sampleUserData.employmentType);
-    setRentPaid(sampleUserData.rentPaid);
-    setProfessionalTax(sampleUserData.professionalTax);
-    setIsMetro(metroStates.includes(sampleUserData.stateOfEmployment));
+  // Load sample data preset
+  const loadSamplePreset = (preset: SamplePreset) => {
+    const data = samplePresets[preset];
+    
+    setUserName(data.userData.userName);
+    setUserState(data.userData.userState);
+    setStateOfEmployment(data.userData.stateOfEmployment);
+    setFinancialYear(data.userData.financialYear);
+    setEmploymentType(data.userData.employmentType);
+    setRentPaid(data.userData.rentPaid);
+    setProfessionalTax(data.userData.professionalTax);
+    setIsMetro(metroStates.includes(data.userData.stateOfEmployment));
     
     setSalaryComponents(prev => prev.map(comp => ({
       ...comp,
-      amount: sampleSalaryData[comp.id] || 0
+      amount: data.salaryData[comp.id] || 0
     })));
     
-    setDeductions(sampleDeductions);
-    setIsSampleDataEnabled(true);
+    setDeductions(data.deductions);
+    setSelectedPreset(preset);
     
     toast({
-      title: "Sample Data Loaded",
-      description: "Example data has been populated to demonstrate the tool.",
+      title: `${data.label} Profile Loaded`,
+      description: data.description,
     });
   };
   
-  // Clear sample data
-  const clearSampleData = () => {
-    handleReset();
-  };
-  
-  // Toggle sample data
-  const toggleSampleData = (enabled: boolean) => {
-    if (enabled) {
-      loadSampleData();
+  // Handle preset change
+  const handlePresetChange = (value: string) => {
+    if (value === "none") {
+      setUserName("");
+      setUserState("");
+      setStateOfEmployment("");
+      setFinancialYear("2025-26");
+      setEmploymentType("private");
+      setSalaryComponents(defaultSalaryComponents);
+      setCustomSalaryComponents([]);
+      setNewCustomComponent({ name: '', amount: 0, category: 'allowance' });
+      setProfessionalTax(0);
+      setRentPaid(0);
+      setIsMetro(false);
+      setDeductions({});
+      setCustomDeductions([]);
+      setNewCustomDeduction({ section: '', name: '', amount: 0 });
+      setCalculatedPerquisites(0);
+      setSelectedPreset("");
+      toast({
+        title: "Sample Data Cleared",
+        description: "All sample data has been removed.",
+      });
     } else {
-      clearSampleData();
+      loadSamplePreset(value as SamplePreset);
     }
   };
   
@@ -1272,24 +1378,51 @@ const DeductionPlayground = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              {/* Sample Data Toggle */}
+              {/* Sample Data Preset Selector */}
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-muted/50">
                 <PlayCircle className="w-4 h-4 text-muted-foreground" />
-                <Label htmlFor="sample-data" className="text-sm font-medium cursor-pointer">
+                <Label htmlFor="sample-preset" className="text-sm font-medium">
                   Sample Data
                 </Label>
-                <Switch
-                  id="sample-data"
-                  checked={isSampleDataEnabled}
-                  onCheckedChange={toggleSampleData}
-                />
+                <Select value={selectedPreset} onValueChange={handlePresetChange}>
+                  <SelectTrigger className="w-[160px] h-8">
+                    <SelectValue placeholder="Select Profile" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border z-50">
+                    <SelectItem value="none">None</SelectItem>
+                    {Object.entries(samplePresets).map(([key, preset]) => (
+                      <SelectItem key={key} value={key}>
+                        {preset.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
-              {/* Reset Button */}
-              <Button variant="outline" onClick={handleReset} className="gap-2">
-                <RotateCcw className="w-4 h-4" />
-                Reset
-              </Button>
+              {/* Reset Button with Confirmation Dialog */}
+              <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <RotateCcw className="w-4 h-4" />
+                    Reset
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Reset All Data?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will clear all your entered data including salary components, 
+                      deductions, and personal details. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleReset} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Reset All Data
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               
               {/* Export Button */}
               <Button onClick={exportToPDF} className="gap-2">
