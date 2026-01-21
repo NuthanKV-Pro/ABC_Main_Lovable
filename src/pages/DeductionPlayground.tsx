@@ -1377,8 +1377,71 @@ const DeductionPlayground = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+        <div className="container mx-auto px-4 py-3 md:py-4">
+          {/* Mobile Layout */}
+          <div className="flex flex-col gap-3 md:hidden">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-lg font-bold text-primary truncate">Deduction Playground</h1>
+                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs shrink-0">WIP</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground truncate">Explore deductions & compare regimes</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Sample Data Selector - Mobile */}
+              <Select value={selectedPreset} onValueChange={handlePresetChange}>
+                <SelectTrigger className="w-[130px] h-8 text-xs">
+                  <PlayCircle className="w-3 h-3 mr-1" />
+                  <SelectValue placeholder="Sample Data" />
+                </SelectTrigger>
+                <SelectContent className="bg-background border z-50">
+                  <SelectItem value="none">None</SelectItem>
+                  {Object.entries(samplePresets).map(([key, preset]) => (
+                    <SelectItem key={key} value={key}>
+                      {preset.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              {/* Reset Button - Mobile */}
+              <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 px-2">
+                    <RotateCcw className="w-4 h-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="max-w-[90vw]">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Reset All Data?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will clear all entered data. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleReset} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Reset
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              
+              {/* Export Button - Mobile */}
+              <Button onClick={exportToPDF} size="sm" className="h-8 gap-1 ml-auto">
+                <FileDown className="w-4 h-4" />
+                <span className="text-xs">Export</span>
+              </Button>
+            </div>
+          </div>
+          
+          {/* Desktop Layout */}
+          <div className="hidden md:flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
                 <ArrowLeft className="w-4 h-4" />
