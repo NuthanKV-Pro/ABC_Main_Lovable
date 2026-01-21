@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, FileDown, Calculator, Info, TrendingUp, Scale, AlertTriangle, CheckCircle, Lightbulb, IndianRupee, Building2, Briefcase, Calendar, User, Plus, Trash2, BarChart3, Upload, Wand2 } from "lucide-react";
+import { ArrowLeft, FileDown, Calculator, Info, TrendingUp, Scale, AlertTriangle, CheckCircle, Lightbulb, IndianRupee, Building2, Briefcase, Calendar, User, Plus, Trash2, BarChart3, Upload, Wand2, RotateCcw, PlayCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -116,6 +116,33 @@ const defaultSalaryComponents: SalaryComponent[] = [
   { id: 'moveable_transfer', name: 'Transfer of Moveable Assets', category: 'perquisite', amount: 0, exemptAmount: 0, description: 'Cost minus wear & tear minus recovery from employee' },
 ];
 
+// Sample data for demonstration
+const sampleUserData = {
+  userName: "Rahul Sharma",
+  userState: "Maharashtra",
+  stateOfEmployment: "Maharashtra",
+  financialYear: "2025-26",
+  employmentType: "private" as const,
+  rentPaid: 240000,
+  professionalTax: 2500,
+};
+
+const sampleSalaryData: Partial<Record<string, number>> = {
+  basic: 600000,
+  da: 60000,
+  hra: 300000,
+  bonus: 50000,
+  travel_conveyance: 24000,
+  other_allowances: 36000,
+};
+
+const sampleDeductions: Record<string, number> = {
+  "80c": 150000,
+  "80d": 25000,
+  "80ccd1b": 50000,
+  "24b": 100000,
+};
+
 // ================== MAIN COMPONENT ==================
 
 const DeductionPlayground = () => {
@@ -150,6 +177,73 @@ const DeductionPlayground = () => {
   
   // Perquisites from calculator
   const [calculatedPerquisites, setCalculatedPerquisites] = useState(0);
+  
+  // Sample data state
+  const [isSampleDataEnabled, setIsSampleDataEnabled] = useState(false);
+  
+  // Reset all data to default
+  const handleReset = () => {
+    setUserName("");
+    setUserState("");
+    setStateOfEmployment("");
+    setFinancialYear("2025-26");
+    setEmploymentType("private");
+    setSalaryComponents(defaultSalaryComponents);
+    setCustomSalaryComponents([]);
+    setNewCustomComponent({ name: '', amount: 0, category: 'allowance' });
+    setProfessionalTax(0);
+    setRentPaid(0);
+    setIsMetro(false);
+    setDeductions({});
+    setCustomDeductions([]);
+    setNewCustomDeduction({ section: '', name: '', amount: 0 });
+    setCalculatedPerquisites(0);
+    setIsSampleDataEnabled(false);
+    
+    toast({
+      title: "Data Cleared",
+      description: "All fields have been reset to default values.",
+    });
+  };
+  
+  // Load sample data
+  const loadSampleData = () => {
+    setUserName(sampleUserData.userName);
+    setUserState(sampleUserData.userState);
+    setStateOfEmployment(sampleUserData.stateOfEmployment);
+    setFinancialYear(sampleUserData.financialYear);
+    setEmploymentType(sampleUserData.employmentType);
+    setRentPaid(sampleUserData.rentPaid);
+    setProfessionalTax(sampleUserData.professionalTax);
+    setIsMetro(metroStates.includes(sampleUserData.stateOfEmployment));
+    
+    setSalaryComponents(prev => prev.map(comp => ({
+      ...comp,
+      amount: sampleSalaryData[comp.id] || 0
+    })));
+    
+    setDeductions(sampleDeductions);
+    setIsSampleDataEnabled(true);
+    
+    toast({
+      title: "Sample Data Loaded",
+      description: "Example data has been populated to demonstrate the tool.",
+    });
+  };
+  
+  // Clear sample data
+  const clearSampleData = () => {
+    handleReset();
+  };
+  
+  // Toggle sample data
+  const toggleSampleData = (enabled: boolean) => {
+    if (enabled) {
+      loadSampleData();
+    } else {
+      clearSampleData();
+    }
+  };
   
   // Form 16 Parser handler
   const handleForm16Parsed = (data: ParsedSalaryData) => {
@@ -1177,10 +1271,32 @@ const DeductionPlayground = () => {
                 <p className="text-sm text-muted-foreground">Explore deductions, compare regimes & make informed decisions</p>
               </div>
             </div>
-            <Button onClick={exportToPDF} className="gap-2">
-              <FileDown className="w-4 h-4" />
-              Export PDF
-            </Button>
+            <div className="flex items-center gap-3">
+              {/* Sample Data Toggle */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-muted/50">
+                <PlayCircle className="w-4 h-4 text-muted-foreground" />
+                <Label htmlFor="sample-data" className="text-sm font-medium cursor-pointer">
+                  Sample Data
+                </Label>
+                <Switch
+                  id="sample-data"
+                  checked={isSampleDataEnabled}
+                  onCheckedChange={toggleSampleData}
+                />
+              </div>
+              
+              {/* Reset Button */}
+              <Button variant="outline" onClick={handleReset} className="gap-2">
+                <RotateCcw className="w-4 h-4" />
+                Reset
+              </Button>
+              
+              {/* Export Button */}
+              <Button onClick={exportToPDF} className="gap-2">
+                <FileDown className="w-4 h-4" />
+                Export PDF
+              </Button>
+            </div>
           </div>
         </div>
       </header>
