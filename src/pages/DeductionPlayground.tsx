@@ -1275,6 +1275,12 @@ const DeductionPlayground = () => {
           </CardContent>
         </Card>
 
+        {/* Form 16 / Salary Slip Parser */}
+        <Form16Parser 
+          onDataParsed={handleForm16Parsed} 
+          autoApply={false} 
+        />
+
         {/* Salary Breakup - 3 Categories */}
         <Card>
           <CardHeader>
@@ -1282,7 +1288,7 @@ const DeductionPlayground = () => {
               <IndianRupee className="w-5 h-5" />
               <span className="text-primary font-bold">Annual</span> Salary Breakup
             </CardTitle>
-            <CardDescription>Enter your annual salary components across categories</CardDescription>
+            <CardDescription>Enter your annual salary components across categories or upload Form 16 above for auto-fill</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Basic Components */}
@@ -1516,8 +1522,20 @@ const DeductionPlayground = () => {
         </Card>
 
         <Tabs defaultValue="deductions" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
             <TabsTrigger value="deductions">Deductions</TabsTrigger>
+            <TabsTrigger value="perquisites" className="flex items-center gap-1">
+              <Calculator className="w-3 h-3" />
+              Perquisites
+            </TabsTrigger>
+            <TabsTrigger value="optimizer" className="flex items-center gap-1">
+              <Wand2 className="w-3 h-3" />
+              Optimizer
+            </TabsTrigger>
+            <TabsTrigger value="calendar" className="flex items-center gap-1">
+              <Calendar className="w-3 h-3" />
+              Calendar
+            </TabsTrigger>
             <TabsTrigger value="tax-comparison">Tax Comparison</TabsTrigger>
             <TabsTrigger value="savings-chart">Savings Chart</TabsTrigger>
             <TabsTrigger value="roi-analysis">ROI Analysis</TabsTrigger>
@@ -1683,6 +1701,52 @@ const DeductionPlayground = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Perquisites Calculator Tab */}
+          <TabsContent value="perquisites" className="space-y-4">
+            <PerquisitesCalculator
+              basicSalary={basicSalary}
+              da={da}
+              isMetro={isMetro}
+              isGovtEmployee={employmentType === "government"}
+              onPerquisiteValueChange={setCalculatedPerquisites}
+            />
+            
+            {calculatedPerquisites > 0 && (
+              <Card className="border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-purple-700 dark:text-purple-400">Total Calculated Perquisites</h4>
+                      <p className="text-sm text-muted-foreground">This amount will be added to your gross salary for tax calculation</p>
+                    </div>
+                    <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">
+                      {formatCurrency(calculatedPerquisites)}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Smart Optimizer Tab */}
+          <TabsContent value="optimizer" className="space-y-4">
+            <SmartDeductionOptimizer
+              grossSalary={grossSalary}
+              currentDeductions={deductions}
+              taxableIncome={taxCalculation.taxableIncomeOld}
+              hraExemption={hraExemption}
+              isEligibleForHRA={hraReceived > 0}
+              rentPaid={rentPaid}
+              hasHomeLoan={(deductions["24b"] || 0) > 0}
+              onApplySuggestion={handleApplyOptimizedDeduction}
+            />
+          </TabsContent>
+
+          {/* Tax Calendar Tab */}
+          <TabsContent value="calendar" className="space-y-4">
+            <DeductionPlaygroundCalendar financialYear={financialYear} />
           </TabsContent>
 
           {/* Tax Comparison Tab */}
