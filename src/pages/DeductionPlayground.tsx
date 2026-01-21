@@ -400,7 +400,7 @@ const DeductionPlayground = () => {
     setDeductions(prev => ({ ...prev, [deductionId]: amount }));
     toast({
       title: "Deduction Applied",
-      description: `${deductionId.toUpperCase()} set to ₹${amount.toLocaleString()}`,
+      description: `${deductionId.toUpperCase()} set to ₹${amount.toLocaleString('en-IN')}`,
     });
   };
 
