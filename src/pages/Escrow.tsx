@@ -8,9 +8,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Plus, Shield, Users, IndianRupee, Clock, CheckCircle2, AlertCircle, XCircle, Eye, FileText, Send, Lock, Unlock } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
+import { ArrowLeft, Plus, Shield, Users, IndianRupee, Clock, CheckCircle2, AlertCircle, XCircle, Eye, FileText, Send, Lock, Unlock, Milestone, Database, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+
+interface MilestoneItem {
+  id: string;
+  title: string;
+  amount: number;
+  status: "pending" | "in_progress" | "completed";
+  dueDate?: Date;
+}
 
 interface EscrowTransaction {
   id: string;
@@ -25,7 +34,7 @@ interface EscrowTransaction {
   createdAt: Date;
   updatedAt: Date;
   terms: string;
-  milestone?: string;
+  milestones: MilestoneItem[];
 }
 
 const statusConfig = {
@@ -37,59 +46,81 @@ const statusConfig = {
   cancelled: { label: "Cancelled", color: "bg-muted text-muted-foreground border-muted-foreground/30", icon: XCircle },
 };
 
+const milestoneStatusConfig = {
+  pending: { label: "Pending", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
+  in_progress: { label: "In Progress", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+  completed: { label: "Completed", color: "bg-green-500/20 text-green-400 border-green-500/30" },
+};
+
 const formatCurrency = (amount: number) => {
   return `₹${amount.toLocaleString('en-IN')}`;
 };
 
+const sampleTransactions: EscrowTransaction[] = [
+  {
+    id: "ESC001",
+    title: "Website Development Project",
+    description: "Full-stack web application development with React and Node.js",
+    amount: 150000,
+    buyerName: "Rahul Sharma",
+    buyerEmail: "rahul@example.com",
+    sellerName: "TechSoft Solutions",
+    sellerEmail: "contact@techsoft.com",
+    status: "funded",
+    createdAt: new Date("2024-01-15"),
+    updatedAt: new Date("2024-01-16"),
+    terms: "50% upfront, 50% on completion. Delivery within 30 days.",
+    milestones: [
+      { id: "M1", title: "Design Phase", amount: 30000, status: "completed" },
+      { id: "M2", title: "Frontend Development", amount: 50000, status: "in_progress" },
+      { id: "M3", title: "Backend Development", amount: 40000, status: "pending" },
+      { id: "M4", title: "Testing & Deployment", amount: 30000, status: "pending" },
+    ]
+  },
+  {
+    id: "ESC002",
+    title: "Property Agreement",
+    description: "Token amount for residential property purchase",
+    amount: 500000,
+    buyerName: "Priya Patel",
+    buyerEmail: "priya@example.com",
+    sellerName: "Kumar Properties",
+    sellerEmail: "sales@kumarprops.com",
+    status: "in_progress",
+    createdAt: new Date("2024-01-10"),
+    updatedAt: new Date("2024-01-18"),
+    terms: "Token amount held until property documentation verification.",
+    milestones: [
+      { id: "M1", title: "Document Collection", amount: 100000, status: "completed" },
+      { id: "M2", title: "Legal Verification", amount: 150000, status: "completed" },
+      { id: "M3", title: "Registration Process", amount: 150000, status: "in_progress" },
+      { id: "M4", title: "Handover", amount: 100000, status: "pending" },
+    ]
+  },
+  {
+    id: "ESC003",
+    title: "Freelance Content Writing",
+    description: "10 blog articles for corporate website",
+    amount: 25000,
+    buyerName: "StartupXYZ",
+    buyerEmail: "hr@startupxyz.com",
+    sellerName: "Anita Writers",
+    sellerEmail: "anita@writers.com",
+    status: "completed",
+    createdAt: new Date("2024-01-05"),
+    updatedAt: new Date("2024-01-20"),
+    terms: "Payment released upon content approval.",
+    milestones: [
+      { id: "M1", title: "First 5 Articles", amount: 12500, status: "completed" },
+      { id: "M2", title: "Remaining 5 Articles", amount: 12500, status: "completed" },
+    ]
+  }
+];
+
 const Escrow = () => {
   const navigate = useNavigate();
-  const [transactions, setTransactions] = useState<EscrowTransaction[]>([
-    {
-      id: "ESC001",
-      title: "Website Development Project",
-      description: "Full-stack web application development with React and Node.js",
-      amount: 150000,
-      buyerName: "Rahul Sharma",
-      buyerEmail: "rahul@example.com",
-      sellerName: "TechSoft Solutions",
-      sellerEmail: "contact@techsoft.com",
-      status: "funded",
-      createdAt: new Date("2024-01-15"),
-      updatedAt: new Date("2024-01-16"),
-      terms: "50% upfront, 50% on completion. Delivery within 30 days.",
-      milestone: "Design Phase Complete"
-    },
-    {
-      id: "ESC002",
-      title: "Property Agreement",
-      description: "Token amount for residential property purchase",
-      amount: 500000,
-      buyerName: "Priya Patel",
-      buyerEmail: "priya@example.com",
-      sellerName: "Kumar Properties",
-      sellerEmail: "sales@kumarprops.com",
-      status: "in_progress",
-      createdAt: new Date("2024-01-10"),
-      updatedAt: new Date("2024-01-18"),
-      terms: "Token amount held until property documentation verification.",
-      milestone: "Document Verification"
-    },
-    {
-      id: "ESC003",
-      title: "Freelance Content Writing",
-      description: "10 blog articles for corporate website",
-      amount: 25000,
-      buyerName: "StartupXYZ",
-      buyerEmail: "hr@startupxyz.com",
-      sellerName: "Anita Writers",
-      sellerEmail: "anita@writers.com",
-      status: "completed",
-      createdAt: new Date("2024-01-05"),
-      updatedAt: new Date("2024-01-20"),
-      terms: "Payment released upon content approval.",
-    }
-  ]);
-
+  const [useSampleData, setUseSampleData] = useState(true);
+  const [transactions, setTransactions] = useState<EscrowTransaction[]>(sampleTransactions);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<EscrowTransaction | null>(null);
   const [activeTab, setActiveTab] = useState("all");
@@ -105,6 +136,44 @@ const Escrow = () => {
     terms: "",
   });
 
+  const [newMilestones, setNewMilestones] = useState<{ title: string; amount: string }[]>([
+    { title: "", amount: "" }
+  ]);
+
+  const handleToggleSampleData = (enabled: boolean) => {
+    setUseSampleData(enabled);
+    if (enabled) {
+      setTransactions(sampleTransactions);
+      toast({
+        title: "Sample Data Enabled",
+        description: "Loaded 3 sample escrow transactions for demonstration.",
+      });
+    } else {
+      setTransactions([]);
+      toast({
+        title: "Sample Data Disabled",
+        description: "All sample transactions have been cleared.",
+      });
+    }
+    setSelectedTransaction(null);
+  };
+
+  const addMilestoneField = () => {
+    setNewMilestones([...newMilestones, { title: "", amount: "" }]);
+  };
+
+  const removeMilestoneField = (index: number) => {
+    if (newMilestones.length > 1) {
+      setNewMilestones(newMilestones.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateMilestoneField = (index: number, field: "title" | "amount", value: string) => {
+    const updated = [...newMilestones];
+    updated[index][field] = value;
+    setNewMilestones(updated);
+  };
+
   const handleCreateTransaction = () => {
     if (!newTransaction.title || !newTransaction.amount || !newTransaction.buyerName || !newTransaction.sellerName) {
       toast({
@@ -114,6 +183,15 @@ const Escrow = () => {
       });
       return;
     }
+
+    const validMilestones = newMilestones
+      .filter(m => m.title && m.amount)
+      .map((m, index) => ({
+        id: `M${index + 1}`,
+        title: m.title,
+        amount: parseFloat(m.amount),
+        status: "pending" as const,
+      }));
 
     const transaction: EscrowTransaction = {
       id: `ESC${String(transactions.length + 1).padStart(3, "0")}`,
@@ -128,6 +206,7 @@ const Escrow = () => {
       createdAt: new Date(),
       updatedAt: new Date(),
       terms: newTransaction.terms,
+      milestones: validMilestones,
     };
 
     setTransactions([transaction, ...transactions]);
@@ -141,11 +220,12 @@ const Escrow = () => {
       sellerEmail: "",
       terms: "",
     });
+    setNewMilestones([{ title: "", amount: "" }]);
     setIsCreateDialogOpen(false);
 
     toast({
       title: "Escrow Created",
-      description: `Transaction ${transaction.id} has been created successfully.`,
+      description: `Transaction ${transaction.id} has been created with ${validMilestones.length} milestone(s).`,
     });
   };
 
@@ -168,7 +248,43 @@ const Escrow = () => {
       description: `Transaction ${id} has been ${statusLabels[newStatus]}.`,
     });
 
-    setSelectedTransaction(null);
+    if (selectedTransaction?.id === id) {
+      setSelectedTransaction({ ...selectedTransaction, status: newStatus, updatedAt: new Date() });
+    }
+  };
+
+  const handleMilestoneStatusChange = (transactionId: string, milestoneId: string, newStatus: MilestoneItem["status"]) => {
+    setTransactions(transactions.map(t => {
+      if (t.id === transactionId) {
+        const updatedMilestones = t.milestones.map(m => 
+          m.id === milestoneId ? { ...m, status: newStatus } : m
+        );
+        return { ...t, milestones: updatedMilestones, updatedAt: new Date() };
+      }
+      return t;
+    }));
+
+    if (selectedTransaction?.id === transactionId) {
+      const updatedMilestones = selectedTransaction.milestones.map(m => 
+        m.id === milestoneId ? { ...m, status: newStatus } : m
+      );
+      setSelectedTransaction({ ...selectedTransaction, milestones: updatedMilestones, updatedAt: new Date() });
+    }
+
+    toast({
+      title: "Milestone Updated",
+      description: `Milestone marked as ${newStatus.replace("_", " ")}.`,
+    });
+  };
+
+  const getMilestoneProgress = (milestones: MilestoneItem[]) => {
+    if (milestones.length === 0) return 0;
+    const completed = milestones.filter(m => m.status === "completed").length;
+    return Math.round((completed / milestones.length) * 100);
+  };
+
+  const getCompletedMilestoneAmount = (milestones: MilestoneItem[]) => {
+    return milestones.filter(m => m.status === "completed").reduce((sum, m) => sum + m.amount, 0);
   };
 
   const filteredTransactions = transactions.filter(t => {
@@ -209,6 +325,18 @@ const Escrow = () => {
                 Secure transaction management between parties
               </p>
             </div>
+            
+            {/* Sample Data Toggle */}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50 border border-border/50">
+              <Database className="w-4 h-4 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground hidden sm:inline">Sample</span>
+              <Switch
+                checked={useSampleData}
+                onCheckedChange={handleToggleSampleData}
+                className="scale-90"
+              />
+            </div>
+
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
               <DialogTrigger asChild>
                 <Button className="gap-2">
@@ -223,7 +351,7 @@ const Escrow = () => {
                     Create New Escrow
                   </DialogTitle>
                   <DialogDescription>
-                    Set up a secure transaction between buyer and seller
+                    Set up a secure transaction between buyer and seller with milestone tracking
                   </DialogDescription>
                 </DialogHeader>
                 
@@ -249,11 +377,11 @@ const Escrow = () => {
                   </div>
 
                   <div className="grid gap-2">
-                    <Label htmlFor="amount">Amount (₹) *</Label>
+                    <Label htmlFor="amount">Total Amount (₹) *</Label>
                     <Input
                       id="amount"
                       type="number"
-                      placeholder="Enter amount"
+                      placeholder="Enter total amount"
                       value={newTransaction.amount}
                       onChange={(e) => setNewTransaction({ ...newTransaction, amount: e.target.value })}
                     />
@@ -309,6 +437,51 @@ const Escrow = () => {
                         />
                       </div>
                     </div>
+                  </div>
+
+                  {/* Milestones Section */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="flex items-center gap-2">
+                        <Milestone className="w-4 h-4" /> Milestones (Optional)
+                      </Label>
+                      <Button type="button" variant="outline" size="sm" onClick={addMilestoneField}>
+                        <Plus className="w-3 h-3 mr-1" /> Add Milestone
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      {newMilestones.map((milestone, index) => (
+                        <div key={index} className="flex gap-2 items-center">
+                          <Input
+                            placeholder={`Milestone ${index + 1} title`}
+                            value={milestone.title}
+                            onChange={(e) => updateMilestoneField(index, "title", e.target.value)}
+                            className="flex-1"
+                          />
+                          <Input
+                            type="number"
+                            placeholder="Amount"
+                            value={milestone.amount}
+                            onChange={(e) => updateMilestoneField(index, "amount", e.target.value)}
+                            className="w-28"
+                          />
+                          {newMilestones.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => removeMilestoneField(index)}
+                              className="shrink-0"
+                            >
+                              <Trash2 className="w-4 h-4 text-destructive" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Break down the transaction into milestones for phased releases
+                    </p>
                   </div>
 
                   <div className="grid gap-2">
@@ -417,10 +590,14 @@ const Escrow = () => {
                   <div className="text-center py-12 text-muted-foreground">
                     <Shield className="w-12 h-12 mx-auto mb-4 opacity-50" />
                     <p>No transactions found</p>
+                    {!useSampleData && (
+                      <p className="text-sm mt-2">Enable sample data or create a new escrow to get started</p>
+                    )}
                   </div>
                 ) : (
                   filteredTransactions.map((transaction) => {
                     const StatusIcon = statusConfig[transaction.status].icon;
+                    const milestoneProgress = getMilestoneProgress(transaction.milestones);
                     return (
                       <Card 
                         key={transaction.id} 
@@ -454,17 +631,24 @@ const Escrow = () => {
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/50 text-sm">
-                            <div className="flex items-center gap-1 text-muted-foreground">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-3 pt-3 border-t border-border/50">
+                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
                               <Users className="w-3 h-3" />
                               <span>{transaction.buyerName}</span>
                               <span className="mx-1">→</span>
                               <span>{transaction.sellerName}</span>
                             </div>
-                            {transaction.milestone && (
-                              <Badge variant="outline" className="text-xs">
-                                {transaction.milestone}
-                              </Badge>
+                            
+                            {transaction.milestones.length > 0 && (
+                              <div className="flex items-center gap-2 flex-1">
+                                <Milestone className="w-3 h-3 text-muted-foreground" />
+                                <div className="flex-1 max-w-32">
+                                  <Progress value={milestoneProgress} className="h-1.5" />
+                                </div>
+                                <span className="text-xs text-muted-foreground">
+                                  {transaction.milestones.filter(m => m.status === "completed").length}/{transaction.milestones.length}
+                                </span>
+                              </div>
                             )}
                           </div>
                         </CardContent>
@@ -479,7 +663,7 @@ const Escrow = () => {
 
         {/* Transaction Details Dialog */}
         <Dialog open={!!selectedTransaction} onOpenChange={() => setSelectedTransaction(null)}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
             {selectedTransaction && (
               <>
                 <DialogHeader>
@@ -498,6 +682,11 @@ const Escrow = () => {
                   <div className="text-center p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
                     <p className="text-sm text-muted-foreground mb-1">Escrow Amount</p>
                     <p className="text-3xl font-bold text-primary">{formatCurrency(selectedTransaction.amount)}</p>
+                    {selectedTransaction.milestones.length > 0 && (
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Released: {formatCurrency(getCompletedMilestoneAmount(selectedTransaction.milestones))}
+                      </p>
+                    )}
                   </div>
 
                   {/* Parties */}
@@ -526,6 +715,62 @@ const Escrow = () => {
                       </CardContent>
                     </Card>
                   </div>
+
+                  {/* Milestones */}
+                  {selectedTransaction.milestones.length > 0 && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="flex items-center gap-2 text-base font-semibold">
+                          <Milestone className="w-4 h-4" /> Milestone Tracking
+                        </Label>
+                        <span className="text-sm text-muted-foreground">
+                          {getMilestoneProgress(selectedTransaction.milestones)}% Complete
+                        </span>
+                      </div>
+                      <Progress value={getMilestoneProgress(selectedTransaction.milestones)} className="h-2" />
+                      
+                      <div className="space-y-2 mt-4">
+                        {selectedTransaction.milestones.map((milestone, index) => (
+                          <div 
+                            key={milestone.id} 
+                            className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 border border-border/50"
+                          >
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                              milestone.status === "completed" 
+                                ? "bg-green-500/20 text-green-400" 
+                                : milestone.status === "in_progress"
+                                ? "bg-blue-500/20 text-blue-400"
+                                : "bg-muted text-muted-foreground"
+                            }`}>
+                              {milestone.status === "completed" ? <CheckCircle2 className="w-4 h-4" /> : index + 1}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium">{milestone.title}</p>
+                              <p className="text-sm text-muted-foreground">{formatCurrency(milestone.amount)}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge className={`${milestoneStatusConfig[milestone.status].color} text-xs`}>
+                                {milestoneStatusConfig[milestone.status].label}
+                              </Badge>
+                              {milestone.status !== "completed" && selectedTransaction.status !== "completed" && selectedTransaction.status !== "cancelled" && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const nextStatus = milestone.status === "pending" ? "in_progress" : "completed";
+                                    handleMilestoneStatusChange(selectedTransaction.id, milestone.id, nextStatus);
+                                  }}
+                                >
+                                  {milestone.status === "pending" ? "Start" : "Complete"}
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Terms */}
                   {selectedTransaction.terms && (
