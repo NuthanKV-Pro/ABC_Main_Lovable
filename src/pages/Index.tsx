@@ -134,6 +134,15 @@ const amazingTools = [
     starred: true
   },
   {
+    id: "escrow",
+    title: "Escrow",
+    description: "Secure transaction management",
+    icon: ShieldCheck,
+    route: "/escrow",
+    tag: "WIP",
+    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+  },
+  {
     id: "emi-calc",
     title: "EMI Calculator",
     description: "Calculate loan EMI instantly",
