@@ -149,82 +149,96 @@ interface SampleDataPreset {
 const samplePresets: Record<SamplePreset, SampleDataPreset> = {
   entry: {
     label: "Entry Level",
-    description: "₹4-6 LPA - Fresh graduate / Junior role",
+    description: "₹12-24 LPA - 2-5 years experience",
     userData: {
       userName: "Priya Singh",
       userState: "Karnataka",
       stateOfEmployment: "Karnataka",
       financialYear: "2025-26",
       employmentType: "private",
-      rentPaid: 120000,
+      rentPaid: 240000,
       professionalTax: 2400,
     },
     salaryData: {
-      basic: 240000,
-      da: 24000,
-      hra: 120000,
-      bonus: 20000,
-      travel_conveyance: 12000,
-      other_allowances: 24000,
+      basic: 600000,      // 40% of CTC
+      da: 60000,          // 10% of Basic
+      hra: 300000,        // 50% of Basic
+      bonus: 150000,      // Performance bonus
+      travel_conveyance: 36000,
+      other_allowances: 54000,
+      children_edu: 2400,
     },
     deductions: {
-      "80c": 50000,
-      "80d": 15000,
+      "80c": 100000,      // EPF + some investments
+      "80d": 25000,       // Health insurance
+      "80ccd1b": 25000,   // NPS
     },
   },
   mid: {
     label: "Mid-Level",
-    description: "₹10-15 LPA - 5-8 years experience",
+    description: "₹24-50 LPA - 5-10 years experience",
     userData: {
       userName: "Rahul Sharma",
       userState: "Maharashtra",
       stateOfEmployment: "Maharashtra",
       financialYear: "2025-26",
       employmentType: "private",
-      rentPaid: 300000,
+      rentPaid: 480000,
       professionalTax: 2500,
     },
     salaryData: {
-      basic: 600000,
-      da: 60000,
-      hra: 300000,
-      bonus: 100000,
-      travel_conveyance: 30000,
-      other_allowances: 60000,
+      basic: 1200000,     // 40% of CTC
+      da: 120000,         // 10% of Basic
+      hra: 600000,        // 50% of Basic
+      bonus: 400000,      // Performance + retention bonus
+      travel_conveyance: 60000,
+      other_allowances: 120000,
+      children_edu: 2400,
+      children_hostel: 7200,
+      ltc: 100000,
     },
     deductions: {
-      "80c": 150000,
-      "80d": 25000,
-      "80ccd1b": 50000,
-      "24b": 100000,
+      "80c": 150000,      // Maxed out
+      "80d": 50000,       // Self + parents health insurance
+      "80ccd1b": 50000,   // NPS maxed
+      "24b": 200000,      // Home loan interest
+      "80tta": 10000,     // Savings interest
     },
   },
   senior: {
     label: "Senior Professional",
-    description: "₹25-40 LPA - 10+ years / Leadership role",
+    description: "₹50-100 LPA - 10+ years / Leadership",
     userData: {
       userName: "Vikram Mehta",
       userState: "Delhi",
       stateOfEmployment: "Delhi",
       financialYear: "2025-26",
       employmentType: "private",
-      rentPaid: 600000,
+      rentPaid: 960000,
       professionalTax: 2500,
     },
     salaryData: {
-      basic: 1200000,
-      da: 120000,
-      hra: 600000,
-      bonus: 300000,
-      travel_conveyance: 60000,
-      other_allowances: 120000,
+      basic: 2400000,     // 40% of CTC
+      da: 240000,         // 10% of Basic
+      hra: 1200000,       // 50% of Basic
+      bonus: 1000000,     // Large performance bonus
+      travel_conveyance: 120000,
+      other_allowances: 240000,
+      children_edu: 2400,
+      children_hostel: 7200,
+      ltc: 200000,
+      entertainment: 50000,
+      motor_car: 180000,  // Company car perquisite
+      gift_voucher: 5000,
     },
     deductions: {
-      "80c": 150000,
-      "80d": 50000,
-      "80ccd1b": 50000,
-      "24b": 200000,
-      "80e": 50000,
+      "80c": 150000,      // Maxed out
+      "80d": 75000,       // Comprehensive family health
+      "80ccd1b": 50000,   // NPS maxed
+      "24b": 200000,      // Home loan interest (max)
+      "80tta": 10000,     // Savings interest
+      "80g": 100000,      // Charitable donations
+      "80e": 50000,       // Education loan interest
     },
   },
 };
