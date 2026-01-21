@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,12 +11,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, FileDown, Calculator, Info, TrendingUp, Scale, AlertTriangle, CheckCircle, Lightbulb, IndianRupee, Building2, Briefcase, Calendar, User, Plus, Trash2, BarChart3 } from "lucide-react";
+import { ArrowLeft, FileDown, Calculator, Info, TrendingUp, Scale, AlertTriangle, CheckCircle, Lightbulb, IndianRupee, Building2, Briefcase, Calendar, User, Plus, Trash2, BarChart3, Upload, Wand2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import Form16Parser, { ParsedSalaryData } from "@/components/Form16Parser";
+import PerquisitesCalculator from "@/components/PerquisitesCalculator";
+import SmartDeductionOptimizer from "@/components/SmartDeductionOptimizer";
+import DeductionPlaygroundCalendar from "@/components/DeductionPlaygroundCalendar";
 
 // ================== TYPE DEFINITIONS ==================
 
@@ -143,6 +147,48 @@ const DeductionPlayground = () => {
   // Custom Deductions
   const [customDeductions, setCustomDeductions] = useState<CustomDeduction[]>([]);
   const [newCustomDeduction, setNewCustomDeduction] = useState({ section: '', name: '', amount: 0 });
+  
+  // Perquisites from calculator
+  const [calculatedPerquisites, setCalculatedPerquisites] = useState(0);
+  
+  // Form 16 Parser handler
+  const handleForm16Parsed = (data: ParsedSalaryData) => {
+    // Apply parsed data to salary components
+    setSalaryComponents(prev => prev.map(comp => {
+      switch (comp.id) {
+        case 'basic': return { ...comp, amount: data.basicSalary || 0 };
+        case 'hra': return { ...comp, amount: data.hra || 0 };
+        case 'da': return { ...comp, amount: data.dearnessAllowance || 0 };
+        case 'bonus': return { ...comp, amount: data.bonus || 0 };
+        case 'fees_commission': return { ...comp, amount: data.commission || 0 };
+        case 'travel_conveyance': return { ...comp, amount: data.travelAllowance || 0 };
+        case 'free_food': return { ...comp, amount: data.freeFood || 0 };
+        case 'other_allowances': return { ...comp, amount: data.otherAllowances || 0 };
+        default: return comp;
+      }
+    }));
+    
+    // Apply deductions
+    setDeductions(prev => ({
+      ...prev,
+      "80c": data.deductions80C || 0,
+      "80d": data.deductions80D || 0
+    }));
+    
+    toast({
+      title: "Form 16 Data Applied!",
+      description: "Salary breakup has been auto-populated from your document.",
+    });
+  };
+  
+  // Handle deduction optimization suggestions
+  const handleApplyOptimizedDeduction = (deductionId: string, amount: number) => {
+    setDeductions(prev => ({ ...prev, [deductionId]: amount }));
+    toast({
+      title: "Deduction Applied",
+      description: `${deductionId.toUpperCase()} set to ₹${amount.toLocaleString()}`,
+    });
+  };
 
   // ================== CALCULATIONS ==================
   
