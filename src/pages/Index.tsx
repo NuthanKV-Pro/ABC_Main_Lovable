@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard, Star } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useRef, useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
@@ -16,7 +16,8 @@ const modules = [
     icon: Calculator,
     route: "/dashboard",
     tag: "Kinda Built",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+    starred: true
   },
   {
     id: "gst",
@@ -91,7 +92,8 @@ const amazingTools = [
     icon: Scissors,
     route: "/tax-loss-harvesting",
     tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+    tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+    starred: true
   },
   {
     id: "when-to-sell",
@@ -109,7 +111,8 @@ const amazingTools = [
     icon: Calculator,
     route: "/deduction-playground",
     tag: "WIP",
-    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+    starred: true
   },
   {
     id: "hra-calc",
@@ -127,7 +130,8 @@ const amazingTools = [
     icon: ScrollText,
     route: "/contract-drafter",
     tag: "Kinda Works",
-    tagColor: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+    tagColor: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+    starred: true
   },
   {
     id: "emi-calc",
@@ -818,8 +822,11 @@ const Index = () => {
               >
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">
-                    <div className="p-3 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10">
+                    <div className="relative p-3 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10">
                       <Icon className="w-8 h-8 text-primary" />
+                      {(module as any).starred && (
+                        <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 absolute -top-1 -right-1" />
+                      )}
                     </div>
                     <div className={`px-3 py-1 rounded-full text-xs font-medium border ${module.tagColor}`}>
                       {module.tag}
@@ -903,8 +910,11 @@ const Index = () => {
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between mb-2">
-                      <div className="p-3 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10">
+                      <div className="relative p-3 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10">
                         <Icon className="w-8 h-8 text-primary" />
+                        {(tool as any).starred && (
+                          <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 absolute -top-1 -right-1" />
+                        )}
                       </div>
                       {tool.tag && (
                         <div className={`px-3 py-1 rounded-full text-xs font-medium border ${tool.tagColor}`}>
