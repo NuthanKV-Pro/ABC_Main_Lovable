@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, FileText, Download, RotateCcw, Shield, Plus, Trash2, Lock, Sparkles } from "lucide-react";
+import { ArrowLeft, FileText, Download, RotateCcw, Shield, Plus, Trash2, Lock, Sparkles, Cookie, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -1044,6 +1044,480 @@ const privacyPolicyPresets: Record<string, Partial<PrivacyPolicyDetails>> = {
   },
 };
 
+// Cookie Consent Banner Interface
+interface CookieBannerDetails {
+  businessName: string;
+  websiteUrl: string;
+  effectiveDate: string;
+  jurisdiction: string;
+  
+  // Cookie Categories
+  essentialCookies: boolean;
+  analyticsCookies: boolean;
+  functionalCookies: boolean;
+  advertisingCookies: boolean;
+  socialMediaCookies: boolean;
+  
+  // Cookie Descriptions
+  essentialDescription: string;
+  analyticsDescription: string;
+  functionalDescription: string;
+  advertisingDescription: string;
+  socialMediaDescription: string;
+  
+  // Styling Options
+  bannerPosition: string;
+  bannerStyle: string;
+  primaryColor: string;
+  backgroundColor: string;
+  textColor: string;
+  buttonStyle: string;
+  
+  // Consent Options
+  showRejectAll: boolean;
+  showPreferences: boolean;
+  showPolicyLink: boolean;
+  privacyPolicyUrl: string;
+  cookiePolicyUrl: string;
+  
+  // Behavior
+  cookieExpiry: string;
+  consentRequired: boolean;
+  reConsentDays: string;
+  blockUntilConsent: boolean;
+  
+  // Compliance
+  gdprCompliant: boolean;
+  ccpaCompliant: boolean;
+  lgpdCompliant: boolean;
+  pecr: boolean;
+  
+  // Language
+  bannerTitle: string;
+  bannerMessage: string;
+  acceptAllText: string;
+  rejectAllText: string;
+  customizeText: string;
+  savePreferencesText: string;
+  
+  // Advanced
+  includeDoNotTrack: boolean;
+  automaticCookieBlocking: boolean;
+  consentLogging: boolean;
+  iabTcf: boolean;
+}
+
+const bannerPositionOptions = [
+  { value: "bottom-full", label: "Bottom - Full Width" },
+  { value: "bottom-left", label: "Bottom - Left Corner" },
+  { value: "bottom-right", label: "Bottom - Right Corner" },
+  { value: "top-full", label: "Top - Full Width" },
+  { value: "center-modal", label: "Center - Modal Popup" },
+];
+
+const bannerStyleOptions = [
+  { value: "minimal", label: "Minimal" },
+  { value: "standard", label: "Standard" },
+  { value: "detailed", label: "Detailed with Categories" },
+  { value: "floating", label: "Floating Card" },
+  { value: "gdpr-strict", label: "GDPR Strict (No Pre-checked)" },
+];
+
+const buttonStyleOptions = [
+  { value: "rounded", label: "Rounded" },
+  { value: "pill", label: "Pill Shape" },
+  { value: "square", label: "Square" },
+  { value: "outline", label: "Outline" },
+];
+
+const cookieExpiryOptions = [
+  { value: "session", label: "Session Only" },
+  { value: "7-days", label: "7 Days" },
+  { value: "30-days", label: "30 Days" },
+  { value: "90-days", label: "90 Days" },
+  { value: "180-days", label: "180 Days" },
+  { value: "365-days", label: "1 Year" },
+];
+
+// Cookie Banner Presets by Business Type
+const cookieBannerPresets: Record<string, Partial<CookieBannerDetails>> = {
+  ecommerce: {
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: true,
+    advertisingCookies: true,
+    socialMediaCookies: true,
+    essentialDescription: "Required for shopping cart, user authentication, and checkout process.",
+    analyticsDescription: "Help us understand how visitors interact with our store to improve the shopping experience.",
+    functionalDescription: "Remember your preferences, wishlist items, and recently viewed products.",
+    advertisingDescription: "Used to show you relevant product recommendations and retargeting ads.",
+    socialMediaDescription: "Enable social sharing and display social proof from other shoppers.",
+    bannerPosition: "bottom-full",
+    bannerStyle: "standard",
+    showRejectAll: true,
+    showPreferences: true,
+    showPolicyLink: true,
+    cookieExpiry: "365-days",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    consentRequired: true,
+    reConsentDays: "365",
+    blockUntilConsent: true,
+    bannerTitle: "We Value Your Privacy",
+    bannerMessage: "We use cookies to enhance your shopping experience, analyze site traffic, and personalize content and advertisements.",
+    acceptAllText: "Accept All Cookies",
+    rejectAllText: "Reject Non-Essential",
+    customizeText: "Customize Preferences",
+    savePreferencesText: "Save My Preferences",
+    automaticCookieBlocking: true,
+    consentLogging: true,
+  },
+  saas: {
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: true,
+    advertisingCookies: false,
+    socialMediaCookies: false,
+    essentialDescription: "Required for application functionality, authentication, and security.",
+    analyticsDescription: "Help us understand feature usage and improve our product.",
+    functionalDescription: "Remember your dashboard settings and preferences.",
+    advertisingDescription: "",
+    socialMediaDescription: "",
+    bannerPosition: "bottom-right",
+    bannerStyle: "minimal",
+    showRejectAll: true,
+    showPreferences: true,
+    showPolicyLink: true,
+    cookieExpiry: "180-days",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    consentRequired: true,
+    reConsentDays: "365",
+    blockUntilConsent: false,
+    bannerTitle: "Cookie Notice",
+    bannerMessage: "We use essential cookies for app functionality and optional analytics to improve our service.",
+    acceptAllText: "Accept All",
+    rejectAllText: "Essentials Only",
+    customizeText: "Manage Cookies",
+    savePreferencesText: "Save Preferences",
+    automaticCookieBlocking: true,
+    consentLogging: true,
+  },
+  marketplace: {
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: true,
+    advertisingCookies: true,
+    socialMediaCookies: true,
+    essentialDescription: "Essential for secure transactions, user sessions, and platform functionality.",
+    analyticsDescription: "Analyze marketplace trends and user behavior to improve matching.",
+    functionalDescription: "Remember your search preferences, saved items, and recently viewed listings.",
+    advertisingDescription: "Show relevant listings and personalized recommendations from sellers.",
+    socialMediaDescription: "Allow sharing listings on social platforms and displaying reviews.",
+    bannerPosition: "bottom-full",
+    bannerStyle: "detailed",
+    showRejectAll: true,
+    showPreferences: true,
+    showPolicyLink: true,
+    cookieExpiry: "365-days",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    consentRequired: true,
+    reConsentDays: "180",
+    blockUntilConsent: true,
+    bannerTitle: "Manage Your Cookie Preferences",
+    bannerMessage: "We and our partners use cookies to provide our services, personalize content, and analyze traffic.",
+    acceptAllText: "Accept All",
+    rejectAllText: "Reject All",
+    customizeText: "Cookie Settings",
+    savePreferencesText: "Confirm My Choices",
+    automaticCookieBlocking: true,
+    consentLogging: true,
+    iabTcf: true,
+  },
+  social: {
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: true,
+    advertisingCookies: true,
+    socialMediaCookies: true,
+    essentialDescription: "Required for authentication, security, and core platform features.",
+    analyticsDescription: "Help us improve features and understand content engagement.",
+    functionalDescription: "Remember your notification settings, theme, and content preferences.",
+    advertisingDescription: "Show you relevant sponsored content and ads based on your interests.",
+    socialMediaDescription: "Enable sharing features and connections with other platforms.",
+    bannerPosition: "center-modal",
+    bannerStyle: "gdpr-strict",
+    showRejectAll: true,
+    showPreferences: true,
+    showPolicyLink: true,
+    cookieExpiry: "365-days",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    consentRequired: true,
+    reConsentDays: "180",
+    blockUntilConsent: true,
+    bannerTitle: "Your Privacy Choices",
+    bannerMessage: "We use cookies and similar technologies. Your choices affect your experience and the content you see.",
+    acceptAllText: "Accept All",
+    rejectAllText: "Essential Only",
+    customizeText: "Privacy Settings",
+    savePreferencesText: "Save and Continue",
+    automaticCookieBlocking: true,
+    consentLogging: true,
+  },
+  content: {
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: true,
+    advertisingCookies: true,
+    socialMediaCookies: true,
+    essentialDescription: "Necessary for paywall access, subscriptions, and site security.",
+    analyticsDescription: "Understand content popularity and reader behavior.",
+    functionalDescription: "Remember your reading preferences, font size, and saved articles.",
+    advertisingDescription: "Display relevant advertisements to support our journalism.",
+    socialMediaDescription: "Allow sharing articles and embedding social content.",
+    bannerPosition: "bottom-full",
+    bannerStyle: "standard",
+    showRejectAll: true,
+    showPreferences: true,
+    showPolicyLink: true,
+    cookieExpiry: "90-days",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    consentRequired: true,
+    reConsentDays: "90",
+    blockUntilConsent: true,
+    bannerTitle: "Cookie Consent",
+    bannerMessage: "We use cookies to provide you with a personalized experience and to support quality journalism.",
+    acceptAllText: "Accept All",
+    rejectAllText: "Reject Non-Essential",
+    customizeText: "Manage Preferences",
+    savePreferencesText: "Save Settings",
+    automaticCookieBlocking: true,
+    consentLogging: true,
+  },
+  consulting: {
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: false,
+    advertisingCookies: false,
+    socialMediaCookies: false,
+    essentialDescription: "Required for contact forms, scheduling, and security.",
+    analyticsDescription: "Help us understand visitor interests and improve our services.",
+    functionalDescription: "",
+    advertisingDescription: "",
+    socialMediaDescription: "",
+    bannerPosition: "bottom-left",
+    bannerStyle: "minimal",
+    showRejectAll: true,
+    showPreferences: false,
+    showPolicyLink: true,
+    cookieExpiry: "180-days",
+    gdprCompliant: true,
+    ccpaCompliant: false,
+    consentRequired: true,
+    reConsentDays: "365",
+    blockUntilConsent: false,
+    bannerTitle: "Cookie Notice",
+    bannerMessage: "We use essential cookies and analytics to understand how visitors find us.",
+    acceptAllText: "Accept",
+    rejectAllText: "Decline Analytics",
+    customizeText: "Learn More",
+    savePreferencesText: "Save",
+    automaticCookieBlocking: false,
+    consentLogging: false,
+  },
+  "mobile-app": {
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: true,
+    advertisingCookies: true,
+    socialMediaCookies: true,
+    essentialDescription: "Required for app functionality, sessions, and security.",
+    analyticsDescription: "Understand app usage patterns and crash reports.",
+    functionalDescription: "Remember your in-app settings and preferences.",
+    advertisingDescription: "Show personalized ads and measure ad effectiveness.",
+    socialMediaDescription: "Enable sharing features with social networks.",
+    bannerPosition: "center-modal",
+    bannerStyle: "standard",
+    showRejectAll: true,
+    showPreferences: true,
+    showPolicyLink: true,
+    cookieExpiry: "365-days",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    consentRequired: true,
+    reConsentDays: "365",
+    blockUntilConsent: true,
+    bannerTitle: "Privacy & Tracking",
+    bannerMessage: "We and our partners use device identifiers and cookies to personalize your experience.",
+    acceptAllText: "Allow All",
+    rejectAllText: "Limited Tracking",
+    customizeText: "Privacy Settings",
+    savePreferencesText: "Apply",
+    automaticCookieBlocking: true,
+    consentLogging: true,
+  },
+  educational: {
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: true,
+    advertisingCookies: false,
+    socialMediaCookies: false,
+    essentialDescription: "Required for course access, progress tracking, and authentication.",
+    analyticsDescription: "Understand learning patterns to improve course content.",
+    functionalDescription: "Remember your progress, notes, and accessibility preferences.",
+    advertisingDescription: "",
+    socialMediaDescription: "",
+    bannerPosition: "bottom-full",
+    bannerStyle: "standard",
+    showRejectAll: true,
+    showPreferences: true,
+    showPolicyLink: true,
+    cookieExpiry: "365-days",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    consentRequired: true,
+    reConsentDays: "365",
+    blockUntilConsent: false,
+    bannerTitle: "Cookie Preferences",
+    bannerMessage: "We use cookies to provide and improve your learning experience.",
+    acceptAllText: "Accept All",
+    rejectAllText: "Essential Only",
+    customizeText: "Manage Cookies",
+    savePreferencesText: "Save Preferences",
+    automaticCookieBlocking: true,
+    consentLogging: true,
+  },
+  healthcare: {
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: true,
+    advertisingCookies: false,
+    socialMediaCookies: false,
+    essentialDescription: "Required for secure portal access, appointment booking, and HIPAA compliance.",
+    analyticsDescription: "Improve our healthcare services based on usage patterns (anonymized data only).",
+    functionalDescription: "Remember your accessibility settings and communication preferences.",
+    advertisingDescription: "",
+    socialMediaDescription: "",
+    bannerPosition: "center-modal",
+    bannerStyle: "gdpr-strict",
+    showRejectAll: true,
+    showPreferences: true,
+    showPolicyLink: true,
+    cookieExpiry: "30-days",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    consentRequired: true,
+    reConsentDays: "30",
+    blockUntilConsent: true,
+    bannerTitle: "Privacy and Cookie Consent",
+    bannerMessage: "Your privacy is important. We use minimal cookies necessary for secure healthcare services.",
+    acceptAllText: "Accept All",
+    rejectAllText: "Essential Only",
+    customizeText: "Manage Privacy",
+    savePreferencesText: "Confirm Choices",
+    automaticCookieBlocking: true,
+    consentLogging: true,
+    includeDoNotTrack: true,
+  },
+  fintech: {
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: true,
+    advertisingCookies: false,
+    socialMediaCookies: false,
+    essentialDescription: "Required for secure transactions, fraud prevention, and regulatory compliance.",
+    analyticsDescription: "Analyze usage patterns to improve our financial services.",
+    functionalDescription: "Remember your security settings, preferred accounts, and interface preferences.",
+    advertisingDescription: "",
+    socialMediaDescription: "",
+    bannerPosition: "bottom-full",
+    bannerStyle: "gdpr-strict",
+    showRejectAll: true,
+    showPreferences: true,
+    showPolicyLink: true,
+    cookieExpiry: "30-days",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    consentRequired: true,
+    reConsentDays: "90",
+    blockUntilConsent: true,
+    bannerTitle: "Cookie & Privacy Notice",
+    bannerMessage: "We use cookies essential for secure banking and optional analytics to improve services.",
+    acceptAllText: "Accept All Cookies",
+    rejectAllText: "Essential Only",
+    customizeText: "Cookie Settings",
+    savePreferencesText: "Save Preferences",
+    automaticCookieBlocking: true,
+    consentLogging: true,
+    includeDoNotTrack: true,
+  },
+  gaming: {
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: true,
+    advertisingCookies: true,
+    socialMediaCookies: true,
+    essentialDescription: "Required for game sessions, progress saving, and anti-cheat systems.",
+    analyticsDescription: "Understand gameplay patterns to improve game balance and performance.",
+    functionalDescription: "Remember your game settings, controls, and visual preferences.",
+    advertisingDescription: "Show relevant in-game offers and measure ad performance.",
+    socialMediaDescription: "Enable friend invites and sharing achievements on social platforms.",
+    bannerPosition: "center-modal",
+    bannerStyle: "floating",
+    showRejectAll: true,
+    showPreferences: true,
+    showPolicyLink: true,
+    cookieExpiry: "365-days",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    consentRequired: true,
+    reConsentDays: "180",
+    blockUntilConsent: true,
+    bannerTitle: "🎮 Cookie Settings",
+    bannerMessage: "We use cookies to save your progress and provide a personalized gaming experience.",
+    acceptAllText: "Accept All",
+    rejectAllText: "Minimal Cookies",
+    customizeText: "Customize",
+    savePreferencesText: "Apply Settings",
+    automaticCookieBlocking: true,
+    consentLogging: true,
+  },
+  general: {
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: false,
+    advertisingCookies: false,
+    socialMediaCookies: false,
+    essentialDescription: "Required for basic site functionality and security.",
+    analyticsDescription: "Help us understand how visitors use our site.",
+    functionalDescription: "",
+    advertisingDescription: "",
+    socialMediaDescription: "",
+    bannerPosition: "bottom-full",
+    bannerStyle: "minimal",
+    showRejectAll: true,
+    showPreferences: false,
+    showPolicyLink: true,
+    cookieExpiry: "180-days",
+    gdprCompliant: false,
+    ccpaCompliant: false,
+    consentRequired: false,
+    reConsentDays: "365",
+    blockUntilConsent: false,
+    bannerTitle: "Cookie Notice",
+    bannerMessage: "This website uses cookies to ensure you get the best experience.",
+    acceptAllText: "Got It",
+    rejectAllText: "Decline",
+    customizeText: "Learn More",
+    savePreferencesText: "Save",
+    automaticCookieBlocking: false,
+    consentLogging: false,
+  },
+};
+
 interface ContractDetails {
   contractType: string;
   party1Name: string;
@@ -1157,6 +1631,54 @@ const ContractDrafter = () => {
     notifyOnChanges: true,
   });
   const [generatedPrivacyPolicy, setGeneratedPrivacyPolicy] = useState<string>("");
+
+  // Cookie Banner State
+  const [cookieBannerDetails, setCookieBannerDetails] = useState<CookieBannerDetails>({
+    businessName: "",
+    websiteUrl: "",
+    effectiveDate: "",
+    jurisdiction: "India",
+    essentialCookies: true,
+    analyticsCookies: true,
+    functionalCookies: false,
+    advertisingCookies: false,
+    socialMediaCookies: false,
+    essentialDescription: "Required for the website to function properly. These cannot be disabled.",
+    analyticsDescription: "Help us understand how visitors interact with our website.",
+    functionalDescription: "Enable enhanced functionality and personalization.",
+    advertisingDescription: "Used to deliver relevant advertisements to you.",
+    socialMediaDescription: "Enable sharing content on social media platforms.",
+    bannerPosition: "bottom-full",
+    bannerStyle: "standard",
+    primaryColor: "#2563eb",
+    backgroundColor: "#1e293b",
+    textColor: "#ffffff",
+    buttonStyle: "rounded",
+    showRejectAll: true,
+    showPreferences: true,
+    showPolicyLink: true,
+    privacyPolicyUrl: "/privacy-policy",
+    cookiePolicyUrl: "/cookie-policy",
+    cookieExpiry: "365-days",
+    consentRequired: true,
+    reConsentDays: "365",
+    blockUntilConsent: false,
+    gdprCompliant: false,
+    ccpaCompliant: false,
+    lgpdCompliant: false,
+    pecr: false,
+    bannerTitle: "We use cookies",
+    bannerMessage: "We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic.",
+    acceptAllText: "Accept All",
+    rejectAllText: "Reject All",
+    customizeText: "Manage Preferences",
+    savePreferencesText: "Save Preferences",
+    includeDoNotTrack: false,
+    automaticCookieBlocking: false,
+    consentLogging: false,
+    iabTcf: false,
+  });
+  const [generatedCookieBanner, setGeneratedCookieBanner] = useState<string>("");
 
   const handleChange = (field: keyof ContractDetails, value: string) => {
     setDetails((prev) => ({ ...prev, [field]: value }));
@@ -1338,6 +1860,305 @@ const ContractDrafter = () => {
     toast({
       title: "Privacy Policy Form Reset",
       description: "All privacy policy fields have been cleared.",
+    });
+  };
+
+  // Cookie Banner Handlers
+  const handleCookieBannerChange = <K extends keyof CookieBannerDetails>(field: K, value: CookieBannerDetails[K]) => {
+    setCookieBannerDetails((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const applyCookieBannerPreset = (businessType: string) => {
+    const preset = cookieBannerPresets[businessType];
+    if (preset) {
+      setCookieBannerDetails((prev) => ({
+        ...prev,
+        ...preset,
+        businessName: prev.businessName,
+        websiteUrl: prev.websiteUrl,
+        effectiveDate: prev.effectiveDate,
+        jurisdiction: prev.jurisdiction,
+        primaryColor: prev.primaryColor,
+        backgroundColor: prev.backgroundColor,
+        textColor: prev.textColor,
+      }));
+      const businessLabel = businessTypes.find((b) => b.value === businessType)?.label || businessType;
+      toast({
+        title: "Preset Applied",
+        description: `${businessLabel} cookie banner preset has been loaded.`,
+      });
+    }
+  };
+
+  const resetCookieBanner = () => {
+    setCookieBannerDetails({
+      businessName: "",
+      websiteUrl: "",
+      effectiveDate: "",
+      jurisdiction: "India",
+      essentialCookies: true,
+      analyticsCookies: true,
+      functionalCookies: false,
+      advertisingCookies: false,
+      socialMediaCookies: false,
+      essentialDescription: "Required for the website to function properly. These cannot be disabled.",
+      analyticsDescription: "Help us understand how visitors interact with our website.",
+      functionalDescription: "Enable enhanced functionality and personalization.",
+      advertisingDescription: "Used to deliver relevant advertisements to you.",
+      socialMediaDescription: "Enable sharing content on social media platforms.",
+      bannerPosition: "bottom-full",
+      bannerStyle: "standard",
+      primaryColor: "#2563eb",
+      backgroundColor: "#1e293b",
+      textColor: "#ffffff",
+      buttonStyle: "rounded",
+      showRejectAll: true,
+      showPreferences: true,
+      showPolicyLink: true,
+      privacyPolicyUrl: "/privacy-policy",
+      cookiePolicyUrl: "/cookie-policy",
+      cookieExpiry: "365-days",
+      consentRequired: true,
+      reConsentDays: "365",
+      blockUntilConsent: false,
+      gdprCompliant: false,
+      ccpaCompliant: false,
+      lgpdCompliant: false,
+      pecr: false,
+      bannerTitle: "We use cookies",
+      bannerMessage: "We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic.",
+      acceptAllText: "Accept All",
+      rejectAllText: "Reject All",
+      customizeText: "Manage Preferences",
+      savePreferencesText: "Save Preferences",
+      includeDoNotTrack: false,
+      automaticCookieBlocking: false,
+      consentLogging: false,
+      iabTcf: false,
+    });
+    setGeneratedCookieBanner("");
+    toast({
+      title: "Cookie Banner Form Reset",
+      description: "All cookie banner fields have been cleared.",
+    });
+  };
+
+  const generateCookieBanner = () => {
+    if (!cookieBannerDetails.businessName) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in at least the business name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    let banner = "";
+
+    // Header
+    banner += `COOKIE CONSENT BANNER CONFIGURATION\n`;
+    banner += `${"═".repeat(60)}\n\n`;
+    banner += `Business: ${cookieBannerDetails.businessName}\n`;
+    banner += `Website: ${cookieBannerDetails.websiteUrl || "[Your Website URL]"}\n`;
+    banner += `Last Updated: ${cookieBannerDetails.effectiveDate || new Date().toLocaleDateString()}\n\n`;
+    banner += `${"─".repeat(60)}\n\n`;
+
+    // Banner Preview Text
+    banner += `1. BANNER CONTENT\n\n`;
+    banner += `Title: "${cookieBannerDetails.bannerTitle}"\n\n`;
+    banner += `Message:\n"${cookieBannerDetails.bannerMessage}"\n\n`;
+    banner += `Buttons:\n`;
+    banner += `  • Primary: "${cookieBannerDetails.acceptAllText}"\n`;
+    if (cookieBannerDetails.showRejectAll) {
+      banner += `  • Secondary: "${cookieBannerDetails.rejectAllText}"\n`;
+    }
+    if (cookieBannerDetails.showPreferences) {
+      banner += `  • Preferences: "${cookieBannerDetails.customizeText}"\n`;
+      banner += `  • Save Button: "${cookieBannerDetails.savePreferencesText}"\n`;
+    }
+    banner += `\n`;
+
+    // Cookie Categories
+    banner += `${"─".repeat(60)}\n\n`;
+    banner += `2. COOKIE CATEGORIES\n\n`;
+
+    if (cookieBannerDetails.essentialCookies) {
+      banner += `■ ESSENTIAL COOKIES (Always Active - Cannot be disabled)\n`;
+      banner += `  ${cookieBannerDetails.essentialDescription}\n\n`;
+    }
+
+    if (cookieBannerDetails.analyticsCookies) {
+      banner += `□ ANALYTICS COOKIES (Optional - Default: ${cookieBannerDetails.gdprCompliant ? 'Off' : 'On'})\n`;
+      banner += `  ${cookieBannerDetails.analyticsDescription}\n\n`;
+    }
+
+    if (cookieBannerDetails.functionalCookies) {
+      banner += `□ FUNCTIONAL COOKIES (Optional - Default: ${cookieBannerDetails.gdprCompliant ? 'Off' : 'On'})\n`;
+      banner += `  ${cookieBannerDetails.functionalDescription}\n\n`;
+    }
+
+    if (cookieBannerDetails.advertisingCookies) {
+      banner += `□ ADVERTISING COOKIES (Optional - Default: ${cookieBannerDetails.gdprCompliant ? 'Off' : 'On'})\n`;
+      banner += `  ${cookieBannerDetails.advertisingDescription}\n\n`;
+    }
+
+    if (cookieBannerDetails.socialMediaCookies) {
+      banner += `□ SOCIAL MEDIA COOKIES (Optional - Default: ${cookieBannerDetails.gdprCompliant ? 'Off' : 'On'})\n`;
+      banner += `  ${cookieBannerDetails.socialMediaDescription}\n\n`;
+    }
+
+    // Styling Configuration
+    banner += `${"─".repeat(60)}\n\n`;
+    banner += `3. STYLING CONFIGURATION\n\n`;
+    banner += `Position: ${bannerPositionOptions.find(p => p.value === cookieBannerDetails.bannerPosition)?.label || cookieBannerDetails.bannerPosition}\n`;
+    banner += `Style: ${bannerStyleOptions.find(s => s.value === cookieBannerDetails.bannerStyle)?.label || cookieBannerDetails.bannerStyle}\n`;
+    banner += `Button Style: ${buttonStyleOptions.find(b => b.value === cookieBannerDetails.buttonStyle)?.label || cookieBannerDetails.buttonStyle}\n`;
+    banner += `Primary Color: ${cookieBannerDetails.primaryColor}\n`;
+    banner += `Background Color: ${cookieBannerDetails.backgroundColor}\n`;
+    banner += `Text Color: ${cookieBannerDetails.textColor}\n\n`;
+
+    // Behavior Settings
+    banner += `${"─".repeat(60)}\n\n`;
+    banner += `4. BEHAVIOR SETTINGS\n\n`;
+    banner += `Cookie Expiry: ${cookieExpiryOptions.find(e => e.value === cookieBannerDetails.cookieExpiry)?.label || cookieBannerDetails.cookieExpiry}\n`;
+    banner += `Consent Required: ${cookieBannerDetails.consentRequired ? 'Yes' : 'No'}\n`;
+    banner += `Re-consent Period: Every ${cookieBannerDetails.reConsentDays} days\n`;
+    banner += `Block Until Consent: ${cookieBannerDetails.blockUntilConsent ? 'Yes - Non-essential scripts blocked until consent' : 'No'}\n`;
+    banner += `Automatic Cookie Blocking: ${cookieBannerDetails.automaticCookieBlocking ? 'Enabled' : 'Disabled'}\n`;
+    banner += `Consent Logging: ${cookieBannerDetails.consentLogging ? 'Enabled - Consent records will be stored' : 'Disabled'}\n`;
+    banner += `Do Not Track Respect: ${cookieBannerDetails.includeDoNotTrack ? 'Enabled' : 'Disabled'}\n`;
+    if (cookieBannerDetails.iabTcf) {
+      banner += `IAB TCF 2.0 Support: Enabled\n`;
+    }
+    banner += `\n`;
+
+    // Links
+    banner += `${"─".repeat(60)}\n\n`;
+    banner += `5. POLICY LINKS\n\n`;
+    if (cookieBannerDetails.showPolicyLink) {
+      banner += `Privacy Policy URL: ${cookieBannerDetails.privacyPolicyUrl}\n`;
+      banner += `Cookie Policy URL: ${cookieBannerDetails.cookiePolicyUrl}\n`;
+    } else {
+      banner += `Policy links hidden from banner\n`;
+    }
+    banner += `\n`;
+
+    // Compliance
+    banner += `${"─".repeat(60)}\n\n`;
+    banner += `6. REGULATORY COMPLIANCE\n\n`;
+    const compliance = [];
+    if (cookieBannerDetails.gdprCompliant) compliance.push("GDPR (EU)");
+    if (cookieBannerDetails.ccpaCompliant) compliance.push("CCPA (California)");
+    if (cookieBannerDetails.lgpdCompliant) compliance.push("LGPD (Brazil)");
+    if (cookieBannerDetails.pecr) compliance.push("PECR (UK)");
+    banner += `Active Compliance: ${compliance.length > 0 ? compliance.join(", ") : "Standard (No specific regulation)"}\n\n`;
+
+    if (cookieBannerDetails.gdprCompliant) {
+      banner += `GDPR Requirements Met:\n`;
+      banner += `  ✓ Prior consent required before non-essential cookies\n`;
+      banner += `  ✓ Clear accept/reject options provided\n`;
+      banner += `  ✓ Granular cookie category controls\n`;
+      banner += `  ✓ Easy withdrawal of consent\n`;
+      banner += `  ✓ No pre-checked boxes for optional cookies\n\n`;
+    }
+
+    if (cookieBannerDetails.ccpaCompliant) {
+      banner += `CCPA Requirements Met:\n`;
+      banner += `  ✓ "Do Not Sell My Personal Information" option available\n`;
+      banner += `  ✓ Clear disclosure of data collection practices\n`;
+      banner += `  ✓ Opt-out mechanism for sale of data\n\n`;
+    }
+
+    // Implementation Code Snippet
+    banner += `${"─".repeat(60)}\n\n`;
+    banner += `7. IMPLEMENTATION CODE SNIPPET\n\n`;
+    banner += `<!-- Cookie Consent Banner -->\n`;
+    banner += `<script>\n`;
+    banner += `  window.cookieConsentConfig = {\n`;
+    banner += `    businessName: "${cookieBannerDetails.businessName}",\n`;
+    banner += `    position: "${cookieBannerDetails.bannerPosition}",\n`;
+    banner += `    style: "${cookieBannerDetails.bannerStyle}",\n`;
+    banner += `    primaryColor: "${cookieBannerDetails.primaryColor}",\n`;
+    banner += `    cookieExpiry: ${parseInt(cookieBannerDetails.cookieExpiry) || 365},\n`;
+    banner += `    categories: {\n`;
+    banner += `      essential: true,\n`;
+    banner += `      analytics: ${cookieBannerDetails.analyticsCookies},\n`;
+    banner += `      functional: ${cookieBannerDetails.functionalCookies},\n`;
+    banner += `      advertising: ${cookieBannerDetails.advertisingCookies},\n`;
+    banner += `      socialMedia: ${cookieBannerDetails.socialMediaCookies}\n`;
+    banner += `    },\n`;
+    banner += `    gdprCompliant: ${cookieBannerDetails.gdprCompliant},\n`;
+    banner += `    ccpaCompliant: ${cookieBannerDetails.ccpaCompliant},\n`;
+    banner += `    blockUntilConsent: ${cookieBannerDetails.blockUntilConsent},\n`;
+    banner += `    consentLogging: ${cookieBannerDetails.consentLogging}\n`;
+    banner += `  };\n`;
+    banner += `</script>\n`;
+    banner += `<script src="cookie-consent.js" defer></script>\n\n`;
+
+    // Footer
+    banner += `${"═".repeat(60)}\n`;
+    banner += `© ${new Date().getFullYear()} ${cookieBannerDetails.businessName}. Cookie Banner Configuration.\n`;
+    banner += `Generated for GDPR/CCPA-compliant cookie consent management.\n`;
+
+    setGeneratedCookieBanner(banner);
+    toast({
+      title: "Cookie Banner Generated",
+      description: "Your Cookie Consent Banner configuration has been created.",
+    });
+  };
+
+  const exportCookieBannerToPDF = () => {
+    if (!generatedCookieBanner) {
+      toast({
+        title: "No Cookie Banner",
+        description: "Please generate a Cookie Banner configuration first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const doc = new jsPDF();
+    
+    // Header
+    doc.setFillColor(37, 99, 235);
+    doc.rect(0, 0, 210, 25, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Cookie Consent Banner - ${cookieBannerDetails.businessName}`, 105, 15, { align: "center" });
+    
+    // Body
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    
+    const lines = doc.splitTextToSize(generatedCookieBanner, 180);
+    let y = 35;
+    const pageHeight = 280;
+    
+    for (let i = 0; i < lines.length; i++) {
+      if (y > pageHeight) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(lines[i], 15, y);
+      y += 4.5;
+    }
+    
+    // Footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.text(`Generated by ABC - AI Legal & Tax Co-pilot | Page ${i} of ${pageCount}`, 105, 290, { align: "center" });
+    }
+    
+    doc.save(`Cookie_Banner_${cookieBannerDetails.businessName.replace(/\s+/g, "_")}_${new Date().toISOString().split("T")[0]}.pdf`);
+    
+    toast({
+      title: "PDF Exported",
+      description: "Your Cookie Banner configuration has been saved as PDF.",
     });
   };
 
@@ -2479,7 +3300,7 @@ const ContractDrafter = () => {
                   <FileText className="h-6 w-6" />
                   Legal Document Drafter
                 </h1>
-                <p className="text-sm text-muted-foreground">Draft contracts, T&Cs, and privacy policies</p>
+                <p className="text-sm text-muted-foreground">Draft contracts, T&Cs, privacy policies, and cookie banners</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -2519,6 +3340,18 @@ const ContractDrafter = () => {
                   </Button>
                 </>
               )}
+              {activeTab === "cookies" && (
+                <>
+                  <Button variant="outline" onClick={resetCookieBanner}>
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset
+                  </Button>
+                  <Button onClick={exportCookieBannerToPDF} disabled={!generatedCookieBanner}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Export PDF
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -2526,18 +3359,22 @@ const ContractDrafter = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-xl grid-cols-3">
+          <TabsList className="grid w-full max-w-3xl grid-cols-4">
             <TabsTrigger value="contracts" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Contracts
             </TabsTrigger>
             <TabsTrigger value="tnc" className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
-              Terms & Conditions
+              T&C
             </TabsTrigger>
             <TabsTrigger value="privacy" className="flex items-center gap-2">
               <Lock className="h-4 w-4" />
-              Privacy Policy
+              Privacy
+            </TabsTrigger>
+            <TabsTrigger value="cookies" className="flex items-center gap-2">
+              <Cookie className="h-4 w-4" />
+              Cookie Banner
             </TabsTrigger>
           </TabsList>
 
@@ -3785,10 +4622,599 @@ const ContractDrafter = () => {
               </Card>
             </div>
           </TabsContent>
+
+          {/* Cookie Banner Tab */}
+          <TabsContent value="cookies">
+            <div className="grid lg:grid-cols-2 gap-6">
+              <Card className="max-h-[80vh] overflow-y-auto">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Cookie className="h-5 w-5" />
+                    Cookie Banner Configuration
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Accordion type="multiple" defaultValue={["basic", "categories", "styling"]} className="w-full">
+                    {/* Basic Information */}
+                    <AccordionItem value="basic">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Basic Information
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div>
+                          <Label>Business Name *</Label>
+                          <Input
+                            placeholder="Your Company Name"
+                            value={cookieBannerDetails.businessName}
+                            onChange={(e) => handleCookieBannerChange("businessName", e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Website URL</Label>
+                          <Input
+                            placeholder="https://example.com"
+                            value={cookieBannerDetails.websiteUrl}
+                            onChange={(e) => handleCookieBannerChange("websiteUrl", e.target.value)}
+                          />
+                        </div>
+                        
+                        {/* Business Type Preset */}
+                        <div>
+                          <Label>Load Preset by Business Type</Label>
+                          <Select onValueChange={(v) => applyCookieBannerPreset(v)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select business type to apply preset" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {businessTypes.map((type) => (
+                                <SelectItem key={type.value} value={type.value}>
+                                  {type.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <Label>Effective Date</Label>
+                            <Input
+                              type="date"
+                              value={cookieBannerDetails.effectiveDate}
+                              onChange={(e) => handleCookieBannerChange("effectiveDate", e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label>Jurisdiction</Label>
+                            <Input
+                              placeholder="India"
+                              value={cookieBannerDetails.jurisdiction}
+                              onChange={(e) => handleCookieBannerChange("jurisdiction", e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Cookie Categories */}
+                    <AccordionItem value="categories">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Cookie Categories
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                            <div className="flex-1">
+                              <Label className="flex items-center gap-2">
+                                Essential Cookies
+                                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Always On</span>
+                              </Label>
+                              <p className="text-xs text-muted-foreground mt-1">Required for basic site functionality</p>
+                            </div>
+                            <Switch checked={true} disabled />
+                          </div>
+                          <Input
+                            placeholder="Description for essential cookies..."
+                            value={cookieBannerDetails.essentialDescription}
+                            onChange={(e) => handleCookieBannerChange("essentialDescription", e.target.value)}
+                            className="text-xs"
+                          />
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                            <div className="flex-1">
+                              <Label>Analytics Cookies</Label>
+                              <p className="text-xs text-muted-foreground mt-1">Track visitor statistics</p>
+                            </div>
+                            <Switch
+                              checked={cookieBannerDetails.analyticsCookies}
+                              onCheckedChange={(v) => handleCookieBannerChange("analyticsCookies", v)}
+                            />
+                          </div>
+                          {cookieBannerDetails.analyticsCookies && (
+                            <Input
+                              placeholder="Description for analytics cookies..."
+                              value={cookieBannerDetails.analyticsDescription}
+                              onChange={(e) => handleCookieBannerChange("analyticsDescription", e.target.value)}
+                              className="text-xs"
+                            />
+                          )}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                            <div className="flex-1">
+                              <Label>Functional Cookies</Label>
+                              <p className="text-xs text-muted-foreground mt-1">Enhanced features & personalization</p>
+                            </div>
+                            <Switch
+                              checked={cookieBannerDetails.functionalCookies}
+                              onCheckedChange={(v) => handleCookieBannerChange("functionalCookies", v)}
+                            />
+                          </div>
+                          {cookieBannerDetails.functionalCookies && (
+                            <Input
+                              placeholder="Description for functional cookies..."
+                              value={cookieBannerDetails.functionalDescription}
+                              onChange={(e) => handleCookieBannerChange("functionalDescription", e.target.value)}
+                              className="text-xs"
+                            />
+                          )}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                            <div className="flex-1">
+                              <Label>Advertising Cookies</Label>
+                              <p className="text-xs text-muted-foreground mt-1">Personalized ads & retargeting</p>
+                            </div>
+                            <Switch
+                              checked={cookieBannerDetails.advertisingCookies}
+                              onCheckedChange={(v) => handleCookieBannerChange("advertisingCookies", v)}
+                            />
+                          </div>
+                          {cookieBannerDetails.advertisingCookies && (
+                            <Input
+                              placeholder="Description for advertising cookies..."
+                              value={cookieBannerDetails.advertisingDescription}
+                              onChange={(e) => handleCookieBannerChange("advertisingDescription", e.target.value)}
+                              className="text-xs"
+                            />
+                          )}
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                            <div className="flex-1">
+                              <Label>Social Media Cookies</Label>
+                              <p className="text-xs text-muted-foreground mt-1">Sharing & social features</p>
+                            </div>
+                            <Switch
+                              checked={cookieBannerDetails.socialMediaCookies}
+                              onCheckedChange={(v) => handleCookieBannerChange("socialMediaCookies", v)}
+                            />
+                          </div>
+                          {cookieBannerDetails.socialMediaCookies && (
+                            <Input
+                              placeholder="Description for social media cookies..."
+                              value={cookieBannerDetails.socialMediaDescription}
+                              onChange={(e) => handleCookieBannerChange("socialMediaDescription", e.target.value)}
+                              className="text-xs"
+                            />
+                          )}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Styling Options */}
+                    <AccordionItem value="styling">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        <span className="flex items-center gap-2">
+                          <Palette className="h-4 w-4" />
+                          Styling Options
+                        </span>
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div>
+                          <Label>Banner Position</Label>
+                          <Select
+                            value={cookieBannerDetails.bannerPosition}
+                            onValueChange={(v) => handleCookieBannerChange("bannerPosition", v)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {bannerPositionOptions.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Banner Style</Label>
+                          <Select
+                            value={cookieBannerDetails.bannerStyle}
+                            onValueChange={(v) => handleCookieBannerChange("bannerStyle", v)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {bannerStyleOptions.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Button Style</Label>
+                          <Select
+                            value={cookieBannerDetails.buttonStyle}
+                            onValueChange={(v) => handleCookieBannerChange("buttonStyle", v)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {buttonStyleOptions.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div>
+                            <Label>Primary Color</Label>
+                            <div className="flex gap-2 items-center mt-1">
+                              <input
+                                type="color"
+                                value={cookieBannerDetails.primaryColor}
+                                onChange={(e) => handleCookieBannerChange("primaryColor", e.target.value)}
+                                className="w-10 h-10 rounded cursor-pointer border"
+                              />
+                              <Input
+                                value={cookieBannerDetails.primaryColor}
+                                onChange={(e) => handleCookieBannerChange("primaryColor", e.target.value)}
+                                className="flex-1 text-xs"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <Label>Background</Label>
+                            <div className="flex gap-2 items-center mt-1">
+                              <input
+                                type="color"
+                                value={cookieBannerDetails.backgroundColor}
+                                onChange={(e) => handleCookieBannerChange("backgroundColor", e.target.value)}
+                                className="w-10 h-10 rounded cursor-pointer border"
+                              />
+                              <Input
+                                value={cookieBannerDetails.backgroundColor}
+                                onChange={(e) => handleCookieBannerChange("backgroundColor", e.target.value)}
+                                className="flex-1 text-xs"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <Label>Text Color</Label>
+                            <div className="flex gap-2 items-center mt-1">
+                              <input
+                                type="color"
+                                value={cookieBannerDetails.textColor}
+                                onChange={(e) => handleCookieBannerChange("textColor", e.target.value)}
+                                className="w-10 h-10 rounded cursor-pointer border"
+                              />
+                              <Input
+                                value={cookieBannerDetails.textColor}
+                                onChange={(e) => handleCookieBannerChange("textColor", e.target.value)}
+                                className="flex-1 text-xs"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Banner Content */}
+                    <AccordionItem value="content">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Banner Content & Text
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div>
+                          <Label>Banner Title</Label>
+                          <Input
+                            value={cookieBannerDetails.bannerTitle}
+                            onChange={(e) => handleCookieBannerChange("bannerTitle", e.target.value)}
+                            placeholder="We use cookies"
+                          />
+                        </div>
+                        <div>
+                          <Label>Banner Message</Label>
+                          <Textarea
+                            value={cookieBannerDetails.bannerMessage}
+                            onChange={(e) => handleCookieBannerChange("bannerMessage", e.target.value)}
+                            placeholder="Describe how you use cookies..."
+                            rows={3}
+                          />
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <Label>Accept All Button Text</Label>
+                            <Input
+                              value={cookieBannerDetails.acceptAllText}
+                              onChange={(e) => handleCookieBannerChange("acceptAllText", e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label>Reject All Button Text</Label>
+                            <Input
+                              value={cookieBannerDetails.rejectAllText}
+                              onChange={(e) => handleCookieBannerChange("rejectAllText", e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <Label>Customize Button Text</Label>
+                            <Input
+                              value={cookieBannerDetails.customizeText}
+                              onChange={(e) => handleCookieBannerChange("customizeText", e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label>Save Preferences Button Text</Label>
+                            <Input
+                              value={cookieBannerDetails.savePreferencesText}
+                              onChange={(e) => handleCookieBannerChange("savePreferencesText", e.target.value)}
+                            />
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Consent Options */}
+                    <AccordionItem value="consent">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Consent & Button Options
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Show "Reject All" Button</Label>
+                            <p className="text-xs text-muted-foreground">Required for GDPR compliance</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.showRejectAll}
+                            onCheckedChange={(v) => handleCookieBannerChange("showRejectAll", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Show Preferences/Customize Button</Label>
+                            <p className="text-xs text-muted-foreground">Granular cookie control</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.showPreferences}
+                            onCheckedChange={(v) => handleCookieBannerChange("showPreferences", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Show Policy Links</Label>
+                            <p className="text-xs text-muted-foreground">Links to privacy/cookie policy</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.showPolicyLink}
+                            onCheckedChange={(v) => handleCookieBannerChange("showPolicyLink", v)}
+                          />
+                        </div>
+                        {cookieBannerDetails.showPolicyLink && (
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <Label>Privacy Policy URL</Label>
+                              <Input
+                                value={cookieBannerDetails.privacyPolicyUrl}
+                                onChange={(e) => handleCookieBannerChange("privacyPolicyUrl", e.target.value)}
+                              />
+                            </div>
+                            <div>
+                              <Label>Cookie Policy URL</Label>
+                              <Input
+                                value={cookieBannerDetails.cookiePolicyUrl}
+                                onChange={(e) => handleCookieBannerChange("cookiePolicyUrl", e.target.value)}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Behavior Settings */}
+                    <AccordionItem value="behavior">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Behavior & Timing
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div>
+                          <Label>Cookie Consent Expiry</Label>
+                          <Select
+                            value={cookieBannerDetails.cookieExpiry}
+                            onValueChange={(v) => handleCookieBannerChange("cookieExpiry", v)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {cookieExpiryOptions.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Re-consent Period (days)</Label>
+                          <Input
+                            type="number"
+                            value={cookieBannerDetails.reConsentDays}
+                            onChange={(e) => handleCookieBannerChange("reConsentDays", e.target.value)}
+                            placeholder="365"
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">How often to ask users to re-confirm consent</p>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Consent Required</Label>
+                            <p className="text-xs text-muted-foreground">Users must interact with banner</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.consentRequired}
+                            onCheckedChange={(v) => handleCookieBannerChange("consentRequired", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Block Scripts Until Consent</Label>
+                            <p className="text-xs text-muted-foreground">Block non-essential scripts until user consents</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.blockUntilConsent}
+                            onCheckedChange={(v) => handleCookieBannerChange("blockUntilConsent", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Automatic Cookie Blocking</Label>
+                            <p className="text-xs text-muted-foreground">Auto-detect and block tracking cookies</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.automaticCookieBlocking}
+                            onCheckedChange={(v) => handleCookieBannerChange("automaticCookieBlocking", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Consent Logging</Label>
+                            <p className="text-xs text-muted-foreground">Store consent records for compliance</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.consentLogging}
+                            onCheckedChange={(v) => handleCookieBannerChange("consentLogging", v)}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Compliance */}
+                    <AccordionItem value="compliance">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Regulatory Compliance
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>GDPR Compliant (EU)</Label>
+                            <p className="text-xs text-muted-foreground">Requires opt-in consent, no pre-checked boxes</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.gdprCompliant}
+                            onCheckedChange={(v) => handleCookieBannerChange("gdprCompliant", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>CCPA Compliant (California)</Label>
+                            <p className="text-xs text-muted-foreground">"Do Not Sell" opt-out mechanism</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.ccpaCompliant}
+                            onCheckedChange={(v) => handleCookieBannerChange("ccpaCompliant", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>LGPD Compliant (Brazil)</Label>
+                            <p className="text-xs text-muted-foreground">Brazilian data protection law</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.lgpdCompliant}
+                            onCheckedChange={(v) => handleCookieBannerChange("lgpdCompliant", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>PECR Compliant (UK)</Label>
+                            <p className="text-xs text-muted-foreground">UK cookie regulations</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.pecr}
+                            onCheckedChange={(v) => handleCookieBannerChange("pecr", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>IAB TCF 2.0 Support</Label>
+                            <p className="text-xs text-muted-foreground">Advertising industry framework</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.iabTcf}
+                            onCheckedChange={(v) => handleCookieBannerChange("iabTcf", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Respect "Do Not Track"</Label>
+                            <p className="text-xs text-muted-foreground">Honor browser DNT signals</p>
+                          </div>
+                          <Switch
+                            checked={cookieBannerDetails.includeDoNotTrack}
+                            onCheckedChange={(v) => handleCookieBannerChange("includeDoNotTrack", v)}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+
+                  <Button className="w-full" onClick={generateCookieBanner}>
+                    <Cookie className="h-4 w-4 mr-2" />
+                    Generate Cookie Banner Configuration
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Cookie Banner Preview</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {generatedCookieBanner ? (
+                    <div className="bg-muted/50 rounded-lg p-4 font-mono text-xs whitespace-pre-wrap max-h-[600px] overflow-y-auto">
+                      {generatedCookieBanner}
+                    </div>
+                  ) : (
+                    <div className="bg-muted/50 rounded-lg p-8 text-center text-muted-foreground">
+                      <Cookie className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                      <p>Configure your cookie banner options and click "Generate Cookie Banner Configuration" to see the preview here.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
         </Tabs>
 
         <p className="text-xs text-muted-foreground text-center mt-6">
-          Disclaimer: This tool generates basic contract, T&C, and privacy policy templates for reference purposes only. 
+          Disclaimer: This tool generates basic contract, T&C, privacy policy, and cookie banner templates for reference purposes only. 
           Please consult a legal professional before using these documents for official purposes.
         </p>
       </main>
