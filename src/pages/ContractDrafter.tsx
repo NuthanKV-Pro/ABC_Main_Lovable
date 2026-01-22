@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, FileText, Download, RotateCcw, Shield, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, FileText, Download, RotateCcw, Shield, Plus, Trash2, Lock, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -482,6 +482,568 @@ const tncPresets: Record<string, Partial<TnCDetails>> = {
   },
 };
 
+// Custom Clause Presets for T&C
+const customClausePresets = [
+  { 
+    title: "Force Majeure", 
+    content: "Neither party shall be liable for any failure or delay in performing their obligations where such failure or delay results from any cause that is beyond the reasonable control of that party, including but not limited to acts of God, natural disasters, pandemics, war, terrorism, riots, civil commotion, government actions, strikes, or failures of third-party telecommunications or power supply.",
+    category: "common"
+  },
+  { 
+    title: "Non-Compete Clause", 
+    content: "During the term of this agreement and for a period of [12/24] months thereafter, User agrees not to directly or indirectly engage in any business that competes with the Company's core services within the same geographic market, except with prior written consent.",
+    category: "unique"
+  },
+  { 
+    title: "Anti-Spam Compliance", 
+    content: "Users agree not to use our services for sending unsolicited bulk emails (spam), harvesting email addresses, or any activities that violate CAN-SPAM Act, GDPR, or other applicable anti-spam laws. Violation will result in immediate account termination without refund.",
+    category: "useful"
+  },
+  { 
+    title: "Accessibility Statement", 
+    content: "We are committed to ensuring digital accessibility for people with disabilities. We continually improve the user experience for everyone and apply relevant accessibility standards (WCAG 2.1 Level AA). If you experience any accessibility barriers, please contact us.",
+    category: "unique"
+  },
+  { 
+    title: "Fair Use Policy", 
+    content: "While we offer unlimited usage on certain plans, all usage is subject to our Fair Use Policy. Excessive usage that negatively impacts service quality for other users may result in throttling, suspension, or plan upgrade requirements. Specific thresholds are outlined in our service documentation.",
+    category: "useful"
+  },
+  { 
+    title: "No Warranty on Third-Party Integrations", 
+    content: "Our service may integrate with third-party applications and services. We provide no warranty regarding the availability, functionality, or security of these third-party integrations. Your use of third-party services is subject to their respective terms and conditions.",
+    category: "common"
+  },
+  { 
+    title: "Data Portability Rights", 
+    content: "Upon written request and subject to verification, we will provide you with a copy of your personal data in a structured, commonly used, and machine-readable format (JSON or CSV). Data export requests will be fulfilled within 30 days of verification.",
+    category: "useful"
+  },
+  { 
+    title: "Beta Features Disclaimer", 
+    content: "Certain features may be designated as 'Beta' or 'Experimental'. These features are provided 'as-is' without warranty, may be modified or discontinued at any time, and should not be relied upon for critical business operations. Data stored in beta features may not be migrated upon feature changes.",
+    category: "unique"
+  },
+  { 
+    title: "Suspension for Non-Payment", 
+    content: "In the event of non-payment of fees when due, we reserve the right to suspend your access to the services after providing 7 days written notice. Continued non-payment for 30 days may result in account termination and data deletion. A reactivation fee may apply for account reinstatement.",
+    category: "common"
+  },
+  { 
+    title: "AI and Automated Processing Disclosure", 
+    content: "Our services may use artificial intelligence, machine learning, and automated decision-making systems to improve user experience, provide recommendations, or process content. You have the right to request human review of automated decisions that significantly affect you.",
+    category: "unique"
+  },
+  { 
+    title: "Content Backup Responsibility", 
+    content: "While we maintain regular backups of our systems, you are solely responsible for maintaining backup copies of any content you upload or create using our services. We shall not be liable for any loss of data due to technical failures, user error, or service termination.",
+    category: "useful"
+  },
+  { 
+    title: "Dispute Resolution - Mediation First", 
+    content: "Before initiating any legal proceedings, both parties agree to first attempt to resolve disputes through good-faith negotiation for a minimum of 30 days. If negotiation fails, parties agree to participate in mediation before a mutually agreed mediator before proceeding to arbitration or litigation.",
+    category: "common"
+  },
+  { 
+    title: "Export Compliance", 
+    content: "You agree to comply with all applicable export and import control laws and regulations. You shall not export, re-export, or transfer any data or services to any country, entity, or person prohibited by applicable laws, including U.S. export restrictions and international sanctions.",
+    category: "useful"
+  },
+  { 
+    title: "Affiliate Program Terms", 
+    content: "Participation in our affiliate or referral program is subject to additional terms. Commission rates, payment thresholds, and prohibited marketing practices are detailed in the Affiliate Agreement. We reserve the right to modify commission structures with 30 days notice.",
+    category: "unique"
+  },
+  { 
+    title: "Service Credits for Downtime", 
+    content: "If service availability falls below our SLA commitment in any calendar month, eligible customers may request service credits. Credits are calculated as a percentage of monthly fees proportional to the downtime exceeding the SLA. Credits must be requested within 30 days and do not exceed 100% of monthly fees.",
+    category: "useful"
+  }
+];
+
+// Privacy Policy Interface
+interface PrivacyPolicyDetails {
+  businessName: string;
+  businessType: string;
+  websiteUrl: string;
+  contactEmail: string;
+  dpoEmail: string;
+  effectiveDate: string;
+  jurisdiction: string;
+  
+  // Data Collection
+  collectsPersonalData: boolean;
+  dataTypes: string[];
+  collectsFromChildren: boolean;
+  childrenAgeLimit: string;
+  automaticDataCollection: boolean;
+  
+  // Cookies & Tracking
+  usesCookies: boolean;
+  cookieTypes: string[];
+  usesAnalytics: boolean;
+  analyticsProvider: string;
+  usesAdvertising: boolean;
+  
+  // Data Usage
+  usesForMarketing: boolean;
+  usesForPersonalization: boolean;
+  usesForAnalytics: boolean;
+  usesForThirdPartySharing: boolean;
+  sellsData: boolean;
+  
+  // Data Protection
+  dataEncryption: boolean;
+  dataRetentionPeriod: string;
+  dataStorageLocation: string;
+  
+  // User Rights
+  gdprCompliant: boolean;
+  ccpaCompliant: boolean;
+  rightToAccess: boolean;
+  rightToDelete: boolean;
+  rightToPortability: boolean;
+  rightToOptOut: boolean;
+  
+  // Third Parties
+  thirdPartyServices: string[];
+  internationalTransfers: boolean;
+  
+  // Specific Industries
+  hipaaCompliant: boolean;
+  pciCompliant: boolean;
+  
+  // Contact & Updates
+  privacyContactMethod: string;
+  notifyOnChanges: boolean;
+}
+
+const cookieTypeOptions = [
+  "Essential/Necessary Cookies",
+  "Performance/Analytics Cookies",
+  "Functionality Cookies",
+  "Targeting/Advertising Cookies",
+  "Social Media Cookies",
+];
+
+const thirdPartyServiceOptions = [
+  "Google Analytics",
+  "Google Ads",
+  "Facebook Pixel",
+  "Stripe (Payments)",
+  "PayPal",
+  "AWS (Cloud Hosting)",
+  "Cloudflare (CDN/Security)",
+  "Mailchimp (Email Marketing)",
+  "Intercom (Customer Support)",
+  "Zendesk (Support)",
+  "Hotjar (Analytics)",
+  "Mixpanel (Analytics)",
+  "Segment (Data Platform)",
+  "HubSpot (CRM)",
+  "Salesforce (CRM)",
+];
+
+// Privacy Policy Presets by Business Type
+const privacyPolicyPresets: Record<string, Partial<PrivacyPolicyDetails>> = {
+  ecommerce: {
+    businessType: "ecommerce",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address", "Phone Number", "Billing/Payment Information", "Browsing History", "Device Information"],
+    collectsFromChildren: false,
+    childrenAgeLimit: "13",
+    automaticDataCollection: true,
+    usesCookies: true,
+    cookieTypes: ["Essential/Necessary Cookies", "Performance/Analytics Cookies", "Targeting/Advertising Cookies"],
+    usesAnalytics: true,
+    analyticsProvider: "Google Analytics",
+    usesAdvertising: true,
+    usesForMarketing: true,
+    usesForPersonalization: true,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: true,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "3 years after last activity",
+    dataStorageLocation: "India / Cloud servers",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: true,
+    rightToOptOut: true,
+    thirdPartyServices: ["Google Analytics", "Stripe (Payments)", "Mailchimp (Email Marketing)"],
+    internationalTransfers: true,
+    hipaaCompliant: false,
+    pciCompliant: true,
+    privacyContactMethod: "Email and Web Form",
+    notifyOnChanges: true,
+  },
+  saas: {
+    businessType: "saas",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address", "Billing/Payment Information", "Usage Analytics", "Device Information"],
+    collectsFromChildren: false,
+    childrenAgeLimit: "16",
+    automaticDataCollection: true,
+    usesCookies: true,
+    cookieTypes: ["Essential/Necessary Cookies", "Performance/Analytics Cookies", "Functionality Cookies"],
+    usesAnalytics: true,
+    analyticsProvider: "Mixpanel",
+    usesAdvertising: false,
+    usesForMarketing: true,
+    usesForPersonalization: true,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: false,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "Duration of account plus 1 year",
+    dataStorageLocation: "AWS (Multiple Regions)",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: true,
+    rightToOptOut: true,
+    thirdPartyServices: ["AWS (Cloud Hosting)", "Stripe (Payments)", "Intercom (Customer Support)", "Mixpanel (Analytics)"],
+    internationalTransfers: true,
+    hipaaCompliant: false,
+    pciCompliant: true,
+    privacyContactMethod: "Email",
+    notifyOnChanges: true,
+  },
+  marketplace: {
+    businessType: "marketplace",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address", "Phone Number", "Billing/Payment Information", "Government ID", "Location Data"],
+    collectsFromChildren: false,
+    childrenAgeLimit: "18",
+    automaticDataCollection: true,
+    usesCookies: true,
+    cookieTypes: ["Essential/Necessary Cookies", "Performance/Analytics Cookies", "Targeting/Advertising Cookies", "Social Media Cookies"],
+    usesAnalytics: true,
+    analyticsProvider: "Google Analytics",
+    usesAdvertising: true,
+    usesForMarketing: true,
+    usesForPersonalization: true,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: true,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "5 years for transaction records",
+    dataStorageLocation: "Cloud servers with regional presence",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: true,
+    rightToOptOut: true,
+    thirdPartyServices: ["Google Analytics", "Stripe (Payments)", "PayPal", "Cloudflare (CDN/Security)"],
+    internationalTransfers: true,
+    hipaaCompliant: false,
+    pciCompliant: true,
+    privacyContactMethod: "Email and In-App",
+    notifyOnChanges: true,
+  },
+  social: {
+    businessType: "social",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address", "Phone Number", "Social Media Profiles", "Location Data", "Browsing History", "Device Information", "User Preferences"],
+    collectsFromChildren: false,
+    childrenAgeLimit: "13",
+    automaticDataCollection: true,
+    usesCookies: true,
+    cookieTypes: ["Essential/Necessary Cookies", "Performance/Analytics Cookies", "Functionality Cookies", "Targeting/Advertising Cookies", "Social Media Cookies"],
+    usesAnalytics: true,
+    analyticsProvider: "Mixpanel",
+    usesAdvertising: true,
+    usesForMarketing: true,
+    usesForPersonalization: true,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: true,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "Duration of account plus 90 days",
+    dataStorageLocation: "Global CDN and Cloud servers",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: true,
+    rightToOptOut: true,
+    thirdPartyServices: ["Google Analytics", "Facebook Pixel", "AWS (Cloud Hosting)", "Cloudflare (CDN/Security)"],
+    internationalTransfers: true,
+    hipaaCompliant: false,
+    pciCompliant: false,
+    privacyContactMethod: "In-App and Email",
+    notifyOnChanges: true,
+  },
+  content: {
+    businessType: "content",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address", "Billing/Payment Information", "Browsing History", "Device Information", "User Preferences"],
+    collectsFromChildren: false,
+    childrenAgeLimit: "13",
+    automaticDataCollection: true,
+    usesCookies: true,
+    cookieTypes: ["Essential/Necessary Cookies", "Performance/Analytics Cookies", "Targeting/Advertising Cookies"],
+    usesAnalytics: true,
+    analyticsProvider: "Google Analytics",
+    usesAdvertising: true,
+    usesForMarketing: true,
+    usesForPersonalization: true,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: false,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "Duration of subscription plus 1 year",
+    dataStorageLocation: "Cloud servers",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: true,
+    rightToOptOut: true,
+    thirdPartyServices: ["Google Analytics", "Google Ads", "Stripe (Payments)", "Mailchimp (Email Marketing)"],
+    internationalTransfers: false,
+    hipaaCompliant: false,
+    pciCompliant: true,
+    privacyContactMethod: "Email",
+    notifyOnChanges: true,
+  },
+  consulting: {
+    businessType: "consulting",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address", "Phone Number", "Billing/Payment Information"],
+    collectsFromChildren: false,
+    childrenAgeLimit: "18",
+    automaticDataCollection: false,
+    usesCookies: true,
+    cookieTypes: ["Essential/Necessary Cookies", "Performance/Analytics Cookies"],
+    usesAnalytics: true,
+    analyticsProvider: "Google Analytics",
+    usesAdvertising: false,
+    usesForMarketing: true,
+    usesForPersonalization: false,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: false,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "7 years for business records",
+    dataStorageLocation: "Secure local and cloud storage",
+    gdprCompliant: true,
+    ccpaCompliant: false,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: true,
+    rightToOptOut: true,
+    thirdPartyServices: ["Google Analytics", "Stripe (Payments)", "HubSpot (CRM)"],
+    internationalTransfers: false,
+    hipaaCompliant: false,
+    pciCompliant: true,
+    privacyContactMethod: "Email",
+    notifyOnChanges: true,
+  },
+  "mobile-app": {
+    businessType: "mobile-app",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address", "Phone Number", "Device Information", "Location Data", "Usage Analytics", "User Preferences"],
+    collectsFromChildren: false,
+    childrenAgeLimit: "13",
+    automaticDataCollection: true,
+    usesCookies: false,
+    cookieTypes: [],
+    usesAnalytics: true,
+    analyticsProvider: "Firebase Analytics",
+    usesAdvertising: true,
+    usesForMarketing: true,
+    usesForPersonalization: true,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: true,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "Duration of app installation plus 90 days",
+    dataStorageLocation: "Firebase/Google Cloud",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: true,
+    rightToOptOut: true,
+    thirdPartyServices: ["Google Analytics", "Google Ads", "Facebook Pixel", "AWS (Cloud Hosting)"],
+    internationalTransfers: true,
+    hipaaCompliant: false,
+    pciCompliant: true,
+    privacyContactMethod: "In-App and Email",
+    notifyOnChanges: true,
+  },
+  educational: {
+    businessType: "educational",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address", "Billing/Payment Information", "Usage Analytics", "User Preferences"],
+    collectsFromChildren: true,
+    childrenAgeLimit: "13",
+    automaticDataCollection: true,
+    usesCookies: true,
+    cookieTypes: ["Essential/Necessary Cookies", "Performance/Analytics Cookies", "Functionality Cookies"],
+    usesAnalytics: true,
+    analyticsProvider: "Google Analytics",
+    usesAdvertising: false,
+    usesForMarketing: true,
+    usesForPersonalization: true,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: false,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "Duration of enrollment plus 5 years",
+    dataStorageLocation: "Educational cloud providers",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: true,
+    rightToOptOut: true,
+    thirdPartyServices: ["Google Analytics", "Stripe (Payments)", "AWS (Cloud Hosting)"],
+    internationalTransfers: false,
+    hipaaCompliant: false,
+    pciCompliant: true,
+    privacyContactMethod: "Email",
+    notifyOnChanges: true,
+  },
+  healthcare: {
+    businessType: "healthcare",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address", "Phone Number", "Billing/Payment Information", "Health Information", "Government ID"],
+    collectsFromChildren: false,
+    childrenAgeLimit: "18",
+    automaticDataCollection: false,
+    usesCookies: true,
+    cookieTypes: ["Essential/Necessary Cookies"],
+    usesAnalytics: true,
+    analyticsProvider: "HIPAA-compliant analytics",
+    usesAdvertising: false,
+    usesForMarketing: false,
+    usesForPersonalization: true,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: false,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "As required by healthcare regulations (typically 7+ years)",
+    dataStorageLocation: "HIPAA-compliant cloud infrastructure",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: true,
+    rightToOptOut: true,
+    thirdPartyServices: ["AWS (Cloud Hosting)", "Stripe (Payments)"],
+    internationalTransfers: false,
+    hipaaCompliant: true,
+    pciCompliant: true,
+    privacyContactMethod: "Secure Email and Phone",
+    notifyOnChanges: true,
+  },
+  fintech: {
+    businessType: "fintech",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address", "Phone Number", "Billing/Payment Information", "Government ID", "Device Information", "Location Data"],
+    collectsFromChildren: false,
+    childrenAgeLimit: "18",
+    automaticDataCollection: true,
+    usesCookies: true,
+    cookieTypes: ["Essential/Necessary Cookies", "Performance/Analytics Cookies"],
+    usesAnalytics: true,
+    analyticsProvider: "Custom/Internal Analytics",
+    usesAdvertising: false,
+    usesForMarketing: true,
+    usesForPersonalization: true,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: true,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "As required by financial regulations (typically 7+ years)",
+    dataStorageLocation: "PCI-DSS compliant data centers",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: true,
+    rightToOptOut: true,
+    thirdPartyServices: ["AWS (Cloud Hosting)", "Stripe (Payments)"],
+    internationalTransfers: true,
+    hipaaCompliant: false,
+    pciCompliant: true,
+    privacyContactMethod: "Secure Email",
+    notifyOnChanges: true,
+  },
+  gaming: {
+    businessType: "gaming",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address", "Billing/Payment Information", "Device Information", "Usage Analytics", "User Preferences", "Social Media Profiles"],
+    collectsFromChildren: true,
+    childrenAgeLimit: "13",
+    automaticDataCollection: true,
+    usesCookies: true,
+    cookieTypes: ["Essential/Necessary Cookies", "Performance/Analytics Cookies", "Functionality Cookies", "Targeting/Advertising Cookies"],
+    usesAnalytics: true,
+    analyticsProvider: "Unity Analytics / Custom",
+    usesAdvertising: true,
+    usesForMarketing: true,
+    usesForPersonalization: true,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: true,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "Duration of account plus 1 year",
+    dataStorageLocation: "Gaming cloud infrastructure",
+    gdprCompliant: true,
+    ccpaCompliant: true,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: true,
+    rightToOptOut: true,
+    thirdPartyServices: ["Google Analytics", "Google Ads", "Facebook Pixel", "AWS (Cloud Hosting)", "Stripe (Payments)"],
+    internationalTransfers: true,
+    hipaaCompliant: false,
+    pciCompliant: true,
+    privacyContactMethod: "In-Game and Email",
+    notifyOnChanges: true,
+  },
+  general: {
+    businessType: "general",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address"],
+    collectsFromChildren: false,
+    childrenAgeLimit: "18",
+    automaticDataCollection: true,
+    usesCookies: true,
+    cookieTypes: ["Essential/Necessary Cookies", "Performance/Analytics Cookies"],
+    usesAnalytics: true,
+    analyticsProvider: "Google Analytics",
+    usesAdvertising: false,
+    usesForMarketing: true,
+    usesForPersonalization: false,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: false,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "2 years",
+    dataStorageLocation: "Cloud servers",
+    gdprCompliant: false,
+    ccpaCompliant: false,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: false,
+    rightToOptOut: true,
+    thirdPartyServices: ["Google Analytics"],
+    internationalTransfers: false,
+    hipaaCompliant: false,
+    pciCompliant: false,
+    privacyContactMethod: "Email",
+    notifyOnChanges: true,
+  },
+};
+
 interface ContractDetails {
   contractType: string;
   party1Name: string;
@@ -554,6 +1116,48 @@ const ContractDrafter = () => {
   });
   const [generatedTnC, setGeneratedTnC] = useState<string>("");
 
+  // Privacy Policy State
+  const [privacyDetails, setPrivacyDetails] = useState<PrivacyPolicyDetails>({
+    businessName: "",
+    businessType: "",
+    websiteUrl: "",
+    contactEmail: "",
+    dpoEmail: "",
+    effectiveDate: "",
+    jurisdiction: "India",
+    collectsPersonalData: true,
+    dataTypes: ["Name and Contact Information", "Email Address"],
+    collectsFromChildren: false,
+    childrenAgeLimit: "13",
+    automaticDataCollection: true,
+    usesCookies: true,
+    cookieTypes: ["Essential/Necessary Cookies"],
+    usesAnalytics: true,
+    analyticsProvider: "Google Analytics",
+    usesAdvertising: false,
+    usesForMarketing: true,
+    usesForPersonalization: false,
+    usesForAnalytics: true,
+    usesForThirdPartySharing: false,
+    sellsData: false,
+    dataEncryption: true,
+    dataRetentionPeriod: "2 years",
+    dataStorageLocation: "Cloud servers",
+    gdprCompliant: false,
+    ccpaCompliant: false,
+    rightToAccess: true,
+    rightToDelete: true,
+    rightToPortability: false,
+    rightToOptOut: true,
+    thirdPartyServices: [],
+    internationalTransfers: false,
+    hipaaCompliant: false,
+    pciCompliant: false,
+    privacyContactMethod: "Email",
+    notifyOnChanges: true,
+  });
+  const [generatedPrivacyPolicy, setGeneratedPrivacyPolicy] = useState<string>("");
+
   const handleChange = (field: keyof ContractDetails, value: string) => {
     setDetails((prev) => ({ ...prev, [field]: value }));
   };
@@ -594,6 +1198,26 @@ const ContractDrafter = () => {
     }));
   };
 
+  const addPresetClause = (preset: { title: string; content: string }) => {
+    // Check if clause with same title already exists
+    if (tncDetails.customClauses.some(c => c.title === preset.title)) {
+      toast({
+        title: "Clause Already Added",
+        description: `"${preset.title}" is already in your custom clauses.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    setTncDetails((prev) => ({
+      ...prev,
+      customClauses: [...prev.customClauses, { title: preset.title, content: preset.content }],
+    }));
+    toast({
+      title: "Clause Added",
+      description: `"${preset.title}" has been added to your custom clauses.`,
+    });
+  };
+
   const applyTnCPreset = (businessType: string) => {
     const preset = tncPresets[businessType];
     if (preset) {
@@ -614,6 +1238,107 @@ const ContractDrafter = () => {
         description: `${businessLabel} preset has been loaded with recommended settings.`,
       });
     }
+  };
+
+  // Privacy Policy handlers
+  const handlePrivacyChange = <K extends keyof PrivacyPolicyDetails>(field: K, value: PrivacyPolicyDetails[K]) => {
+    setPrivacyDetails((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const togglePrivacyDataType = (dataType: string) => {
+    setPrivacyDetails((prev) => ({
+      ...prev,
+      dataTypes: prev.dataTypes.includes(dataType)
+        ? prev.dataTypes.filter((d) => d !== dataType)
+        : [...prev.dataTypes, dataType],
+    }));
+  };
+
+  const toggleCookieType = (cookieType: string) => {
+    setPrivacyDetails((prev) => ({
+      ...prev,
+      cookieTypes: prev.cookieTypes.includes(cookieType)
+        ? prev.cookieTypes.filter((c) => c !== cookieType)
+        : [...prev.cookieTypes, cookieType],
+    }));
+  };
+
+  const toggleThirdPartyService = (service: string) => {
+    setPrivacyDetails((prev) => ({
+      ...prev,
+      thirdPartyServices: prev.thirdPartyServices.includes(service)
+        ? prev.thirdPartyServices.filter((s) => s !== service)
+        : [...prev.thirdPartyServices, service],
+    }));
+  };
+
+  const applyPrivacyPreset = (businessType: string) => {
+    const preset = privacyPolicyPresets[businessType];
+    if (preset) {
+      setPrivacyDetails((prev) => ({
+        ...prev,
+        ...preset,
+        // Preserve user-entered basic info
+        businessName: prev.businessName,
+        websiteUrl: prev.websiteUrl,
+        contactEmail: prev.contactEmail,
+        dpoEmail: prev.dpoEmail,
+        effectiveDate: prev.effectiveDate,
+        jurisdiction: prev.jurisdiction,
+      }));
+      const businessLabel = businessTypes.find((b) => b.value === businessType)?.label || businessType;
+      toast({
+        title: "Template Applied",
+        description: `${businessLabel} privacy policy preset has been loaded.`,
+      });
+    }
+  };
+
+  const resetPrivacyPolicy = () => {
+    setPrivacyDetails({
+      businessName: "",
+      businessType: "",
+      websiteUrl: "",
+      contactEmail: "",
+      dpoEmail: "",
+      effectiveDate: "",
+      jurisdiction: "India",
+      collectsPersonalData: true,
+      dataTypes: ["Name and Contact Information", "Email Address"],
+      collectsFromChildren: false,
+      childrenAgeLimit: "13",
+      automaticDataCollection: true,
+      usesCookies: true,
+      cookieTypes: ["Essential/Necessary Cookies"],
+      usesAnalytics: true,
+      analyticsProvider: "Google Analytics",
+      usesAdvertising: false,
+      usesForMarketing: true,
+      usesForPersonalization: false,
+      usesForAnalytics: true,
+      usesForThirdPartySharing: false,
+      sellsData: false,
+      dataEncryption: true,
+      dataRetentionPeriod: "2 years",
+      dataStorageLocation: "Cloud servers",
+      gdprCompliant: false,
+      ccpaCompliant: false,
+      rightToAccess: true,
+      rightToDelete: true,
+      rightToPortability: false,
+      rightToOptOut: true,
+      thirdPartyServices: [],
+      internationalTransfers: false,
+      hipaaCompliant: false,
+      pciCompliant: false,
+      privacyContactMethod: "Email",
+      notifyOnChanges: true,
+    });
+    setGeneratedPrivacyPolicy("");
+    toast({
+      title: "Privacy Policy Form Reset",
+      description: "All privacy policy fields have been cleared.",
+    });
   };
 
   const getContractLabel = (type: string) => {
@@ -1434,6 +2159,312 @@ const ContractDrafter = () => {
     });
   };
 
+  const generatePrivacyPolicy = () => {
+    if (!privacyDetails.businessName || !privacyDetails.businessType) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in at least the business name and type.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const businessLabel = businessTypes.find((b) => b.value === privacyDetails.businessType)?.label || privacyDetails.businessType;
+    let policy = "";
+
+    // Header
+    policy += `PRIVACY POLICY\n`;
+    policy += `${"═".repeat(60)}\n\n`;
+    policy += `Last Updated: ${privacyDetails.effectiveDate || new Date().toLocaleDateString()}\n\n`;
+    policy += `${privacyDetails.businessName} ("we," "us," or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our ${businessLabel.toLowerCase()} services${privacyDetails.websiteUrl ? ` at ${privacyDetails.websiteUrl}` : ""}.\n\n`;
+    policy += `Please read this Privacy Policy carefully. By using our services, you consent to the data practices described in this policy.\n\n`;
+    policy += `${"─".repeat(60)}\n\n`;
+
+    // Section 1: Information We Collect
+    policy += `1. INFORMATION WE COLLECT\n\n`;
+    
+    if (privacyDetails.collectsPersonalData && privacyDetails.dataTypes.length > 0) {
+      policy += `1.1 Personal Information\n`;
+      policy += `We may collect the following types of personal information:\n`;
+      privacyDetails.dataTypes.forEach((type) => {
+        policy += `  • ${type}\n`;
+      });
+      policy += `\n`;
+    }
+    
+    if (privacyDetails.automaticDataCollection) {
+      policy += `1.2 Automatically Collected Information\n`;
+      policy += `When you access our services, we automatically collect:\n`;
+      policy += `  • IP address and browser type\n`;
+      policy += `  • Device identifiers and operating system\n`;
+      policy += `  • Pages visited and time spent\n`;
+      policy += `  • Referring URL and search terms\n`;
+      policy += `  • Click patterns and navigation data\n\n`;
+    }
+
+    if (privacyDetails.collectsFromChildren) {
+      policy += `1.3 Children's Information\n`;
+      policy += `Our services may be used by individuals under ${privacyDetails.childrenAgeLimit} years of age with parental consent. We comply with COPPA and other applicable children's privacy laws. We do not knowingly collect personal information from children without verifiable parental consent.\n\n`;
+    } else {
+      policy += `1.3 Children's Privacy\n`;
+      policy += `Our services are not intended for individuals under ${privacyDetails.childrenAgeLimit} years of age. We do not knowingly collect personal information from children. If you believe a child has provided us with personal information, please contact us immediately.\n\n`;
+    }
+
+    // Section 2: Cookies and Tracking
+    if (privacyDetails.usesCookies) {
+      policy += `2. COOKIES AND TRACKING TECHNOLOGIES\n\n`;
+      policy += `2.1 Types of Cookies We Use\n`;
+      policy += `We use the following types of cookies:\n`;
+      privacyDetails.cookieTypes.forEach((type) => {
+        policy += `  • ${type}\n`;
+      });
+      policy += `\n`;
+      
+      policy += `2.2 Cookie Control\n`;
+      policy += `You can control cookies through your browser settings. Please note that disabling certain cookies may affect the functionality of our services.\n\n`;
+    }
+
+    if (privacyDetails.usesAnalytics) {
+      policy += `2.3 Analytics\n`;
+      policy += `We use ${privacyDetails.analyticsProvider || "analytics services"} to understand how users interact with our services. This helps us improve user experience and service performance.\n\n`;
+    }
+
+    if (privacyDetails.usesAdvertising) {
+      policy += `2.4 Advertising\n`;
+      policy += `We may use third-party advertising services to display relevant advertisements. These services may use cookies and similar technologies to collect information about your browsing activities.\n\n`;
+    }
+
+    // Section 3: How We Use Information
+    policy += `3. HOW WE USE YOUR INFORMATION\n\n`;
+    policy += `We use the information we collect for the following purposes:\n`;
+    policy += `  • To provide and maintain our services\n`;
+    policy += `  • To process transactions and send related information\n`;
+    policy += `  • To respond to your inquiries and provide customer support\n`;
+    if (privacyDetails.usesForPersonalization) {
+      policy += `  • To personalize your experience and deliver tailored content\n`;
+    }
+    if (privacyDetails.usesForMarketing) {
+      policy += `  • To send promotional communications (with your consent)\n`;
+    }
+    if (privacyDetails.usesForAnalytics) {
+      policy += `  • To analyze usage patterns and improve our services\n`;
+    }
+    policy += `  • To detect, prevent, and address technical issues and fraud\n`;
+    policy += `  • To comply with legal obligations\n\n`;
+
+    // Section 4: Data Sharing
+    policy += `4. DISCLOSURE OF YOUR INFORMATION\n\n`;
+    
+    if (privacyDetails.usesForThirdPartySharing) {
+      policy += `4.1 Third-Party Service Providers\n`;
+      policy += `We may share your information with third-party service providers who perform services on our behalf:\n`;
+      if (privacyDetails.thirdPartyServices.length > 0) {
+        privacyDetails.thirdPartyServices.forEach((service) => {
+          policy += `  • ${service}\n`;
+        });
+      }
+      policy += `\nThese providers are contractually obligated to protect your information and may only use it for the specific purposes we authorize.\n\n`;
+    }
+
+    if (privacyDetails.sellsData) {
+      policy += `4.2 Sale of Data\n`;
+      policy += `We may sell or share your personal information with third parties for commercial purposes. You have the right to opt-out of such sales as described in the "Your Rights" section below.\n\n`;
+    } else {
+      policy += `4.2 No Sale of Data\n`;
+      policy += `We do not sell your personal information to third parties.\n\n`;
+    }
+
+    policy += `4.3 Legal Requirements\n`;
+    policy += `We may disclose your information:\n`;
+    policy += `  • To comply with legal obligations or court orders\n`;
+    policy += `  • To protect our rights, privacy, safety, or property\n`;
+    policy += `  • In connection with a merger, acquisition, or sale of assets\n`;
+    policy += `  • With your consent or at your direction\n\n`;
+
+    // Section 5: Data Security
+    policy += `5. DATA SECURITY\n\n`;
+    if (privacyDetails.dataEncryption) {
+      policy += `We implement appropriate technical and organizational security measures to protect your personal information, including:\n`;
+      policy += `  • Encryption of data in transit (SSL/TLS) and at rest\n`;
+      policy += `  • Secure access controls and authentication\n`;
+      policy += `  • Regular security assessments and audits\n`;
+      policy += `  • Employee training on data protection\n\n`;
+    } else {
+      policy += `We implement reasonable security measures to protect your personal information. However, no method of transmission over the internet or electronic storage is 100% secure.\n\n`;
+    }
+
+    // Section 6: Data Retention
+    policy += `6. DATA RETENTION\n\n`;
+    policy += `We retain your personal information for: ${privacyDetails.dataRetentionPeriod || "as long as necessary to fulfill the purposes outlined in this Privacy Policy"}.\n\n`;
+    policy += `After the retention period, we will securely delete or anonymize your information unless longer retention is required by law.\n\n`;
+
+    // Section 7: International Transfers
+    if (privacyDetails.internationalTransfers) {
+      policy += `7. INTERNATIONAL DATA TRANSFERS\n\n`;
+      policy += `Your information may be transferred to and processed in countries other than your country of residence. These countries may have different data protection laws.\n\n`;
+      policy += `When we transfer your data internationally, we ensure appropriate safeguards are in place, including:\n`;
+      policy += `  • Standard contractual clauses approved by regulatory authorities\n`;
+      policy += `  • Binding corporate rules for intra-group transfers\n`;
+      policy += `  • Certification under approved frameworks\n\n`;
+    }
+
+    // Section 8: Your Rights
+    policy += `${privacyDetails.internationalTransfers ? "8" : "7"}. YOUR RIGHTS\n\n`;
+    
+    policy += `Depending on your location, you may have the following rights:\n`;
+    if (privacyDetails.rightToAccess) {
+      policy += `  • Right to Access: Request a copy of your personal information\n`;
+    }
+    if (privacyDetails.rightToDelete) {
+      policy += `  • Right to Deletion: Request deletion of your personal information\n`;
+    }
+    if (privacyDetails.rightToPortability) {
+      policy += `  • Right to Portability: Receive your data in a structured, commonly used format\n`;
+    }
+    if (privacyDetails.rightToOptOut) {
+      policy += `  • Right to Opt-Out: Opt-out of marketing communications and data sales\n`;
+    }
+    policy += `  • Right to Correction: Request correction of inaccurate information\n`;
+    policy += `  • Right to Object: Object to certain processing of your information\n\n`;
+
+    policy += `To exercise these rights, contact us using the information provided below.\n\n`;
+
+    // GDPR Section
+    if (privacyDetails.gdprCompliant) {
+      policy += `GDPR COMPLIANCE (FOR EEA USERS)\n\n`;
+      policy += `If you are in the European Economic Area (EEA), you have additional rights under the General Data Protection Regulation (GDPR):\n\n`;
+      policy += `Legal Basis for Processing:\n`;
+      policy += `  • Contractual necessity: To fulfill our contract with you\n`;
+      policy += `  • Legitimate interests: To operate and improve our services\n`;
+      policy += `  • Consent: For marketing and optional data processing\n`;
+      policy += `  • Legal obligation: To comply with applicable laws\n\n`;
+      policy += `Data Protection Officer:\n`;
+      policy += `You may contact our Data Protection Officer at: ${privacyDetails.dpoEmail || privacyDetails.contactEmail || "[DPO Email]"}\n\n`;
+      policy += `You have the right to lodge a complaint with your local supervisory authority if you believe your rights have been violated.\n\n`;
+    }
+
+    // CCPA Section
+    if (privacyDetails.ccpaCompliant) {
+      policy += `CCPA COMPLIANCE (FOR CALIFORNIA RESIDENTS)\n\n`;
+      policy += `If you are a California resident, the California Consumer Privacy Act (CCPA) provides you with specific rights:\n\n`;
+      policy += `Your CCPA Rights:\n`;
+      policy += `  • Right to Know: What personal information we collect, use, and disclose\n`;
+      policy += `  • Right to Delete: Request deletion of your personal information\n`;
+      policy += `  • Right to Opt-Out: Opt-out of the sale of personal information\n`;
+      policy += `  • Right to Non-Discrimination: We will not discriminate against you for exercising your rights\n\n`;
+      policy += `Categories of Information Collected in the Past 12 Months:\n`;
+      policy += `  • Identifiers (name, email, IP address)\n`;
+      policy += `  • Commercial information (transaction history)\n`;
+      policy += `  • Internet activity (browsing history, interactions)\n`;
+      policy += `  • Geolocation data\n\n`;
+      if (privacyDetails.sellsData) {
+        policy += `To opt-out of the sale of your personal information, please contact us or use our "Do Not Sell My Personal Information" link.\n\n`;
+      }
+    }
+
+    // Industry-Specific Compliance
+    if (privacyDetails.hipaaCompliant) {
+      policy += `HIPAA COMPLIANCE\n\n`;
+      policy += `We comply with the Health Insurance Portability and Accountability Act (HIPAA) for protected health information (PHI). We implement administrative, physical, and technical safeguards to protect PHI.\n\n`;
+      policy += `Your HIPAA Rights:\n`;
+      policy += `  • Access your health records\n`;
+      policy += `  • Request amendments to your records\n`;
+      policy += `  • Receive an accounting of disclosures\n`;
+      policy += `  • Request restrictions on certain uses and disclosures\n\n`;
+    }
+
+    if (privacyDetails.pciCompliant) {
+      policy += `PCI-DSS COMPLIANCE\n\n`;
+      policy += `We comply with the Payment Card Industry Data Security Standard (PCI-DSS) for handling payment card information. Credit card data is encrypted and processed through secure, certified payment processors.\n\n`;
+    }
+
+    // Section 9: Updates
+    policy += `${"─".repeat(60)}\n\n`;
+    policy += `CHANGES TO THIS PRIVACY POLICY\n\n`;
+    if (privacyDetails.notifyOnChanges) {
+      policy += `We may update this Privacy Policy from time to time. We will notify you of any material changes by:\n`;
+      policy += `  • Posting the updated policy on our website\n`;
+      policy += `  • Updating the "Last Updated" date\n`;
+      policy += `  • Sending an email notification (for material changes)\n\n`;
+    } else {
+      policy += `We may update this Privacy Policy from time to time. The updated version will be indicated by an updated "Last Updated" date.\n\n`;
+    }
+
+    // Contact Information
+    policy += `CONTACT US\n\n`;
+    policy += `If you have questions or concerns about this Privacy Policy or our data practices, please contact us:\n\n`;
+    policy += `${privacyDetails.businessName}\n`;
+    if (privacyDetails.contactEmail) policy += `Email: ${privacyDetails.contactEmail}\n`;
+    if (privacyDetails.dpoEmail && privacyDetails.gdprCompliant) policy += `Data Protection Officer: ${privacyDetails.dpoEmail}\n`;
+    if (privacyDetails.websiteUrl) policy += `Website: ${privacyDetails.websiteUrl}\n`;
+    policy += `Preferred Contact Method: ${privacyDetails.privacyContactMethod}\n\n`;
+
+    // Footer
+    policy += `${"═".repeat(60)}\n`;
+    policy += `© ${new Date().getFullYear()} ${privacyDetails.businessName}. All rights reserved.\n`;
+
+    setGeneratedPrivacyPolicy(policy);
+    toast({
+      title: "Privacy Policy Generated",
+      description: "Your Privacy Policy has been drafted successfully.",
+    });
+  };
+
+  const exportPrivacyPolicyToPDF = () => {
+    if (!generatedPrivacyPolicy) {
+      toast({
+        title: "No Privacy Policy",
+        description: "Please generate a Privacy Policy first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const doc = new jsPDF();
+    
+    // Header
+    doc.setFillColor(30, 58, 95);
+    doc.rect(0, 0, 210, 25, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Privacy Policy - ${privacyDetails.businessName}`, 105, 15, { align: "center" });
+    
+    // Body
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    
+    const lines = doc.splitTextToSize(generatedPrivacyPolicy, 180);
+    let y = 35;
+    const pageHeight = 280;
+    
+    for (let i = 0; i < lines.length; i++) {
+      if (y > pageHeight) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(lines[i], 15, y);
+      y += 4.5;
+    }
+    
+    // Footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.text(`Generated by ABC - AI Legal & Tax Co-pilot | Page ${i} of ${pageCount}`, 105, 290, { align: "center" });
+    }
+    
+    doc.save(`Privacy_Policy_${privacyDetails.businessName.replace(/\s+/g, "_")}_${new Date().toISOString().split("T")[0]}.pdf`);
+    
+    toast({
+      title: "PDF Exported",
+      description: "Your Privacy Policy has been saved as PDF.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
@@ -1446,13 +2477,13 @@ const ContractDrafter = () => {
               <div>
                 <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
                   <FileText className="h-6 w-6" />
-                  Contract & T&C Drafter
+                  Legal Document Drafter
                 </h1>
-                <p className="text-sm text-muted-foreground">Draft professional contracts and terms instantly</p>
+                <p className="text-sm text-muted-foreground">Draft contracts, T&Cs, and privacy policies</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {activeTab === "contracts" ? (
+              {activeTab === "contracts" && (
                 <>
                   <Button variant="outline" onClick={handleReset}>
                     <RotateCcw className="h-4 w-4 mr-2" />
@@ -1463,13 +2494,26 @@ const ContractDrafter = () => {
                     Export PDF
                   </Button>
                 </>
-              ) : (
+              )}
+              {activeTab === "tnc" && (
                 <>
                   <Button variant="outline" onClick={handleTnCReset}>
                     <RotateCcw className="h-4 w-4 mr-2" />
                     Reset
                   </Button>
                   <Button onClick={exportTnCToPDF} disabled={!generatedTnC}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Export PDF
+                  </Button>
+                </>
+              )}
+              {activeTab === "privacy" && (
+                <>
+                  <Button variant="outline" onClick={resetPrivacyPolicy}>
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset
+                  </Button>
+                  <Button onClick={exportPrivacyPolicyToPDF} disabled={!generatedPrivacyPolicy}>
                     <Download className="h-4 w-4 mr-2" />
                     Export PDF
                   </Button>
@@ -1482,7 +2526,7 @@ const ContractDrafter = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-xl grid-cols-3">
             <TabsTrigger value="contracts" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Contracts
@@ -1490,6 +2534,10 @@ const ContractDrafter = () => {
             <TabsTrigger value="tnc" className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
               Terms & Conditions
+            </TabsTrigger>
+            <TabsTrigger value="privacy" className="flex items-center gap-2">
+              <Lock className="h-4 w-4" />
+              Privacy Policy
             </TabsTrigger>
           </TabsList>
 
@@ -2113,35 +3161,70 @@ const ContractDrafter = () => {
                         Custom Clauses
                       </AccordionTrigger>
                       <AccordionContent className="space-y-4 pt-2">
-                        {tncDetails.customClauses.map((clause, index) => (
-                          <div key={index} className="border rounded-lg p-3 space-y-2">
-                            <div className="flex items-center justify-between">
-                              <Label>Clause {index + 1}</Label>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeCustomClause(index)}
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
-                            </div>
-                            <Input
-                              placeholder="Clause Title"
-                              value={clause.title}
-                              onChange={(e) => updateCustomClause(index, "title", e.target.value)}
-                            />
-                            <Textarea
-                              placeholder="Clause Content"
-                              value={clause.content}
-                              onChange={(e) => updateCustomClause(index, "content", e.target.value)}
-                              rows={3}
-                            />
+                        {/* Preset Clause Suggestions */}
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-primary" />
+                            <Label className="text-sm font-medium">Quick Add Preset Clauses</Label>
                           </div>
-                        ))}
-                        <Button variant="outline" className="w-full" onClick={addCustomClause}>
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add Custom Clause
-                        </Button>
+                          <div className="grid gap-2">
+                            {["common", "useful", "unique"].map((category) => (
+                              <div key={category} className="space-y-2">
+                                <p className="text-xs font-medium text-muted-foreground capitalize">{category === "common" ? "📋 Common" : category === "useful" ? "⭐ Most Useful" : "✨ Unique"}</p>
+                                <div className="flex flex-wrap gap-1">
+                                  {customClausePresets
+                                    .filter((p) => p.category === category)
+                                    .map((preset) => (
+                                      <Button
+                                        key={preset.title}
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-xs h-7"
+                                        onClick={() => addPresetClause(preset)}
+                                        disabled={tncDetails.customClauses.some(c => c.title === preset.title)}
+                                      >
+                                        <Plus className="h-3 w-3 mr-1" />
+                                        {preset.title}
+                                      </Button>
+                                    ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="border-t pt-4">
+                          <Label className="text-sm font-medium mb-2 block">Your Custom Clauses ({tncDetails.customClauses.length})</Label>
+                          {tncDetails.customClauses.map((clause, index) => (
+                            <div key={index} className="border rounded-lg p-3 space-y-2 mb-3">
+                              <div className="flex items-center justify-between">
+                                <Label>Clause {index + 1}</Label>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeCustomClause(index)}
+                                >
+                                  <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                              </div>
+                              <Input
+                                placeholder="Clause Title"
+                                value={clause.title}
+                                onChange={(e) => updateCustomClause(index, "title", e.target.value)}
+                              />
+                              <Textarea
+                                placeholder="Clause Content"
+                                value={clause.content}
+                                onChange={(e) => updateCustomClause(index, "content", e.target.value)}
+                                rows={3}
+                              />
+                            </div>
+                          ))}
+                          <Button variant="outline" className="w-full" onClick={addCustomClause}>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Blank Custom Clause
+                          </Button>
+                        </div>
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
@@ -2172,10 +3255,540 @@ const ContractDrafter = () => {
               </Card>
             </div>
           </TabsContent>
+
+          {/* Privacy Policy Tab */}
+          <TabsContent value="privacy">
+            <div className="grid lg:grid-cols-2 gap-6">
+              <Card className="max-h-[80vh] overflow-y-auto">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lock className="h-5 w-5" />
+                    Privacy Policy Configuration
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Accordion type="multiple" defaultValue={["basic", "data", "cookies"]} className="w-full">
+                    {/* Basic Information */}
+                    <AccordionItem value="basic">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Basic Information
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div>
+                          <Label>Business Name *</Label>
+                          <Input
+                            placeholder="Your Company Name"
+                            value={privacyDetails.businessName}
+                            onChange={(e) => handlePrivacyChange("businessName", e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Business Type *</Label>
+                          <Select value={privacyDetails.businessType} onValueChange={(v) => handlePrivacyChange("businessType", v)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select business type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {businessTypes.map((type) => (
+                                <SelectItem key={type.value} value={type.value}>
+                                  {type.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        {/* Template Preset Button */}
+                        {privacyDetails.businessType && (
+                          <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                            <div className="flex items-center justify-between gap-4">
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">Load Template Preset</p>
+                                <p className="text-xs text-muted-foreground">
+                                  Apply GDPR/CCPA-compliant settings for {businessTypes.find(b => b.value === privacyDetails.businessType)?.label}
+                                </p>
+                              </div>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => applyPrivacyPreset(privacyDetails.businessType)}
+                                className="whitespace-nowrap"
+                              >
+                                Apply Template
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <Label>Website URL</Label>
+                            <Input
+                              placeholder="https://example.com"
+                              value={privacyDetails.websiteUrl}
+                              onChange={(e) => handlePrivacyChange("websiteUrl", e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label>Contact Email</Label>
+                            <Input
+                              placeholder="privacy@example.com"
+                              value={privacyDetails.contactEmail}
+                              onChange={(e) => handlePrivacyChange("contactEmail", e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div>
+                            <Label>DPO Email (for GDPR)</Label>
+                            <Input
+                              placeholder="dpo@example.com"
+                              value={privacyDetails.dpoEmail}
+                              onChange={(e) => handlePrivacyChange("dpoEmail", e.target.value)}
+                            />
+                          </div>
+                          <div>
+                            <Label>Effective Date</Label>
+                            <Input
+                              type="date"
+                              value={privacyDetails.effectiveDate}
+                              onChange={(e) => handlePrivacyChange("effectiveDate", e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <Label>Jurisdiction</Label>
+                          <Input
+                            placeholder="India"
+                            value={privacyDetails.jurisdiction}
+                            onChange={(e) => handlePrivacyChange("jurisdiction", e.target.value)}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Data Collection */}
+                    <AccordionItem value="data">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Data Collection
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Collect Personal Data</Label>
+                            <p className="text-xs text-muted-foreground">Platform collects user data</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.collectsPersonalData}
+                            onCheckedChange={(v) => handlePrivacyChange("collectsPersonalData", v)}
+                          />
+                        </div>
+                        {privacyDetails.collectsPersonalData && (
+                          <div>
+                            <Label className="mb-2 block">Data Types Collected</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                              {dataTypesOptions.map((dataType) => (
+                                <div key={dataType} className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={`privacy-${dataType}`}
+                                    checked={privacyDetails.dataTypes.includes(dataType)}
+                                    onCheckedChange={() => togglePrivacyDataType(dataType)}
+                                  />
+                                  <label htmlFor={`privacy-${dataType}`} className="text-xs cursor-pointer">
+                                    {dataType}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Automatic Data Collection</Label>
+                            <p className="text-xs text-muted-foreground">Collect IP, device info, etc.</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.automaticDataCollection}
+                            onCheckedChange={(v) => handlePrivacyChange("automaticDataCollection", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Collect Data from Children</Label>
+                            <p className="text-xs text-muted-foreground">COPPA compliance required</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.collectsFromChildren}
+                            onCheckedChange={(v) => handlePrivacyChange("collectsFromChildren", v)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Minimum Age Requirement</Label>
+                          <Select value={privacyDetails.childrenAgeLimit} onValueChange={(v) => handlePrivacyChange("childrenAgeLimit", v)}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="13">13 years (COPPA)</SelectItem>
+                              <SelectItem value="16">16 years (GDPR)</SelectItem>
+                              <SelectItem value="18">18 years (Adult)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Cookies & Tracking */}
+                    <AccordionItem value="cookies">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Cookies & Tracking
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Use Cookies</Label>
+                            <p className="text-xs text-muted-foreground">Website uses cookies</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.usesCookies}
+                            onCheckedChange={(v) => handlePrivacyChange("usesCookies", v)}
+                          />
+                        </div>
+                        {privacyDetails.usesCookies && (
+                          <div>
+                            <Label className="mb-2 block">Cookie Types</Label>
+                            <div className="space-y-2">
+                              {cookieTypeOptions.map((cookieType) => (
+                                <div key={cookieType} className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={cookieType}
+                                    checked={privacyDetails.cookieTypes.includes(cookieType)}
+                                    onCheckedChange={() => toggleCookieType(cookieType)}
+                                  />
+                                  <label htmlFor={cookieType} className="text-xs cursor-pointer">
+                                    {cookieType}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Use Analytics</Label>
+                            <p className="text-xs text-muted-foreground">Track user behavior</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.usesAnalytics}
+                            onCheckedChange={(v) => handlePrivacyChange("usesAnalytics", v)}
+                          />
+                        </div>
+                        {privacyDetails.usesAnalytics && (
+                          <div>
+                            <Label>Analytics Provider</Label>
+                            <Input
+                              placeholder="e.g., Google Analytics"
+                              value={privacyDetails.analyticsProvider}
+                              onChange={(e) => handlePrivacyChange("analyticsProvider", e.target.value)}
+                            />
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Use Advertising</Label>
+                            <p className="text-xs text-muted-foreground">Display targeted ads</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.usesAdvertising}
+                            onCheckedChange={(v) => handlePrivacyChange("usesAdvertising", v)}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Data Usage */}
+                    <AccordionItem value="usage">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Data Usage
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Use for Marketing</Label>
+                            <p className="text-xs text-muted-foreground">Send promotional content</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.usesForMarketing}
+                            onCheckedChange={(v) => handlePrivacyChange("usesForMarketing", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Use for Personalization</Label>
+                            <p className="text-xs text-muted-foreground">Customize user experience</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.usesForPersonalization}
+                            onCheckedChange={(v) => handlePrivacyChange("usesForPersonalization", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Share with Third Parties</Label>
+                            <p className="text-xs text-muted-foreground">Share data with partners</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.usesForThirdPartySharing}
+                            onCheckedChange={(v) => handlePrivacyChange("usesForThirdPartySharing", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Sell Personal Data</Label>
+                            <p className="text-xs text-muted-foreground text-destructive">Important for CCPA</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.sellsData}
+                            onCheckedChange={(v) => handlePrivacyChange("sellsData", v)}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Third Party Services */}
+                    <AccordionItem value="thirdparty">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Third-Party Services
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div>
+                          <Label className="mb-2 block">Services Used</Label>
+                          <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                            {thirdPartyServiceOptions.map((service) => (
+                              <div key={service} className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={service}
+                                  checked={privacyDetails.thirdPartyServices.includes(service)}
+                                  onCheckedChange={() => toggleThirdPartyService(service)}
+                                />
+                                <label htmlFor={service} className="text-xs cursor-pointer">
+                                  {service}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>International Data Transfers</Label>
+                            <p className="text-xs text-muted-foreground">Transfer data across borders</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.internationalTransfers}
+                            onCheckedChange={(v) => handlePrivacyChange("internationalTransfers", v)}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Data Security */}
+                    <AccordionItem value="security">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Data Security & Retention
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Data Encryption</Label>
+                            <p className="text-xs text-muted-foreground">Encrypt data in transit/rest</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.dataEncryption}
+                            onCheckedChange={(v) => handlePrivacyChange("dataEncryption", v)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Data Retention Period</Label>
+                          <Input
+                            placeholder="e.g., 2 years after account deletion"
+                            value={privacyDetails.dataRetentionPeriod}
+                            onChange={(e) => handlePrivacyChange("dataRetentionPeriod", e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label>Data Storage Location</Label>
+                          <Input
+                            placeholder="e.g., AWS servers in Mumbai, India"
+                            value={privacyDetails.dataStorageLocation}
+                            onChange={(e) => handlePrivacyChange("dataStorageLocation", e.target.value)}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Compliance */}
+                    <AccordionItem value="compliance">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Regulatory Compliance
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>GDPR Compliant</Label>
+                            <p className="text-xs text-muted-foreground">EU data protection</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.gdprCompliant}
+                            onCheckedChange={(v) => handlePrivacyChange("gdprCompliant", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>CCPA Compliant</Label>
+                            <p className="text-xs text-muted-foreground">California privacy law</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.ccpaCompliant}
+                            onCheckedChange={(v) => handlePrivacyChange("ccpaCompliant", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>HIPAA Compliant</Label>
+                            <p className="text-xs text-muted-foreground">Healthcare data protection</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.hipaaCompliant}
+                            onCheckedChange={(v) => handlePrivacyChange("hipaaCompliant", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>PCI-DSS Compliant</Label>
+                            <p className="text-xs text-muted-foreground">Payment card security</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.pciCompliant}
+                            onCheckedChange={(v) => handlePrivacyChange("pciCompliant", v)}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* User Rights */}
+                    <AccordionItem value="rights">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        User Rights
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Right to Access</Label>
+                            <p className="text-xs text-muted-foreground">Users can request their data</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.rightToAccess}
+                            onCheckedChange={(v) => handlePrivacyChange("rightToAccess", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Right to Delete</Label>
+                            <p className="text-xs text-muted-foreground">Users can request deletion</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.rightToDelete}
+                            onCheckedChange={(v) => handlePrivacyChange("rightToDelete", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Right to Data Portability</Label>
+                            <p className="text-xs text-muted-foreground">Export data in standard format</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.rightToPortability}
+                            onCheckedChange={(v) => handlePrivacyChange("rightToPortability", v)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Right to Opt-Out</Label>
+                            <p className="text-xs text-muted-foreground">Opt-out of marketing/sales</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.rightToOptOut}
+                            onCheckedChange={(v) => handlePrivacyChange("rightToOptOut", v)}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Contact & Updates */}
+                    <AccordionItem value="contact">
+                      <AccordionTrigger className="text-sm font-semibold">
+                        Contact & Updates
+                      </AccordionTrigger>
+                      <AccordionContent className="space-y-4 pt-2">
+                        <div>
+                          <Label>Privacy Contact Method</Label>
+                          <Select value={privacyDetails.privacyContactMethod} onValueChange={(v) => handlePrivacyChange("privacyContactMethod", v)}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Email">Email</SelectItem>
+                              <SelectItem value="Email and Web Form">Email and Web Form</SelectItem>
+                              <SelectItem value="In-App and Email">In-App and Email</SelectItem>
+                              <SelectItem value="Phone and Email">Phone and Email</SelectItem>
+                              <SelectItem value="Secure Portal">Secure Portal</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <Label>Notify on Policy Changes</Label>
+                            <p className="text-xs text-muted-foreground">Email users about updates</p>
+                          </div>
+                          <Switch
+                            checked={privacyDetails.notifyOnChanges}
+                            onCheckedChange={(v) => handlePrivacyChange("notifyOnChanges", v)}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+
+                  <Button className="w-full" onClick={generatePrivacyPolicy}>
+                    <Lock className="h-4 w-4 mr-2" />
+                    Generate Privacy Policy
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Privacy Policy Preview</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {generatedPrivacyPolicy ? (
+                    <div className="bg-muted/50 rounded-lg p-4 font-mono text-xs whitespace-pre-wrap max-h-[600px] overflow-y-auto">
+                      {generatedPrivacyPolicy}
+                    </div>
+                  ) : (
+                    <div className="bg-muted/50 rounded-lg p-8 text-center text-muted-foreground">
+                      <Lock className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                      <p>Configure your privacy policy options and click "Generate Privacy Policy" to see the preview here.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
         </Tabs>
 
         <p className="text-xs text-muted-foreground text-center mt-6">
-          Disclaimer: This tool generates basic contract and T&C templates for reference purposes only. 
+          Disclaimer: This tool generates basic contract, T&C, and privacy policy templates for reference purposes only. 
           Please consult a legal professional before using these documents for official purposes.
         </p>
       </main>
