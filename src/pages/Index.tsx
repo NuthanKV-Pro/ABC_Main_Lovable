@@ -630,6 +630,36 @@ const Index = () => {
         case 'h':
           scrollToTop();
           break;
+        case 'd':
+          navigate('/dashboard');
+          break;
+        case 'e':
+          navigate('/emi-calculator');
+          break;
+        case 's':
+          navigate('/sip-calculator');
+          break;
+        case 'p':
+          navigate('/ppf-calculator');
+          break;
+        case 'r':
+          navigate('/retirement-calculator');
+          break;
+        case 'g':
+          navigate('/gratuity-calculator');
+          break;
+        case 'n':
+          navigate('/net-worth-calculator');
+          break;
+        case 'b':
+          navigate('/budget-planner');
+          break;
+        case 'l':
+          navigate('/loan-comparison');
+          break;
+        case 'c':
+          navigate('/credit-score-calculator');
+          break;
         case '?':
           // Toggle shortcuts help - handled by popover
           break;
@@ -638,7 +668,7 @@ const Index = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
@@ -712,9 +742,10 @@ const Index = () => {
                 <span className="hidden sm:inline">Shortcuts</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-56 p-3" side="top" align="end">
-              <div className="space-y-2">
+            <PopoverContent className="w-64 p-3" side="top" align="end">
+              <div className="space-y-2 max-h-80 overflow-y-auto">
                 <h4 className="font-medium text-sm mb-3">Keyboard Shortcuts</h4>
+                <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Navigation</div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Go to Top</span>
                   <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">H</kbd>
@@ -726,6 +757,48 @@ const Index = () => {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Amazing Tools</span>
                   <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">T</kbd>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Dashboard</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">D</kbd>
+                </div>
+                <div className="border-t my-2" />
+                <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Quick Tools</div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">EMI Calculator</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">E</kbd>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">SIP Calculator</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">S</kbd>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">PPF Calculator</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">P</kbd>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Retirement Calc</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">R</kbd>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Gratuity Calc</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">G</kbd>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Net Worth Calc</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">N</kbd>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Budget Planner</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">B</kbd>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Loan Comparison</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">L</kbd>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Credit Score Calc</span>
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">C</kbd>
                 </div>
               </div>
             </PopoverContent>
