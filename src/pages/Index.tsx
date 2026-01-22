@@ -7,6 +7,7 @@ import { useRef, useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
+import FuturisticBackground from "@/components/FuturisticBackground";
 
 const modules = [
   {
@@ -671,7 +672,8 @@ const Index = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-muted/30 to-background">
+      <FuturisticBackground />
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
