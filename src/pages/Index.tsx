@@ -8,6 +8,8 @@ import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import FuturisticBackground from "@/components/FuturisticBackground";
+import LandingSeoOgSettings from "@/components/LandingSeoOgSettings";
+import { applyLandingSeo, loadLandingSeo } from "@/utils/landingSeo";
 
 const modules = [
   {
@@ -671,6 +673,11 @@ const Index = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [navigate]);
 
+  useEffect(() => {
+    // Apply persisted SEO/OG settings for the landing page.
+    applyLandingSeo(loadLandingSeo());
+  }, []);
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-muted/30 to-background">
       <FuturisticBackground />
@@ -696,6 +703,7 @@ const Index = () => {
               >
                 <BookOpen className="h-4 w-4" />
               </Button>
+              <LandingSeoOgSettings />
             </div>
           </div>
         </div>
