@@ -123,12 +123,38 @@ export default function FuturisticBackground({ mode = "solar" }: FuturisticBackg
           </svg>
         </motion.div>
 
-        {/* Central star glow (brighter) */}
-        <div
-          className="absolute left-1/2 top-[38%] h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full blur-md opacity-[0.7]"
+        {/* Central star glow (brighter) with pulsing effect synced to planets */}
+        <motion.div
+          className="absolute left-1/2 top-[38%] h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full blur-md"
           style={{
             background:
-              "radial-gradient(circle, hsl(var(--primary-glow) / 0.7), hsl(var(--primary) / 0.3) 50%, transparent 70%)",
+              "radial-gradient(circle, hsl(var(--primary-glow) / 0.8), hsl(var(--primary) / 0.4) 50%, transparent 70%)",
+          }}
+          animate={animated && !reduceMotion ? {
+            opacity: [0.6, 0.85, 0.6],
+            scale: [1, 1.15, 1],
+          } : { opacity: 0.7 }}
+          transition={{
+            duration: 4.5, // Synced with inner planet's 45s rotation (1/10th)
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        {/* Secondary outer glow pulse for depth */}
+        <motion.div
+          className="absolute left-1/2 top-[38%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full blur-xl"
+          style={{
+            background:
+              "radial-gradient(circle, hsl(var(--primary) / 0.3), transparent 65%)",
+          }}
+          animate={animated && !reduceMotion ? {
+            opacity: [0.3, 0.5, 0.3],
+            scale: [1, 1.2, 1],
+          } : { opacity: 0.35 }}
+          transition={{
+            duration: 6.5, // Synced with outer planet's 65s rotation (1/10th)
+            repeat: Infinity,
+            ease: "easeInOut",
           }}
         />
 
