@@ -861,17 +861,17 @@ const Index = () => {
           >
             <Button 
               size="lg"
-              className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white shadow-[var(--shadow-gold)] px-8 py-6 text-lg"
+              className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-black shadow-[var(--shadow-gold)] px-8 py-6 text-lg"
               onClick={scrollToModules}
             >
-              Explore Modules ↓
+              Explore Modules <span className="font-bold">↓</span>
             </Button>
             <Button 
               size="lg"
-              className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white shadow-[var(--shadow-gold)] px-8 py-6 text-lg"
+              className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-black shadow-[var(--shadow-gold)] px-8 py-6 text-lg"
               onClick={scrollToAmazingTools}
             >
-              Explore Amazing Tools ↓
+              Explore Amazing Tools <span className="font-bold">↓</span>
             </Button>
             <Button 
               size="lg"
