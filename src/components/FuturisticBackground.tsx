@@ -1,4 +1,5 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useEffect, useState } from "react";
 import type { BackgroundMode } from "./BackgroundModeSwitch";
 
 interface FuturisticBackgroundProps {
@@ -6,7 +7,7 @@ interface FuturisticBackgroundProps {
 }
 
 /**
- * Minimal, futuristic ambient background.
+ * Minimal, futuristic ambient background with mouse parallax.
  * - No pointer events
  * - Respects prefers-reduced-motion
  * - Uses design tokens via CSS variables (HSL)
@@ -14,56 +15,95 @@ interface FuturisticBackgroundProps {
  */
 export default function FuturisticBackground({ mode = "solar" }: FuturisticBackgroundProps) {
   const reduceMotion = useReducedMotion();
+  
+  // Mouse parallax state
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  
+  // Smooth spring values for parallax
+  const springConfig = { damping: 25, stiffness: 100 };
+  const springX = useSpring(mouseX, springConfig);
+  const springY = useSpring(mouseY, springConfig);
+  
+  // Transform for different parallax layers
+  const parallaxX1 = useTransform(springX, [-0.5, 0.5], [-15, 15]);
+  const parallaxY1 = useTransform(springY, [-0.5, 0.5], [-10, 10]);
+  const parallaxX2 = useTransform(springX, [-0.5, 0.5], [-25, 25]);
+  const parallaxY2 = useTransform(springY, [-0.5, 0.5], [-18, 18]);
+  const parallaxRotate = useTransform(springX, [-0.5, 0.5], [-3, 3]);
+
+  useEffect(() => {
+    if (reduceMotion || mode === "off") return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Normalize mouse position to -0.5 to 0.5
+      const x = (e.clientX / window.innerWidth) - 0.5;
+      const y = (e.clientY / window.innerHeight) - 0.5;
+      mouseX.set(x);
+      mouseY.set(y);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [reduceMotion, mode, mouseX, mouseY]);
 
   // SVG noise (data URI) used as a subtle grain overlay.
-  // Monochrome + blend mode means it adapts to theme tokens underneath.
   const noiseSvg =
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E";
 
   const Orbits = ({ animated }: { animated: boolean }) => {
-    const stroke = "hsl(var(--primary) / 0.30)";
-    const strokeSoft = "hsl(var(--primary-glow) / 0.22)";
+    const stroke = "hsl(var(--primary) / 0.45)";
+    const strokeSoft = "hsl(var(--primary-glow) / 0.35)";
 
     const orbitBase =
       "absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2";
 
     const orbitLineStyle: React.CSSProperties = {
       stroke,
-      strokeWidth: 1,
+      strokeWidth: 1.5,
       fill: "none",
       vectorEffect: "non-scaling-stroke",
     };
 
     const planetStyle: React.CSSProperties = {
       background:
-        "radial-gradient(circle at 35% 35%, hsl(var(--primary-glow) / 0.55), hsl(var(--primary) / 0.18) 55%, transparent 70%)",
-      boxShadow: "0 0 18px hsl(var(--primary) / 0.10)",
+        "radial-gradient(circle at 35% 35%, hsl(var(--primary-glow) / 0.75), hsl(var(--primary) / 0.35) 55%, transparent 70%)",
+      boxShadow: "0 0 24px hsl(var(--primary) / 0.25), 0 0 48px hsl(var(--primary-glow) / 0.15)",
     };
 
     const ringMask: React.CSSProperties = {
       maskImage:
-        "radial-gradient(520px 320px at 50% 45%, black 60%, transparent 80%)",
+        "radial-gradient(600px 380px at 50% 45%, black 50%, transparent 75%)",
       WebkitMaskImage:
-        "radial-gradient(520px 320px at 50% 45%, black 60%, transparent 80%)",
+        "radial-gradient(600px 380px at 50% 45%, black 50%, transparent 75%)",
     };
 
     const MotionWrap = animated ? motion.div : "div";
 
     return (
-      <div className="absolute inset-0" style={ringMask}>
-        {/* Orbit rings (subtle gold lines) */}
-        <div className={orbitBase}>
+      <motion.div 
+        className="absolute inset-0" 
+        style={{ 
+          ...(animated && !reduceMotion ? { x: parallaxX1, y: parallaxY1 } : {}),
+          ...ringMask 
+        }}
+      >
+        {/* Orbit rings (gold lines - more visible) */}
+        <motion.div 
+          className={orbitBase}
+          style={animated && !reduceMotion ? { rotate: parallaxRotate } : {}}
+        >
           <svg
             width="920"
             height="520"
             viewBox="0 0 920 520"
-            className="opacity-[0.28]"
+            className="opacity-[0.5]"
           >
             <defs>
               <linearGradient id="orbitGlow" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="hsl(var(--primary) / 0.10)" />
-                <stop offset="0.5" stopColor="hsl(var(--primary) / 0.42)" />
-                <stop offset="1" stopColor="hsl(var(--primary-glow) / 0.16)" />
+                <stop offset="0" stopColor="hsl(var(--primary) / 0.15)" />
+                <stop offset="0.5" stopColor="hsl(var(--primary) / 0.6)" />
+                <stop offset="1" stopColor="hsl(var(--primary-glow) / 0.25)" />
               </linearGradient>
             </defs>
 
@@ -76,19 +116,19 @@ export default function FuturisticBackground({ mode = "solar" }: FuturisticBackg
             <path
               d="M 88 288 C 190 140, 330 92, 460 104 C 600 118, 730 206, 826 336"
               stroke="url(#orbitGlow)"
-              strokeWidth="1"
+              strokeWidth="2"
               fill="none"
-              opacity="0.55"
+              opacity="0.7"
             />
           </svg>
-        </div>
+        </motion.div>
 
-        {/* Central star glow (very soft) */}
+        {/* Central star glow (brighter) */}
         <div
-          className="absolute left-1/2 top-[38%] h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full blur-sm opacity-[0.55]"
+          className="absolute left-1/2 top-[38%] h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full blur-md opacity-[0.7]"
           style={{
             background:
-              "radial-gradient(circle, hsl(var(--primary-glow) / 0.55), transparent 70%)",
+              "radial-gradient(circle, hsl(var(--primary-glow) / 0.7), hsl(var(--primary) / 0.3) 50%, transparent 70%)",
           }}
         />
 
@@ -99,7 +139,7 @@ export default function FuturisticBackground({ mode = "solar" }: FuturisticBackg
             ? {
                 animate: { rotate: 360 },
                 transition: {
-                  duration: 52,
+                  duration: 45,
                   repeat: Infinity,
                   ease: "linear",
                 },
@@ -107,25 +147,25 @@ export default function FuturisticBackground({ mode = "solar" }: FuturisticBackg
             : {})}
         >
           <div
-            className="absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full"
+            className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full"
             style={planetStyle}
           />
           <div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             style={{ transform: "translate(-50%, -50%) translateX(210px)" }}
           >
-            <div className="h-2.5 w-2.5 rounded-full" style={planetStyle} />
+            <div className="h-3.5 w-3.5 rounded-full" style={planetStyle} />
           </div>
         </MotionWrap>
 
         <MotionWrap
           className="absolute left-1/2 top-[38%] h-[720px] w-[720px] -translate-x-1/2 -translate-y-1/2"
-          style={{ opacity: 0.85 }}
+          style={{ opacity: 0.9 }}
           {...(animated
             ? {
                 animate: { rotate: -360 },
                 transition: {
-                  duration: 78,
+                  duration: 65,
                   repeat: Infinity,
                   ease: "linear",
                 },
@@ -136,13 +176,13 @@ export default function FuturisticBackground({ mode = "solar" }: FuturisticBackg
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             style={{ transform: "translate(-50%, -50%) translateX(320px)" }}
           >
-            <div className="h-2 w-2 rounded-full" style={planetStyle} />
+            <div className="h-3 w-3 rounded-full" style={planetStyle} />
           </div>
           <div
             className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             style={{ transform: "translate(-50%, -50%) translateX(-300px)" }}
           >
-            <div className="h-1.5 w-1.5 rounded-full" style={planetStyle} />
+            <div className="h-2.5 w-2.5 rounded-full" style={planetStyle} />
           </div>
         </MotionWrap>
 
@@ -152,64 +192,77 @@ export default function FuturisticBackground({ mode = "solar" }: FuturisticBackg
             width="920"
             height="520"
             viewBox="0 0 920 520"
-            className="opacity-[0.14]"
+            className="opacity-[0.25]"
           >
-            <line x1="460" y1="260" x2="640" y2="170" stroke={strokeSoft} />
-            <line x1="460" y1="260" x2="250" y2="330" stroke={strokeSoft} />
-            <line x1="460" y1="260" x2="700" y2="300" stroke={strokeSoft} />
+            <line x1="460" y1="260" x2="640" y2="170" stroke={strokeSoft} strokeWidth="1" />
+            <line x1="460" y1="260" x2="250" y2="330" stroke={strokeSoft} strokeWidth="1" />
+            <line x1="460" y1="260" x2="700" y2="300" stroke={strokeSoft} strokeWidth="1" />
           </svg>
         </div>
-      </div>
+      </motion.div>
     );
   };
 
   // Grid pattern component
   const GridPattern = ({ animated }: { animated: boolean }) => {
-    const gridStroke = "hsl(var(--primary) / 0.12)";
+    const gridStroke = "hsl(var(--primary) / 0.20)";
     
     return (
-      <div className="absolute inset-0">
+      <motion.div 
+        className="absolute inset-0"
+        style={animated && !reduceMotion ? { x: parallaxX2, y: parallaxY2 } : {}}
+      >
         {/* Technical grid */}
         <div
-          className="absolute inset-0 opacity-[0.35]"
+          className="absolute inset-0 opacity-[0.5]"
           style={{
             backgroundImage: `
               linear-gradient(${gridStroke} 1px, transparent 1px),
               linear-gradient(90deg, ${gridStroke} 1px, transparent 1px)
             `,
             backgroundSize: "64px 64px",
-            maskImage: "radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 70%)",
-            WebkitMaskImage: "radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 70%)",
+            maskImage: "radial-gradient(ellipse 85% 65% at 50% 30%, black 25%, transparent 75%)",
+            WebkitMaskImage: "radial-gradient(ellipse 85% 65% at 50% 30%, black 25%, transparent 75%)",
           }}
         />
         
         {/* Floating grid dots at intersections */}
         {animated && (
           <motion.div
-            className="absolute inset-0 opacity-[0.25]"
+            className="absolute inset-0 opacity-[0.4]"
             style={{
-              backgroundImage: `radial-gradient(circle 2px at center, hsl(var(--primary) / 0.4) 0%, transparent 100%)`,
+              backgroundImage: `radial-gradient(circle 3px at center, hsl(var(--primary) / 0.6) 0%, transparent 100%)`,
               backgroundSize: "64px 64px",
-              maskImage: "radial-gradient(ellipse 60% 50% at 50% 35%, black 10%, transparent 60%)",
-              WebkitMaskImage: "radial-gradient(ellipse 60% 50% at 50% 35%, black 10%, transparent 60%)",
+              maskImage: "radial-gradient(ellipse 70% 55% at 50% 35%, black 15%, transparent 65%)",
+              WebkitMaskImage: "radial-gradient(ellipse 70% 55% at 50% 35%, black 15%, transparent 65%)",
             }}
-            animate={{ opacity: [0.2, 0.35, 0.2] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           />
         )}
 
         {/* Horizontal scan lines */}
         {animated && (
-          <motion.div
-            className="absolute left-0 right-0 h-px opacity-[0.18]"
-            style={{
-              background: "linear-gradient(90deg, transparent, hsl(var(--primary) / 0.5), transparent)",
-            }}
-            animate={{ y: [100, 400, 100] }}
-            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-          />
+          <>
+            <motion.div
+              className="absolute left-0 right-0 h-px opacity-[0.35]"
+              style={{
+                background: "linear-gradient(90deg, transparent, hsl(var(--primary) / 0.7), transparent)",
+              }}
+              animate={{ y: [80, 450, 80] }}
+              transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute left-0 right-0 h-px opacity-[0.2]"
+              style={{
+                background: "linear-gradient(90deg, transparent, hsl(var(--primary-glow) / 0.5), transparent)",
+              }}
+              animate={{ y: [300, 100, 300] }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            />
+          </>
         )}
-      </div>
+      </motion.div>
     );
   };
 
@@ -227,12 +280,12 @@ export default function FuturisticBackground({ mode = "solar" }: FuturisticBackg
       {/* Black/dark base */}
       <div className="absolute inset-0 bg-background" />
 
-      {/* Soft gold ambience to keep depth without distraction */}
+      {/* Soft gold ambience - more visible */}
       <div
-        className="absolute inset-0 opacity-[0.55]"
+        className="absolute inset-0 opacity-[0.7]"
         style={{
           background:
-            "radial-gradient(1000px 520px at 50% 12%, hsl(var(--primary) / 0.08), transparent 62%), radial-gradient(900px 520px at 20% 20%, hsl(var(--primary-glow) / 0.06), transparent 60%), radial-gradient(1000px 520px at 80% 30%, hsl(var(--primary) / 0.05), transparent 62%)",
+            "radial-gradient(1000px 520px at 50% 12%, hsl(var(--primary) / 0.12), transparent 62%), radial-gradient(900px 520px at 20% 20%, hsl(var(--primary-glow) / 0.10), transparent 60%), radial-gradient(1000px 520px at 80% 30%, hsl(var(--primary) / 0.08), transparent 62%)",
         }}
       />
 
@@ -242,7 +295,7 @@ export default function FuturisticBackground({ mode = "solar" }: FuturisticBackg
 
       {/* Subtle grain/noise overlay (static, non-distracting) */}
       <div
-        className="absolute inset-0 opacity-[0.10]"
+        className="absolute inset-0 opacity-[0.08]"
         style={{
           backgroundImage: `url(${noiseSvg})`,
           backgroundRepeat: "repeat",
@@ -253,13 +306,13 @@ export default function FuturisticBackground({ mode = "solar" }: FuturisticBackg
       {/* Ultra-faint scanline for technical feel (disabled in reduced motion, solar mode only) */}
       {!reduceMotion && mode === "solar" && (
         <motion.div
-          className="absolute left-0 right-0 h-px opacity-[0.14]"
+          className="absolute left-0 right-0 h-px opacity-[0.25]"
           style={{
             background:
-              "linear-gradient(90deg, transparent, hsl(var(--primary) / 0.45), transparent)",
+              "linear-gradient(90deg, transparent, hsl(var(--primary) / 0.6), transparent)",
           }}
-          animate={{ y: [140, 560, 140] }}
-          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ y: [120, 500, 120] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
         />
       )}
     </div>
