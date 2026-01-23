@@ -1,12 +1,18 @@
 import { motion, useReducedMotion } from "framer-motion";
+import type { BackgroundMode } from "./BackgroundModeSwitch";
+
+interface FuturisticBackgroundProps {
+  mode?: BackgroundMode;
+}
 
 /**
  * Minimal, futuristic ambient background.
  * - No pointer events
  * - Respects prefers-reduced-motion
  * - Uses design tokens via CSS variables (HSL)
+ * - Supports Grid / Solar / Off modes
  */
-export default function FuturisticBackground() {
+export default function FuturisticBackground({ mode = "solar" }: FuturisticBackgroundProps) {
   const reduceMotion = useReducedMotion();
 
   // SVG noise (data URI) used as a subtle grain overlay.
@@ -157,6 +163,65 @@ export default function FuturisticBackground() {
     );
   };
 
+  // Grid pattern component
+  const GridPattern = ({ animated }: { animated: boolean }) => {
+    const gridStroke = "hsl(var(--primary) / 0.12)";
+    
+    return (
+      <div className="absolute inset-0">
+        {/* Technical grid */}
+        <div
+          className="absolute inset-0 opacity-[0.35]"
+          style={{
+            backgroundImage: `
+              linear-gradient(${gridStroke} 1px, transparent 1px),
+              linear-gradient(90deg, ${gridStroke} 1px, transparent 1px)
+            `,
+            backgroundSize: "64px 64px",
+            maskImage: "radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 70%)",
+            WebkitMaskImage: "radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 70%)",
+          }}
+        />
+        
+        {/* Floating grid dots at intersections */}
+        {animated && (
+          <motion.div
+            className="absolute inset-0 opacity-[0.25]"
+            style={{
+              backgroundImage: `radial-gradient(circle 2px at center, hsl(var(--primary) / 0.4) 0%, transparent 100%)`,
+              backgroundSize: "64px 64px",
+              maskImage: "radial-gradient(ellipse 60% 50% at 50% 35%, black 10%, transparent 60%)",
+              WebkitMaskImage: "radial-gradient(ellipse 60% 50% at 50% 35%, black 10%, transparent 60%)",
+            }}
+            animate={{ opacity: [0.2, 0.35, 0.2] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          />
+        )}
+
+        {/* Horizontal scan lines */}
+        {animated && (
+          <motion.div
+            className="absolute left-0 right-0 h-px opacity-[0.18]"
+            style={{
+              background: "linear-gradient(90deg, transparent, hsl(var(--primary) / 0.5), transparent)",
+            }}
+            animate={{ y: [100, 400, 100] }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          />
+        )}
+      </div>
+    );
+  };
+
+  // If mode is off, just show the dark background
+  if (mode === "off") {
+    return (
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-background" />
+      </div>
+    );
+  }
+
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
       {/* Black/dark base */}
@@ -171,8 +236,9 @@ export default function FuturisticBackground() {
         }}
       />
 
-      {/* Solar-system line animation */}
-      <Orbits animated={!reduceMotion} />
+      {/* Conditional animation based on mode */}
+      {mode === "solar" && <Orbits animated={!reduceMotion} />}
+      {mode === "grid" && <GridPattern animated={!reduceMotion} />}
 
       {/* Subtle grain/noise overlay (static, non-distracting) */}
       <div
@@ -184,8 +250,8 @@ export default function FuturisticBackground() {
         }}
       />
 
-      {/* Ultra-faint scanline for technical feel (disabled in reduced motion) */}
-      {!reduceMotion && (
+      {/* Ultra-faint scanline for technical feel (disabled in reduced motion, solar mode only) */}
+      {!reduceMotion && mode === "solar" && (
         <motion.div
           className="absolute left-0 right-0 h-px opacity-[0.14]"
           style={{

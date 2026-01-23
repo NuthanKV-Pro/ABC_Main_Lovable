@@ -8,6 +8,7 @@ import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import FuturisticBackground from "@/components/FuturisticBackground";
+import BackgroundModeSwitch, { useBackgroundMode } from "@/components/BackgroundModeSwitch";
 
 const modules = [
   {
@@ -573,6 +574,7 @@ const Index = () => {
   const modulesRef = useRef<HTMLDivElement>(null);
   const amazingToolsRef = useRef<HTMLDivElement>(null);
   const [showFloatingNav, setShowFloatingNav] = useState(false);
+  const [bgMode, setBgMode] = useBackgroundMode();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -673,7 +675,7 @@ const Index = () => {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-muted/30 to-background">
-      <FuturisticBackground />
+      <FuturisticBackground mode={bgMode} />
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
@@ -685,7 +687,8 @@ const Index = () => {
                 <span className="text-xs sm:text-sm font-medium text-foreground">Nuthan Kaparthy</span>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <BackgroundModeSwitch mode={bgMode} onChange={setBgMode} />
               <SearchBar />
               <Button
                 variant="outline"
