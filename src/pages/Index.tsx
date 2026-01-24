@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import FuturisticBackground from "@/components/FuturisticBackground";
 import BackgroundModeSwitch, { useBackgroundMode } from "@/components/BackgroundModeSwitch";
+import PrototypeBanner from "@/components/PrototypeBanner";
 
 const modules = [
   {
@@ -1048,6 +1049,7 @@ const Index = () => {
       </main>
 
       <Footer />
+      <PrototypeBanner />
     </div>
   );
 };
