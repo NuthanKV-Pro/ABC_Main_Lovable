@@ -32,9 +32,7 @@ export default function PrototypeBanner() {
               <p className="font-medium text-primary mb-1">Prototype Notice</p>
               <p className="text-muted-foreground">
                 This is a <span className="text-foreground font-medium">demonstration prototype</span> of ABC - AI Legal & Tax Co-pilot. 
-                All data you enter is stored <span className="text-foreground font-medium">locally in your browser</span> and 
-                is not sent to any server. Please do not enter real sensitive financial information. 
-                For production use, secure cloud storage will be implemented.
+                All data you enter is stored <span className="text-foreground font-medium">locally in your browser</span> and is not sent to any server.
               </p>
             </div>
             <Button
