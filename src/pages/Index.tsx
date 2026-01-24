@@ -689,12 +689,14 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
-              <BackgroundModeSwitch mode={bgMode} onChange={setBgMode} />
+              <div className="hidden sm:block">
+                <BackgroundModeSwitch mode={bgMode} onChange={setBgMode} />
+              </div>
               <SearchBar />
               <Button
                 variant="outline"
                 size="icon"
-                className="shrink-0"
+                className="shrink-0 flex"
                 aria-label="Open ABC Learn"
                 onClick={() => window.open("https://abclearn1.lovable.app", "_blank", "noopener,noreferrer")}
               >
