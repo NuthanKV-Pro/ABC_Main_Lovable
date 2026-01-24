@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Save, RotateCcw, User, Shield, Bell, Palette } from "lucide-react";
+import { ArrowLeft, Save, RotateCcw, User, Shield, Bell, Palette, Trash2 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useToast } from "@/hooks/use-toast";
@@ -44,6 +45,28 @@ const ProfileSettings = () => {
     toast({
       title: "Profile Reset",
       description: "Your profile has been reset to default values.",
+    });
+  };
+
+  const handleClearAllData = () => {
+    // Clear all localStorage data
+    localStorage.clear();
+    
+    // Reset form to defaults
+    setFormData({
+      name: 'Shankaran Pillai',
+      pan: 'ILOVE1432U',
+      email: '',
+      phone: '',
+      address: '',
+      dateOfBirth: '',
+      assesseeType: 'Individual',
+    });
+    
+    toast({
+      title: "All Data Cleared",
+      description: "All locally stored data has been permanently deleted.",
+      variant: "destructive",
     });
   };
 
@@ -240,6 +263,56 @@ const ProfileSettings = () => {
                   checked={preferences.darkMode}
                   onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, darkMode: checked }))}
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Data Management */}
+          <Card className="border-destructive/30">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Trash2 className="w-5 h-5 text-destructive" />
+                <CardTitle className="text-destructive">Data Management</CardTitle>
+              </div>
+              <CardDescription>Manage your locally stored data</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Clear All Local Data</p>
+                  <p className="text-sm text-muted-foreground">
+                    Permanently delete all data stored in your browser including profile, income details, tax calculations, and preferences.
+                  </p>
+                </div>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="gap-2 flex-shrink-0 ml-4">
+                      <Trash2 className="w-4 h-4" />
+                      Clear All Data
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete all data stored locally in your browser, including:
+                        <ul className="list-disc list-inside mt-2 space-y-1">
+                          <li>Profile information</li>
+                          <li>Income and salary details</li>
+                          <li>Tax calculations and deductions</li>
+                          <li>Financial ratios and budget data</li>
+                          <li>All preferences and settings</li>
+                        </ul>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleClearAllData} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        Yes, Clear All Data
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </CardContent>
           </Card>
