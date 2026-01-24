@@ -1,6 +1,19 @@
 import { motion, useReducedMotion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import type { BackgroundMode } from "./BackgroundModeSwitch";
+
+// Generate random stars for the starfield
+const generateStars = (count: number) => {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 2 + 0.5,
+    delay: Math.random() * 5,
+    duration: Math.random() * 3 + 2,
+    opacity: Math.random() * 0.5 + 0.3,
+  }));
+};
 
 interface FuturisticBackgroundProps {
   mode?: BackgroundMode;
@@ -50,6 +63,41 @@ export default function FuturisticBackground({ mode = "solar" }: FuturisticBackg
   // SVG noise (data URI) used as a subtle grain overlay.
   const noiseSvg =
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E";
+
+  // Memoize stars so they don't regenerate on every render
+  const stars = useMemo(() => generateStars(60), []);
+
+  // Starfield component for Solar mode
+  const Starfield = ({ animated }: { animated: boolean }) => {
+    return (
+      <div className="absolute inset-0">
+        {stars.map((star) => (
+          <motion.div
+            key={star.id}
+            className="absolute rounded-full"
+            style={{
+              left: `${star.x}%`,
+              top: `${star.y}%`,
+              width: star.size,
+              height: star.size,
+              background: `radial-gradient(circle, hsl(var(--primary-glow) / ${star.opacity}), hsl(var(--primary) / ${star.opacity * 0.5}))`,
+              boxShadow: `0 0 ${star.size * 2}px hsl(var(--primary-glow) / ${star.opacity * 0.5})`,
+            }}
+            animate={animated && !reduceMotion ? {
+              opacity: [star.opacity * 0.4, star.opacity, star.opacity * 0.4],
+              scale: [0.8, 1.2, 0.8],
+            } : { opacity: star.opacity * 0.7 }}
+            transition={{
+              duration: star.duration,
+              delay: star.delay,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </div>
+    );
+  };
 
   const Orbits = ({ animated }: { animated: boolean }) => {
     const stroke = "hsl(var(--primary) / 0.45)";
@@ -314,6 +362,9 @@ export default function FuturisticBackground({ mode = "solar" }: FuturisticBackg
             "radial-gradient(1000px 520px at 50% 12%, hsl(var(--primary) / 0.12), transparent 62%), radial-gradient(900px 520px at 20% 20%, hsl(var(--primary-glow) / 0.10), transparent 60%), radial-gradient(1000px 520px at 80% 30%, hsl(var(--primary) / 0.08), transparent 62%)",
         }}
       />
+
+      {/* Starfield layer (behind orbits in solar mode) */}
+      {mode === "solar" && <Starfield animated={!reduceMotion} />}
 
       {/* Conditional animation based on mode */}
       {mode === "solar" && <Orbits animated={!reduceMotion} />}
