@@ -174,8 +174,8 @@ export default function SolarSystemBackground({ enabled = true }: SolarSystemBac
         ))}
       </motion.div>
 
-      {/* Solar System Container */}
-      <div className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2">
+      {/* Solar System Container - centered with full coverage */}
+      <div className="absolute inset-0 flex items-center justify-center" style={{ minHeight: '100vh' }}>
         {/* Sun */}
         <motion.div
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
