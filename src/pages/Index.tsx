@@ -7,8 +7,8 @@ import { useRef, useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
-import FuturisticBackground from "@/components/FuturisticBackground";
-import BackgroundModeSwitch, { useBackgroundMode } from "@/components/BackgroundModeSwitch";
+import SolarSystemBackground from "@/components/SolarSystemBackground";
+import BackgroundToggle, { useBackgroundEnabled } from "@/components/BackgroundToggle";
 import PrototypeBanner from "@/components/PrototypeBanner";
 
 const modules = [
@@ -575,7 +575,7 @@ const Index = () => {
   const modulesRef = useRef<HTMLDivElement>(null);
   const amazingToolsRef = useRef<HTMLDivElement>(null);
   const [showFloatingNav, setShowFloatingNav] = useState(false);
-  const [bgMode, setBgMode] = useBackgroundMode();
+  const [bgEnabled, setBgEnabled] = useBackgroundEnabled();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -676,7 +676,7 @@ const Index = () => {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-muted/30 to-background">
-      <FuturisticBackground mode={bgMode} />
+      <SolarSystemBackground enabled={bgEnabled} />
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
@@ -689,9 +689,7 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="hidden sm:block">
-                <BackgroundModeSwitch mode={bgMode} onChange={setBgMode} />
-              </div>
+              <BackgroundToggle enabled={bgEnabled} onChange={setBgEnabled} />
               <SearchBar />
               <Button
                 variant="outline"
