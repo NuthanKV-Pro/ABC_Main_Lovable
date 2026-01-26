@@ -8,7 +8,6 @@ import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import SolarSystemBackground from "@/components/SolarSystemBackground";
-import BackgroundToggle, { useBackgroundEnabled } from "@/components/BackgroundToggle";
 import PrototypeBanner from "@/components/PrototypeBanner";
 
 const modules = [
@@ -575,7 +574,6 @@ const Index = () => {
   const modulesRef = useRef<HTMLDivElement>(null);
   const amazingToolsRef = useRef<HTMLDivElement>(null);
   const [showFloatingNav, setShowFloatingNav] = useState(false);
-  const [bgEnabled, setBgEnabled] = useBackgroundEnabled();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -676,7 +674,7 @@ const Index = () => {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-muted/30 to-background">
-      <SolarSystemBackground enabled={bgEnabled} />
+      <SolarSystemBackground />
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
@@ -689,7 +687,6 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
-              <BackgroundToggle enabled={bgEnabled} onChange={setBgEnabled} />
               <SearchBar />
               <Button
                 variant="outline"
