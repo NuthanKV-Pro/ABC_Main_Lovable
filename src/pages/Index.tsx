@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard, Star, BookOpen } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard, Star, BookOpen, Crown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useRef, useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
@@ -77,495 +77,570 @@ const modules = [
   }
 ];
 
-const amazingTools = [
+// Tool interface for type safety
+interface Tool {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  route: string | null;
+  tag: string;
+  tagColor: string;
+  starred?: boolean;
+}
+
+// Categorized Amazing Tools
+const toolCategories: { name: string; icon: React.ComponentType<{ className?: string }>; description: string; tools: Tool[] }[] = [
   {
-    id: "salary-optimisation",
-    title: "Salary Optimisation Engine",
-    description: "Optimize your salary structure",
-    icon: Wallet,
-    route: "external:https://abcsalop1.lovable.app",
-    tag: "WIP",
-    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+    name: "⭐ Featured Tools",
+    icon: Crown,
+    description: "Premium tools for comprehensive financial planning",
+    tools: [
+      {
+        id: "tax-loss-harvesting",
+        title: "Tax Loss Harvesting",
+        description: "Offset capital gains with losses",
+        icon: Scissors,
+        route: "/tax-loss-harvesting",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
+      },
+      {
+        id: "deduction-playground",
+        title: "Deduction Playground",
+        description: "Explore deductions, compare regimes & ROI",
+        icon: Calculator,
+        route: "/deduction-playground",
+        tag: "WIP",
+        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+        starred: true
+      },
+      {
+        id: "contract-drafter",
+        title: "Contract Drafter",
+        description: "Draft professional contracts instantly",
+        icon: ScrollText,
+        route: "/contract-drafter",
+        tag: "Kinda Works",
+        tagColor: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+        starred: true
+      },
+      {
+        id: "escrow",
+        title: "Escrow",
+        description: "Secure transaction management",
+        icon: ShieldCheck,
+        route: "/escrow",
+        tag: "WIP",
+        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+        starred: true
+      }
+    ]
   },
   {
-    id: "tax-loss-harvesting",
-    title: "Tax Loss Harvesting",
-    description: "Offset capital gains with losses",
-    icon: Scissors,
-    route: "/tax-loss-harvesting",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
-    starred: true
-  },
-  {
-    id: "when-to-sell",
-    title: "When to Sell?",
-    description: "Investment exit timing analysis",
-    icon: HelpCircle,
-    route: null,
-    tag: "Coming Soon",
-    tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
-  },
-  {
-    id: "deduction-playground",
-    title: "Deduction Playground",
-    description: "Explore deductions, compare regimes & ROI",
+    name: "Tax Planning & Optimization",
     icon: Calculator,
-    route: "/deduction-playground",
-    tag: "WIP",
-    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-    starred: true
+    description: "Maximize tax savings and optimize your strategy",
+    tools: [
+      {
+        id: "80c-optimizer",
+        title: "Tax Saver 80C Optimizer",
+        description: "Maximize 80C deductions allocation",
+        icon: CircleDollarSign,
+        route: "/80c-optimizer",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "tax-saving-comparison",
+        title: "Tax Saving Comparison",
+        description: "Compare 80C investments side by side",
+        icon: Scale,
+        route: "/tax-saving-comparison",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "advance-tax-calc",
+        title: "Advance Tax CalC",
+        description: "Calculate advance tax payments",
+        icon: DollarSign,
+        route: "external:https://abcadv1.lovable.app",
+        tag: "WIP",
+        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+      },
+      {
+        id: "salary-optimisation",
+        title: "Salary Optimisation Engine",
+        description: "Optimize your salary structure",
+        icon: Wallet,
+        route: "external:https://abcsalop1.lovable.app",
+        tag: "WIP",
+        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+      },
+      {
+        id: "hra-calc",
+        title: "HRA Calc",
+        description: "House Rent Allowance calculator",
+        icon: Home,
+        route: "external:https://abcsalop1.lovable.app/hra-calc",
+        tag: "WIP",
+        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+      }
+    ]
   },
   {
-    id: "hra-calc",
-    title: "HRA Calc",
-    description: "House Rent Allowance calculator",
-    icon: Home,
-    route: "external:https://abcsalop1.lovable.app/hra-calc",
-    tag: "WIP",
-    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
-  },
-  {
-    id: "contract-drafter",
-    title: "Contract Drafter",
-    description: "Draft professional contracts instantly",
-    icon: ScrollText,
-    route: "/contract-drafter",
-    tag: "Kinda Works",
-    tagColor: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-    starred: true
-  },
-  {
-    id: "escrow",
-    title: "Escrow",
-    description: "Secure transaction management",
-    icon: ShieldCheck,
-    route: "/escrow",
-    tag: "WIP",
-    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
-  },
-  {
-    id: "emi-calc",
-    title: "EMI Calculator",
-    description: "Calculate loan EMI instantly",
+    name: "Loan & EMI Calculators",
     icon: Banknote,
-    route: "/emi-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+    description: "Plan and compare loan options effectively",
+    tools: [
+      {
+        id: "emi-calc",
+        title: "EMI Calculator",
+        description: "Calculate loan EMI instantly",
+        icon: Banknote,
+        route: "/emi-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "home-loan-eligibility",
+        title: "Home Loan Eligibility",
+        description: "Check your maximum loan amount",
+        icon: Home,
+        route: "/home-loan-eligibility",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "car-loan-calc",
+        title: "Car Loan EMI CalC",
+        description: "Vehicle financing calculator",
+        icon: Car,
+        route: "/car-loan-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "personal-loan-calc",
+        title: "Personal Loan CalC",
+        description: "Credit score based EMI & eligibility",
+        icon: UserCheck,
+        route: "/personal-loan-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "gold-loan-calc",
+        title: "Gold Loan CalC",
+        description: "Estimate loan on your gold",
+        icon: Coins,
+        route: "/gold-loan-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "education-loan-calc",
+        title: "Education Loan CalC",
+        description: "Plan your education financing",
+        icon: GraduationCap,
+        route: "/education-loan-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "loan-advisor",
+        title: "Loan Advisor",
+        description: "EMI vs Tenure reduction guidance",
+        icon: MessageSquare,
+        route: "/loan-advisor",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "loan-comparison",
+        title: "Loan Comparison Tool",
+        description: "Compare multiple loan offers side-by-side",
+        icon: GitCompare,
+        route: "/loan-comparison",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      }
+    ]
   },
   {
-    id: "gratuity-calc",
-    title: "Gratuity CalC",
-    description: "Calculate your gratuity entitlement",
-    icon: Gift,
-    route: "/gratuity-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+    name: "Investment Calculators",
+    icon: TrendingUp,
+    description: "Plan and track your investment growth",
+    tools: [
+      {
+        id: "sip-calc",
+        title: "SIP CalC",
+        description: "Calculate SIP returns & maturity",
+        icon: LineChart,
+        route: "/sip-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "goal-sip-calc",
+        title: "Goal-Based SIP CalC",
+        description: "Plan SIP for financial goals",
+        icon: Target,
+        route: "/goal-sip-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "lumpsum-calc",
+        title: "Lumpsum Calculator",
+        description: "Calculate one-time investment returns",
+        icon: Coins,
+        route: "/lumpsum-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "swp-calc",
+        title: "SWP CalC",
+        description: "Plan regular income from MF",
+        icon: TrendingUp,
+        route: "/swp-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "elss-calc",
+        title: "ELSS CalC",
+        description: "Equity Linked Savings Scheme",
+        icon: TrendingUp,
+        route: "/elss-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "compound-interest",
+        title: "Compound Interest CalC",
+        description: "Step-up SIP & yearly growth breakdown",
+        icon: Compound,
+        route: "/compound-interest",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "cagr-calc",
+        title: "CAGR CalC",
+        description: "Compound Annual Growth Rate",
+        icon: BarChart,
+        route: "/cagr-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "mf-overlap-analyzer",
+        title: "MF Overlap Analyzer",
+        description: "Find duplicate holdings in MF portfolio",
+        icon: Layers,
+        route: "/mf-overlap-analyzer",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "stock-portfolio",
+        title: "Stock Portfolio Tracker",
+        description: "Monitor equity investments with P&L",
+        icon: Portfolio,
+        route: "/stock-portfolio",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      }
+    ]
   },
   {
-    id: "retirement-calc",
-    title: "Retirement Corpus Calculator",
-    description: "Estimate savings needed for retirement",
+    name: "Savings & Deposits",
     icon: PiggyBank,
-    route: "/retirement-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+    description: "Government schemes and fixed income options",
+    tools: [
+      {
+        id: "ppf-calc",
+        title: "PPF CalC",
+        description: "Calculate PPF maturity amount",
+        icon: Landmark,
+        route: "/ppf-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "fd-calc",
+        title: "FD Calculator",
+        description: "Calculate Fixed Deposit maturity",
+        icon: Banknote,
+        route: "/fd-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "rd-calc",
+        title: "RD CalC",
+        description: "Recurring Deposit calculator",
+        icon: Repeat,
+        route: "/rd-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "nsc-calc",
+        title: "NSC CalC",
+        description: "National Savings Certificate returns",
+        icon: ScrollText,
+        route: "/nsc-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "nps-calc",
+        title: "NPS CalC",
+        description: "National Pension Scheme calculator",
+        icon: Shield,
+        route: "/nps-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "pf-calc",
+        title: "PF CalC",
+        description: "Provident Fund corpus estimator",
+        icon: Briefcase,
+        route: "/pf-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "scss-calc",
+        title: "SCSS CalC",
+        description: "Senior Citizen Savings Scheme",
+        icon: Users,
+        route: "/scss-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "ssy-calc",
+        title: "SSY CalC",
+        description: "Sukanya Samriddhi Yojana calculator",
+        icon: Heart,
+        route: "/ssy-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      }
+    ]
   },
   {
-    id: "sip-calc",
-    title: "SIP CalC",
-    description: "Calculate SIP returns & maturity",
-    icon: LineChart,
-    route: "/sip-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+    name: "Retirement & Benefits",
+    icon: Gift,
+    description: "Plan for a secure retirement",
+    tools: [
+      {
+        id: "retirement-calc",
+        title: "Retirement Corpus Calculator",
+        description: "Estimate savings needed for retirement",
+        icon: PiggyBank,
+        route: "/retirement-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "gratuity-calc",
+        title: "Gratuity CalC",
+        description: "Calculate your gratuity entitlement",
+        icon: Gift,
+        route: "/gratuity-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "emergency-fund",
+        title: "Emergency Fund CalC",
+        description: "Plan your financial safety net",
+        icon: Umbrella,
+        route: "/emergency-fund",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "insurance-premium-calc",
+        title: "Insurance Premium Calculator",
+        description: "Term life & health insurance premiums",
+        icon: ShieldCheck,
+        route: "/insurance-premium-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      }
+    ]
   },
   {
-    id: "ppf-calc",
-    title: "PPF CalC",
-    description: "Calculate PPF maturity amount",
-    icon: Landmark,
-    route: "/ppf-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "fd-calc",
-    title: "FD Calculator",
-    description: "Calculate Fixed Deposit maturity",
-    icon: Banknote,
-    route: "/fd-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "lumpsum-calc",
-    title: "Lumpsum Calculator",
-    description: "Calculate one-time investment returns",
-    icon: Coins,
-    route: "/lumpsum-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "nps-calc",
-    title: "NPS CalC",
-    description: "National Pension Scheme calculator",
-    icon: Shield,
-    route: "/nps-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "nsc-calc",
-    title: "NSC CalC",
-    description: "National Savings Certificate returns",
-    icon: ScrollText,
-    route: "/nsc-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "pf-calc",
-    title: "PF CalC",
-    description: "Provident Fund corpus estimator",
-    icon: Briefcase,
-    route: "/pf-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "tax-saving-comparison",
-    title: "Tax Saving Comparison",
-    description: "Compare 80C investments side by side",
-    icon: Scale,
-    route: "/tax-saving-comparison",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "ssy-calc",
-    title: "SSY CalC",
-    description: "Sukanya Samriddhi Yojana calculator",
-    icon: Heart,
-    route: "/ssy-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "cagr-calc",
-    title: "CAGR CalC",
-    description: "Compound Annual Growth Rate",
-    icon: BarChart,
-    route: "/cagr-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "rd-calc",
-    title: "RD CalC",
-    description: "Recurring Deposit calculator",
-    icon: Repeat,
-    route: "/rd-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "scss-calc",
-    title: "SCSS CalC",
-    description: "Senior Citizen Savings Scheme",
-    icon: Users,
-    route: "/scss-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "home-loan-eligibility",
-    title: "Home Loan Eligibility",
-    description: "Check your maximum loan amount",
-    icon: Home,
-    route: "/home-loan-eligibility",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "elss-calc",
-    title: "ELSS CalC",
-    description: "Equity Linked Savings Scheme",
-    icon: TrendingUp,
-    route: "/elss-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "credit-score-calc",
-    title: "Credit Score CalC",
-    description: "Estimate your CIBIL score",
-    icon: CreditCard,
-    route: "/credit-score-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "stamp-duty-calc",
-    title: "Stamp Duty CalC",
-    description: "Property registration charges",
-    icon: FileCheck,
-    route: "/stamp-duty-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "car-loan-calc",
-    title: "Car Loan EMI CalC",
-    description: "Vehicle financing calculator",
-    icon: Car,
-    route: "/car-loan-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "product-builder",
-    title: "Product Builder",
-    description: "Framework for idea-to-blueprint development",
-    icon: Sparkles,
-    route: "external:https://abcprodev1.lovable.app",
-    tag: "WIP",
-    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
-  },
-  {
-    id: "gold-loan-calc",
-    title: "Gold Loan CalC",
-    description: "Estimate loan on your gold",
-    icon: Coins,
-    route: "/gold-loan-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "education-loan-calc",
-    title: "Education Loan CalC",
-    description: "Plan your education financing",
-    icon: GraduationCap,
-    route: "/education-loan-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "swp-calc",
-    title: "SWP CalC",
-    description: "Plan regular income from MF",
-    icon: TrendingUp,
-    route: "/swp-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "loan-advisor",
-    title: "Loan Advisor",
-    description: "EMI vs Tenure reduction guidance",
-    icon: MessageSquare,
-    route: "/loan-advisor",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "loan-comparison",
-    title: "Loan Comparison Tool",
-    description: "Compare multiple loan offers side-by-side",
-    icon: GitCompare,
-    route: "/loan-comparison",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "rent-vs-buy",
-    title: "Rent vs Buy Calculator",
-    description: "Should you rent or buy a home?",
+    name: "Real Estate & Property",
     icon: Building2,
-    route: "/rent-vs-buy",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+    description: "Home buying and property decisions",
+    tools: [
+      {
+        id: "rent-vs-buy",
+        title: "Rent vs Buy Calculator",
+        description: "Should you rent or buy a home?",
+        icon: Building2,
+        route: "/rent-vs-buy",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "home-affordability",
+        title: "Home Affordability CalC",
+        description: "How much house can you afford?",
+        icon: Home,
+        route: "/home-affordability",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "stamp-duty-calc",
+        title: "Stamp Duty CalC",
+        description: "Property registration charges",
+        icon: FileCheck,
+        route: "/stamp-duty-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      }
+    ]
   },
   {
-    id: "home-affordability",
-    title: "Home Affordability CalC",
-    description: "How much house can you afford?",
-    icon: Home,
-    route: "/home-affordability",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "debt-to-income",
-    title: "Debt-to-Income CalC",
-    description: "Check your financial health",
-    icon: Target,
-    route: "/debt-to-income",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "emergency-fund",
-    title: "Emergency Fund CalC",
-    description: "Plan your financial safety net",
-    icon: Umbrella,
-    route: "/emergency-fund",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "financial-goal-tracker",
-    title: "Financial Goal Tracker",
-    description: "Set, track & achieve financial goals",
-    icon: Flag,
-    route: "/financial-goal-tracker",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "budget-planner",
-    title: "Budget Planner",
-    description: "Create & track monthly budgets",
+    name: "Personal Finance & Planning",
     icon: ClipboardList,
-    route: "/budget-planner",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+    description: "Budget, track, and grow your wealth",
+    tools: [
+      {
+        id: "budget-planner",
+        title: "Budget Planner",
+        description: "Create & track monthly budgets",
+        icon: ClipboardList,
+        route: "/budget-planner",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "net-worth-calculator",
+        title: "Net Worth Calculator",
+        description: "Track assets vs liabilities",
+        icon: BadgeDollarSign,
+        route: "/net-worth-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "financial-goal-tracker",
+        title: "Financial Goal Tracker",
+        description: "Set, track & achieve financial goals",
+        icon: Flag,
+        route: "/financial-goal-tracker",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "debt-to-income",
+        title: "Debt-to-Income CalC",
+        description: "Check your financial health",
+        icon: Target,
+        route: "/debt-to-income",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "credit-score-calc",
+        title: "Credit Score CalC",
+        description: "Estimate your CIBIL score",
+        icon: CreditCard,
+        route: "/credit-score-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "inflation-calc",
+        title: "Inflation Impact CalC",
+        description: "Real vs nominal returns & purchasing power",
+        icon: TrendingDown,
+        route: "/inflation-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      }
+    ]
   },
   {
-    id: "net-worth-calculator",
-    title: "Net Worth Calculator",
-    description: "Track assets vs liabilities",
-    icon: BadgeDollarSign,
-    route: "/net-worth-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+    name: "Business & Corporate Finance",
+    icon: Briefcase,
+    description: "Professional tools for business decisions",
+    tools: [
+      {
+        id: "capital-budgeting",
+        title: "Capital Budgeting",
+        description: "NPV, IRR, MIRR & more techniques",
+        icon: PieChart,
+        route: "/capital-budgeting",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "cashflow-budgeting",
+        title: "Cash Flow Budgeting Tool",
+        description: "Comprehensive cash flow planning",
+        icon: Workflow,
+        route: "/cash-flow-budgeting",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "factoring-tool",
+        title: "Factoring Tool",
+        description: "Evaluate factoring cost vs benefits",
+        icon: Factory,
+        route: "/factoring-tool",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "dividend-decision",
+        title: "Dividend Decision Tool",
+        description: "Gordon's, Lintner's & dividend theories",
+        icon: Split,
+        route: "/dividend-decision",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "product-builder",
+        title: "Product Builder",
+        description: "Framework for idea-to-blueprint development",
+        icon: Sparkles,
+        route: "external:https://abcprodev1.lovable.app",
+        tag: "WIP",
+        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+      }
+    ]
   },
   {
-    id: "capital-budgeting",
-    title: "Capital Budgeting",
-    description: "NPV, IRR, MIRR & more techniques",
-    icon: PieChart,
-    route: "/capital-budgeting",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "personal-loan-calc",
-    title: "Personal Loan CalC",
-    description: "Credit score based EMI & eligibility",
-    icon: UserCheck,
-    route: "/personal-loan-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "insurance-premium-calc",
-    title: "Insurance Premium Calculator",
-    description: "Term life & health insurance premiums",
-    icon: ShieldCheck,
-    route: "/insurance-premium-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "mf-overlap-analyzer",
-    title: "MF Overlap Analyzer",
-    description: "Find duplicate holdings in MF portfolio",
-    icon: Layers,
-    route: "/mf-overlap-analyzer",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "cashflow-budgeting",
-    title: "Cash Flow Budgeting Tool",
-    description: "Comprehensive cash flow planning",
-    icon: Workflow,
-    route: "/cashflow-budgeting",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "factoring-tool",
-    title: "Factoring Tool",
-    description: "Evaluate factoring cost vs benefits",
-    icon: Factory,
-    route: "/factoring-tool",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "dividend-decision",
-    title: "Dividend Decision Tool",
-    description: "Gordon's, Lintner's & dividend theories",
-    icon: Split,
-    route: "/dividend-decision",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "stock-portfolio",
-    title: "Stock Portfolio Tracker",
-    description: "Monitor equity investments with P&L",
-    icon: Portfolio,
-    route: "/stock-portfolio",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "goal-sip-calc",
-    title: "Goal-Based SIP CalC",
-    description: "Plan SIP for financial goals",
-    icon: Target,
-    route: "/goal-sip-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "compound-interest",
-    title: "Compound Interest CalC",
-    description: "Step-up SIP & yearly growth breakdown",
-    icon: Compound,
-    route: "/compound-interest",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "inflation-calc",
-    title: "Inflation Impact CalC",
-    description: "Real vs nominal returns & purchasing power",
-    icon: TrendingDown,
-    route: "/inflation-calculator",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "80c-optimizer",
-    title: "Tax Saver 80C Optimizer",
-    description: "Maximize 80C deductions allocation",
-    icon: CircleDollarSign,
-    route: "/80c-optimizer",
-    tag: "Live",
-    tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
-  },
-  {
-    id: "advance-tax-calc",
-    title: "Advance Tax CalC",
-    description: "Calculate advance tax payments",
-    icon: DollarSign,
-    route: "external:https://abcadv1.lovable.app",
-    tag: "WIP",
-    tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
-  },
-  {
-    id: "more-calcs",
-    title: "More Amazing Tools🥂 Coming Sooooon💖!",
+    name: "Coming Soon",
+    icon: HelpCircle,
     description: "Exciting tools on the way",
-    icon: MoreHorizontal,
-    route: null,
-    tag: "",
-    tagColor: ""
+    tools: [
+      {
+        id: "when-to-sell",
+        title: "When to Sell?",
+        description: "Investment exit timing analysis",
+        icon: HelpCircle,
+        route: null,
+        tag: "Coming Soon",
+        tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
+      }
+    ]
   }
 ];
 
@@ -574,10 +649,12 @@ const Index = () => {
   const modulesRef = useRef<HTMLDivElement>(null);
   const amazingToolsRef = useRef<HTMLDivElement>(null);
   const [showFloatingNav, setShowFloatingNav] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
+    "⭐ Featured Tools": true
+  });
 
   useEffect(() => {
     const handleScroll = () => {
-      // Show floating nav after scrolling past hero (approximately 400px)
       setShowFloatingNav(window.scrollY > 400);
     };
 
@@ -614,10 +691,28 @@ const Index = () => {
     });
   };
 
+  const toggleCategory = (categoryName: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [categoryName]: !prev[categoryName]
+    }));
+  };
+
+  const expandAll = () => {
+    const allExpanded: Record<string, boolean> = {};
+    toolCategories.forEach(cat => {
+      allExpanded[cat.name] = true;
+    });
+    setExpandedCategories(allExpanded);
+  };
+
+  const collapseAll = () => {
+    setExpandedCategories({ "⭐ Featured Tools": true });
+  };
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is typing in an input
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
       }
@@ -663,7 +758,6 @@ const Index = () => {
           navigate('/credit-score-calculator');
           break;
         case '?':
-          // Toggle shortcuts help - handled by popover
           break;
       }
     };
@@ -953,7 +1047,7 @@ const Index = () => {
           })}
         </div>
 
-        {/* Amazing Tools Section */}
+        {/* Amazing Tools Section - Categorized */}
         <div ref={amazingToolsRef} className="mt-16 max-w-6xl mx-auto">
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 mb-4">
@@ -961,86 +1055,166 @@ const Index = () => {
               <h2 className="text-3xl font-bold">Amazing Tools</h2>
               <Sparkles className="w-6 h-6 text-primary" />
             </div>
-            <p className="text-lg text-muted-foreground">
-              Specialized calculators and utilities to simplify your finances
+            <p className="text-lg text-muted-foreground mb-4">
+              54 specialized calculators and utilities organized by category
             </p>
+            <div className="flex justify-center gap-2">
+              <Button variant="outline" size="sm" onClick={expandAll}>
+                Expand All
+              </Button>
+              <Button variant="outline" size="sm" onClick={collapseAll}>
+                Collapse All
+              </Button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {amazingTools.map((tool) => {
-              const Icon = tool.icon;
-              const isDisabled = !tool.route;
-              const isPlaceholder = tool.id === "more-calcs";
-              
-              if (isPlaceholder) {
-                return (
-                  <Card 
-                    key={tool.id}
-                    className="border-2 border-dashed border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center min-h-[200px]"
-                  >
-                    <div className="text-center p-6">
-                      <Icon className="w-10 h-10 text-primary/50 mx-auto mb-3" />
-                      <p className="text-lg font-medium text-primary/70">{tool.title}</p>
-                    </div>
-                  </Card>
-                );
-              }
-              
+          {/* Category Sections */}
+          <div className="space-y-6">
+            {toolCategories.map((category) => {
+              const CategoryIcon = category.icon;
+              const isExpanded = expandedCategories[category.name] ?? false;
+              const isFeatured = category.name.includes("Featured");
+
               return (
-                <Card 
-                  key={tool.id}
-                  className={`hover:shadow-[var(--shadow-card)] transition-all cursor-pointer border-2 hover:border-primary/30 ${
-                    isDisabled ? 'opacity-75' : ''
+                <motion.div
+                  key={category.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`rounded-xl border-2 overflow-hidden ${
+                    isFeatured 
+                      ? 'border-yellow-500/50 bg-gradient-to-br from-yellow-500/5 to-amber-500/5' 
+                      : 'border-border bg-card/50'
                   }`}
-                  onClick={() => {
-                    if (tool.route) {
-                      if (tool.route.startsWith('external:')) {
-                        window.open(tool.route.replace('external:', ''), '_blank');
-                      } else {
-                        navigate(tool.route);
-                      }
-                    }
-                  }}
                 >
-                  <CardHeader>
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="relative p-3 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10">
-                        <Icon className="w-8 h-8 text-primary" />
-                        {(tool as any).starred && (
-                          <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 absolute -top-1 -right-1" />
-                        )}
+                  {/* Category Header */}
+                  <button
+                    onClick={() => toggleCategory(category.name)}
+                    className={`w-full flex items-center justify-between p-4 md:p-6 hover:bg-muted/30 transition-colors ${
+                      isFeatured ? 'bg-gradient-to-r from-yellow-500/10 to-amber-500/10' : ''
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 md:gap-4">
+                      <div className={`p-2 md:p-3 rounded-lg ${
+                        isFeatured 
+                          ? 'bg-gradient-to-br from-yellow-500/20 to-amber-500/20' 
+                          : 'bg-primary/10'
+                      }`}>
+                        <CategoryIcon className={`w-5 h-5 md:w-6 md:h-6 ${
+                          isFeatured ? 'text-yellow-500' : 'text-primary'
+                        }`} />
                       </div>
-                      {tool.tag && (
-                        <div className={`px-3 py-1 rounded-full text-xs font-medium border ${tool.tagColor}`}>
-                          {tool.tag}
-                        </div>
-                      )}
+                      <div className="text-left">
+                        <h3 className={`text-lg md:text-xl font-semibold ${
+                          isFeatured ? 'text-yellow-500' : ''
+                        }`}>
+                          {category.name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground hidden sm:block">
+                          {category.description}
+                        </p>
+                      </div>
                     </div>
-                    <CardTitle className="text-xl">{tool.title}</CardTitle>
-                    <CardDescription className="text-base">{tool.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button 
-                      className="w-full"
-                      variant={isDisabled ? "outline" : "default"}
-                      disabled={isDisabled}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (tool.route) {
-                          if (tool.route.startsWith('external:')) {
-                            window.open(tool.route.replace('external:', ''), '_blank');
-                          } else {
-                            navigate(tool.route);
-                          }
-                        }
-                      }}
-                    >
-                      {isDisabled ? "Coming Soon" : "Open Tool"}
-                    </Button>
-                  </CardContent>
-                </Card>
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <span className="text-xs md:text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                        {category.tools.length} tools
+                      </span>
+                      <motion.div
+                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <ArrowUp className="w-5 h-5 text-muted-foreground" />
+                      </motion.div>
+                    </div>
+                  </button>
+
+                  {/* Tools Grid - Collapsible */}
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      height: isExpanded ? 'auto' : 0,
+                      opacity: isExpanded ? 1 : 0
+                    }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-4 md:p-6 pt-0">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {category.tools.map((tool) => {
+                          const Icon = tool.icon;
+                          const isDisabled = !tool.route;
+
+                          return (
+                            <Card
+                              key={tool.id}
+                              className={`hover:shadow-[var(--shadow-card)] transition-all cursor-pointer border hover:border-primary/30 ${
+                                isDisabled ? 'opacity-75' : ''
+                              } ${tool.starred ? 'ring-1 ring-yellow-500/30' : ''}`}
+                              onClick={() => {
+                                if (tool.route) {
+                                  if (tool.route.startsWith('external:')) {
+                                    window.open(tool.route.replace('external:', ''), '_blank');
+                                  } else {
+                                    navigate(tool.route);
+                                  }
+                                }
+                              }}
+                            >
+                              <CardHeader className="pb-3">
+                                <div className="flex items-start justify-between mb-2">
+                                  <div className="relative p-2 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10">
+                                    <Icon className="w-6 h-6 text-primary" />
+                                    {tool.starred && (
+                                      <Star className="w-3 h-3 text-yellow-500 fill-yellow-500 absolute -top-1 -right-1" />
+                                    )}
+                                  </div>
+                                  {tool.tag && (
+                                    <div className={`px-2 py-0.5 rounded-full text-xs font-medium border ${tool.tagColor}`}>
+                                      {tool.tag}
+                                    </div>
+                                  )}
+                                </div>
+                                <CardTitle className="text-base">{tool.title}</CardTitle>
+                                <CardDescription className="text-sm">{tool.description}</CardDescription>
+                              </CardHeader>
+                              <CardContent className="pt-0">
+                                <Button
+                                  className="w-full"
+                                  size="sm"
+                                  variant={isDisabled ? "outline" : "default"}
+                                  disabled={isDisabled}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (tool.route) {
+                                      if (tool.route.startsWith('external:')) {
+                                        window.open(tool.route.replace('external:', ''), '_blank');
+                                      } else {
+                                        navigate(tool.route);
+                                      }
+                                    }
+                                  }}
+                                >
+                                  {isDisabled ? "Coming Soon" : "Open Tool"}
+                                </Button>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
               );
             })}
+          </div>
+
+          {/* More Coming Soon Placeholder */}
+          <div className="mt-8">
+            <Card className="border-2 border-dashed border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center min-h-[120px]">
+              <div className="text-center p-6">
+                <MoreHorizontal className="w-10 h-10 text-primary/50 mx-auto mb-3" />
+                <p className="text-lg font-medium text-primary/70">More Amazing Tools🥂 Coming Sooooon💖!</p>
+              </div>
+            </Card>
           </div>
         </div>
       </main>

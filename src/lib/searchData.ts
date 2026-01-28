@@ -43,60 +43,92 @@ export const taxModules: SearchItem[] = sortAlphabetically([
   { name: "Total Income & Tax", route: "/total-income-tax", category: "Tax Modules", keywords: ["total", "income", "tax", "liability"] },
 ]);
 
-// Amazing Tools (from Index.tsx - comprehensive list)
-export const amazingTools: SearchItem[] = sortAlphabetically([
-  { name: "Salary Optimisation Engine", route: "external:https://abcsalop1.lovable.app", category: "Amazing Tools", keywords: ["salary", "optimisation", "structure", "ctc"] },
-  { name: "Tax Loss Harvesting", route: "/tax-loss-harvesting", category: "Amazing Tools", keywords: ["tax", "loss", "harvesting", "capital gains", "offset"] },
-  { name: "Deduction Playground", route: "/deduction-playground", category: "Amazing Tools", keywords: ["deduction", "playground", "80c", "80d", "tax saving", "regime", "comparison", "roi"] },
-  { name: "HRA Calc", route: "external:https://abcsalop1.lovable.app/hra-calc", category: "Amazing Tools", keywords: ["hra", "house rent", "allowance"] },
-  { name: "Contract Drafter", route: "/contract-drafter", category: "Amazing Tools", keywords: ["contract", "drafter", "agreement", "legal", "nda", "employment"] },
-  { name: "Escrow", route: "/escrow", category: "Amazing Tools", keywords: ["escrow", "secure", "transaction"] },
-  { name: "EMI Calculator", route: "/emi-calculator", category: "Amazing Tools", keywords: ["emi", "loan", "installment"] },
-  { name: "Gratuity Calculator", route: "/gratuity-calculator", category: "Amazing Tools", keywords: ["gratuity", "retirement", "employee"] },
-  { name: "Retirement Corpus Calculator", route: "/retirement-calculator", category: "Amazing Tools", keywords: ["retirement", "corpus", "pension", "savings"] },
-  { name: "SIP Calculator", route: "/sip-calculator", category: "Amazing Tools", keywords: ["sip", "mutual fund", "investment"] },
-  { name: "PPF Calculator", route: "/ppf-calculator", category: "Amazing Tools", keywords: ["ppf", "public provident fund"] },
-  { name: "FD Calculator", route: "/fd-calculator", category: "Amazing Tools", keywords: ["fd", "fixed deposit", "bank"] },
-  { name: "Lumpsum Calculator", route: "/lumpsum-calculator", category: "Amazing Tools", keywords: ["lumpsum", "one-time", "investment"] },
-  { name: "NPS Calculator", route: "/nps-calculator", category: "Amazing Tools", keywords: ["nps", "national pension", "retirement"] },
-  { name: "NSC Calculator", route: "/nsc-calculator", category: "Amazing Tools", keywords: ["nsc", "national savings certificate"] },
-  { name: "PF Calculator", route: "/pf-calculator", category: "Amazing Tools", keywords: ["pf", "provident fund", "epf"] },
-  { name: "Tax Saving Comparison", route: "/tax-saving-comparison", category: "Amazing Tools", keywords: ["tax", "saving", "80c", "comparison"] },
-  { name: "SSY Calculator", route: "/ssy-calculator", category: "Amazing Tools", keywords: ["ssy", "sukanya samriddhi", "girl child"] },
-  { name: "CAGR Calculator", route: "/cagr-calculator", category: "Amazing Tools", keywords: ["cagr", "compound annual growth rate"] },
-  { name: "RD Calculator", route: "/rd-calculator", category: "Amazing Tools", keywords: ["rd", "recurring deposit"] },
-  { name: "SCSS Calculator", route: "/scss-calculator", category: "Amazing Tools", keywords: ["scss", "senior citizen", "savings scheme"] },
-  { name: "Home Loan Eligibility", route: "/home-loan-eligibility", category: "Amazing Tools", keywords: ["home", "loan", "eligibility", "housing"] },
-  { name: "ELSS Calculator", route: "/elss-calculator", category: "Amazing Tools", keywords: ["elss", "tax saving", "mutual fund"] },
-  { name: "Credit Score Calculator", route: "/credit-score-calculator", category: "Amazing Tools", keywords: ["credit", "score", "cibil", "rating"] },
-  { name: "Stamp Duty Calculator", route: "/stamp-duty-calculator", category: "Amazing Tools", keywords: ["stamp", "duty", "registration", "property"] },
-  { name: "Car Loan EMI Calculator", route: "/car-loan-calculator", category: "Amazing Tools", keywords: ["car", "loan", "vehicle", "auto", "emi"] },
-  { name: "Product Builder", route: "external:https://abcprodev1.lovable.app", category: "Amazing Tools", keywords: ["product", "builder", "idea", "blueprint"] },
-  { name: "Gold Loan Calculator", route: "/gold-loan-calculator", category: "Amazing Tools", keywords: ["gold", "loan", "jewellery"] },
-  { name: "Education Loan Calculator", route: "/education-loan-calculator", category: "Amazing Tools", keywords: ["education", "loan", "student"] },
-  { name: "SWP Calculator", route: "/swp-calculator", category: "Amazing Tools", keywords: ["swp", "systematic withdrawal", "mutual fund"] },
-  { name: "Loan Advisor", route: "/loan-advisor", category: "Amazing Tools", keywords: ["loan", "advisor", "prepayment", "emi reduction"] },
-  { name: "Loan Comparison Tool", route: "/loan-comparison", category: "Amazing Tools", keywords: ["loan", "comparison", "offers", "banks"] },
-  { name: "Rent vs Buy Calculator", route: "/rent-vs-buy", category: "Amazing Tools", keywords: ["rent", "buy", "home", "decision"] },
-  { name: "Home Affordability Calculator", route: "/home-affordability", category: "Amazing Tools", keywords: ["home", "affordability", "budget", "house"] },
-  { name: "Debt-to-Income Calculator", route: "/debt-to-income", category: "Amazing Tools", keywords: ["debt", "income", "ratio", "dti"] },
-  { name: "Emergency Fund Calculator", route: "/emergency-fund", category: "Amazing Tools", keywords: ["emergency", "fund", "savings", "safety"] },
-  { name: "Financial Goal Tracker", route: "/financial-goal-tracker", category: "Amazing Tools", keywords: ["goal", "tracker", "planning", "savings"] },
-  { name: "Budget Planner", route: "/budget-planner", category: "Amazing Tools", keywords: ["budget", "planner", "expenses", "income"] },
-  { name: "Net Worth Calculator", route: "/net-worth-calculator", category: "Amazing Tools", keywords: ["net worth", "assets", "liabilities", "wealth"] },
-  { name: "Capital Budgeting", route: "/capital-budgeting", category: "Amazing Tools", keywords: ["capital", "budgeting", "npv", "irr", "mirr", "payback"] },
-  { name: "Personal Loan Calculator", route: "/personal-loan-calculator", category: "Amazing Tools", keywords: ["personal", "loan", "credit score", "emi"] },
-  { name: "Insurance Premium Calculator", route: "/insurance-premium-calculator", category: "Amazing Tools", keywords: ["insurance", "premium", "term life", "health", "coverage"] },
-  { name: "MF Overlap Analyzer", route: "/mf-overlap-analyzer", category: "Amazing Tools", keywords: ["mutual fund", "overlap", "portfolio", "duplicate", "holdings"] },
-  { name: "Cash Flow Budgeting Tool", route: "/cash-flow-budgeting", category: "Amazing Tools", keywords: ["cash flow", "budgeting", "inflow", "outflow", "projection"] },
-  { name: "Factoring Tool", route: "/factoring-tool", category: "Amazing Tools", keywords: ["factoring", "receivables", "invoice", "discount", "financing"] },
-  { name: "Dividend Decision Tool", route: "/dividend-decision", category: "Amazing Tools", keywords: ["dividend", "gordon", "lintner", "payout", "retention", "policy"] },
-  { name: "Stock Portfolio Tracker", route: "/stock-portfolio", category: "Amazing Tools", keywords: ["stock", "portfolio", "equity", "shares", "p&l", "allocation"] },
-  { name: "Goal-Based SIP Calculator", route: "/goal-sip-calculator", category: "Amazing Tools", keywords: ["goal", "sip", "target", "financial goal", "planning"] },
-  { name: "Compound Interest Calculator", route: "/compound-interest", category: "Amazing Tools", keywords: ["compound", "interest", "step-up", "sip", "growth", "yearly"] },
-  { name: "Inflation Impact Calculator", route: "/inflation-calculator", category: "Amazing Tools", keywords: ["inflation", "purchasing power", "real return", "nominal", "erosion"] },
-  { name: "Tax Saver 80C Optimizer", route: "/80c-optimizer", category: "Amazing Tools", keywords: ["80c", "tax saver", "elss", "ppf", "nps", "deduction", "optimizer"] },
-  { name: "Advance Tax Calculator", route: "external:https://abcadv1.lovable.app", category: "Amazing Tools", keywords: ["advance", "tax", "quarterly", "payment"] },
+// ⭐ Featured Tools
+export const featuredTools: SearchItem[] = sortAlphabetically([
+  { name: "Tax Loss Harvesting", route: "/tax-loss-harvesting", category: "⭐ Featured Tools", keywords: ["tax", "loss", "harvesting", "capital gains", "offset"] },
+  { name: "Deduction Playground", route: "/deduction-playground", category: "⭐ Featured Tools", keywords: ["deduction", "playground", "80c", "80d", "tax saving", "regime", "comparison", "roi"] },
+  { name: "Contract Drafter", route: "/contract-drafter", category: "⭐ Featured Tools", keywords: ["contract", "drafter", "agreement", "legal", "nda", "employment"] },
+  { name: "Escrow", route: "/escrow", category: "⭐ Featured Tools", keywords: ["escrow", "secure", "transaction"] },
+]);
+
+// Tax Planning & Optimization
+export const taxPlanningTools: SearchItem[] = sortAlphabetically([
+  { name: "Tax Saver 80C Optimizer", route: "/80c-optimizer", category: "Tax Planning", keywords: ["80c", "tax saver", "elss", "ppf", "nps", "deduction", "optimizer"] },
+  { name: "Tax Saving Comparison", route: "/tax-saving-comparison", category: "Tax Planning", keywords: ["tax", "saving", "80c", "comparison"] },
+  { name: "Advance Tax Calculator", route: "external:https://abcadv1.lovable.app", category: "Tax Planning", keywords: ["advance", "tax", "quarterly", "payment"] },
+  { name: "Salary Optimisation Engine", route: "external:https://abcsalop1.lovable.app", category: "Tax Planning", keywords: ["salary", "optimisation", "structure", "ctc"] },
+  { name: "HRA Calc", route: "external:https://abcsalop1.lovable.app/hra-calc", category: "Tax Planning", keywords: ["hra", "house rent", "allowance"] },
+]);
+
+// Loan & EMI Calculators
+export const loanTools: SearchItem[] = sortAlphabetically([
+  { name: "EMI Calculator", route: "/emi-calculator", category: "Loan & EMI", keywords: ["emi", "loan", "installment"] },
+  { name: "Home Loan Eligibility", route: "/home-loan-eligibility", category: "Loan & EMI", keywords: ["home", "loan", "eligibility", "housing"] },
+  { name: "Car Loan EMI Calculator", route: "/car-loan-calculator", category: "Loan & EMI", keywords: ["car", "loan", "vehicle", "auto", "emi"] },
+  { name: "Personal Loan Calculator", route: "/personal-loan-calculator", category: "Loan & EMI", keywords: ["personal", "loan", "credit score", "emi"] },
+  { name: "Gold Loan Calculator", route: "/gold-loan-calculator", category: "Loan & EMI", keywords: ["gold", "loan", "jewellery"] },
+  { name: "Education Loan Calculator", route: "/education-loan-calculator", category: "Loan & EMI", keywords: ["education", "loan", "student"] },
+  { name: "Loan Advisor", route: "/loan-advisor", category: "Loan & EMI", keywords: ["loan", "advisor", "prepayment", "emi reduction"] },
+  { name: "Loan Comparison Tool", route: "/loan-comparison", category: "Loan & EMI", keywords: ["loan", "comparison", "offers", "banks"] },
+]);
+
+// Investment Calculators
+export const investmentTools: SearchItem[] = sortAlphabetically([
+  { name: "SIP Calculator", route: "/sip-calculator", category: "Investments", keywords: ["sip", "mutual fund", "investment"] },
+  { name: "Goal-Based SIP Calculator", route: "/goal-sip-calculator", category: "Investments", keywords: ["goal", "sip", "target", "financial goal", "planning"] },
+  { name: "Lumpsum Calculator", route: "/lumpsum-calculator", category: "Investments", keywords: ["lumpsum", "one-time", "investment"] },
+  { name: "SWP Calculator", route: "/swp-calculator", category: "Investments", keywords: ["swp", "systematic withdrawal", "mutual fund"] },
+  { name: "ELSS Calculator", route: "/elss-calculator", category: "Investments", keywords: ["elss", "tax saving", "mutual fund"] },
+  { name: "Compound Interest Calculator", route: "/compound-interest", category: "Investments", keywords: ["compound", "interest", "step-up", "sip", "growth", "yearly"] },
+  { name: "CAGR Calculator", route: "/cagr-calculator", category: "Investments", keywords: ["cagr", "compound annual growth rate"] },
+  { name: "MF Overlap Analyzer", route: "/mf-overlap-analyzer", category: "Investments", keywords: ["mutual fund", "overlap", "portfolio", "duplicate", "holdings"] },
+  { name: "Stock Portfolio Tracker", route: "/stock-portfolio", category: "Investments", keywords: ["stock", "portfolio", "equity", "shares", "p&l", "allocation"] },
+]);
+
+// Savings & Deposits
+export const savingsTools: SearchItem[] = sortAlphabetically([
+  { name: "PPF Calculator", route: "/ppf-calculator", category: "Savings & Deposits", keywords: ["ppf", "public provident fund"] },
+  { name: "FD Calculator", route: "/fd-calculator", category: "Savings & Deposits", keywords: ["fd", "fixed deposit", "bank"] },
+  { name: "RD Calculator", route: "/rd-calculator", category: "Savings & Deposits", keywords: ["rd", "recurring deposit"] },
+  { name: "NSC Calculator", route: "/nsc-calculator", category: "Savings & Deposits", keywords: ["nsc", "national savings certificate"] },
+  { name: "NPS Calculator", route: "/nps-calculator", category: "Savings & Deposits", keywords: ["nps", "national pension", "retirement"] },
+  { name: "PF Calculator", route: "/pf-calculator", category: "Savings & Deposits", keywords: ["pf", "provident fund", "epf"] },
+  { name: "SCSS Calculator", route: "/scss-calculator", category: "Savings & Deposits", keywords: ["scss", "senior citizen", "savings scheme"] },
+  { name: "SSY Calculator", route: "/ssy-calculator", category: "Savings & Deposits", keywords: ["ssy", "sukanya samriddhi", "girl child"] },
+]);
+
+// Retirement & Benefits
+export const retirementTools: SearchItem[] = sortAlphabetically([
+  { name: "Retirement Corpus Calculator", route: "/retirement-calculator", category: "Retirement & Benefits", keywords: ["retirement", "corpus", "pension", "savings"] },
+  { name: "Gratuity Calculator", route: "/gratuity-calculator", category: "Retirement & Benefits", keywords: ["gratuity", "retirement", "employee"] },
+  { name: "Emergency Fund Calculator", route: "/emergency-fund", category: "Retirement & Benefits", keywords: ["emergency", "fund", "savings", "safety"] },
+  { name: "Insurance Premium Calculator", route: "/insurance-premium-calculator", category: "Retirement & Benefits", keywords: ["insurance", "premium", "term life", "health", "coverage"] },
+]);
+
+// Real Estate & Property
+export const realEstateTools: SearchItem[] = sortAlphabetically([
+  { name: "Rent vs Buy Calculator", route: "/rent-vs-buy", category: "Real Estate", keywords: ["rent", "buy", "home", "decision"] },
+  { name: "Home Affordability Calculator", route: "/home-affordability", category: "Real Estate", keywords: ["home", "affordability", "budget", "house"] },
+  { name: "Stamp Duty Calculator", route: "/stamp-duty-calculator", category: "Real Estate", keywords: ["stamp", "duty", "registration", "property"] },
+]);
+
+// Personal Finance & Planning
+export const personalFinanceTools: SearchItem[] = sortAlphabetically([
+  { name: "Budget Planner", route: "/budget-planner", category: "Personal Finance", keywords: ["budget", "planner", "expenses", "income"] },
+  { name: "Net Worth Calculator", route: "/net-worth-calculator", category: "Personal Finance", keywords: ["net worth", "assets", "liabilities", "wealth"] },
+  { name: "Financial Goal Tracker", route: "/financial-goal-tracker", category: "Personal Finance", keywords: ["goal", "tracker", "planning", "savings"] },
+  { name: "Debt-to-Income Calculator", route: "/debt-to-income", category: "Personal Finance", keywords: ["debt", "income", "ratio", "dti"] },
+  { name: "Credit Score Calculator", route: "/credit-score-calculator", category: "Personal Finance", keywords: ["credit", "score", "cibil", "rating"] },
+  { name: "Inflation Impact Calculator", route: "/inflation-calculator", category: "Personal Finance", keywords: ["inflation", "purchasing power", "real return", "nominal", "erosion"] },
+]);
+
+// Business & Corporate Finance
+export const businessTools: SearchItem[] = sortAlphabetically([
+  { name: "Capital Budgeting", route: "/capital-budgeting", category: "Business Finance", keywords: ["capital", "budgeting", "npv", "irr", "mirr", "payback"] },
+  { name: "Cash Flow Budgeting Tool", route: "/cash-flow-budgeting", category: "Business Finance", keywords: ["cash flow", "budgeting", "inflow", "outflow", "projection"] },
+  { name: "Factoring Tool", route: "/factoring-tool", category: "Business Finance", keywords: ["factoring", "receivables", "invoice", "discount", "financing"] },
+  { name: "Dividend Decision Tool", route: "/dividend-decision", category: "Business Finance", keywords: ["dividend", "gordon", "lintner", "payout", "retention", "policy"] },
+  { name: "Product Builder", route: "external:https://abcprodev1.lovable.app", category: "Business Finance", keywords: ["product", "builder", "idea", "blueprint"] },
 ]);
 
 // Pages & Settings
@@ -111,7 +143,15 @@ export const getAllSearchItems = (): SearchItem[] => {
     ...modulesData,
     ...incomeModules,
     ...taxModules,
-    ...amazingTools,
+    ...featuredTools,
+    ...taxPlanningTools,
+    ...loanTools,
+    ...investmentTools,
+    ...savingsTools,
+    ...retirementTools,
+    ...realEstateTools,
+    ...personalFinanceTools,
+    ...businessTools,
     ...pages,
   ];
 };
