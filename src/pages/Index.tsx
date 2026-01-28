@@ -127,6 +127,16 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         starred: true
       },
       {
+        id: "focus",
+        title: "Focus",
+        description: "Disconnect and focus on what matters",
+        icon: Target,
+        route: "external:https://abcfocus.lovable.app",
+        tag: "Works",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
+      },
+      {
         id: "escrow",
         title: "Escrow",
         description: "Secure transaction management",
