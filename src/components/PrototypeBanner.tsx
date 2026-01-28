@@ -31,8 +31,8 @@ export default function PrototypeBanner() {
             <div className="flex-1 text-sm">
               <p className="font-medium text-primary mb-1">Prototype Notice</p>
               <p className="text-muted-foreground">
-                This is a <span className="text-foreground font-medium">demonstration prototype</span> of ABC - AI Legal & Tax Co-pilot. 
-                All data you enter is stored <span className="text-foreground font-medium">locally in your browser</span> and is not sent to any server.
+                This is a <span className="text-foreground font-medium">Working Prototype</span> of ABC - AI Legal & Tax Co-pilot. 
+                All data you enter is stored <span className="text-foreground font-medium">locally in your browser</span> and is not sent to any server. Not a production-ready application.
               </p>
             </div>
             <Button
