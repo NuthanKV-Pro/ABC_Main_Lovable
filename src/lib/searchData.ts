@@ -49,6 +49,7 @@ export const featuredTools: SearchItem[] = sortAlphabetically([
   { name: "Deduction Playground", route: "/deduction-playground", category: "⭐ Featured Tools", keywords: ["deduction", "playground", "80c", "80d", "tax saving", "regime", "comparison", "roi"] },
   { name: "Contract Drafter", route: "/contract-drafter", category: "⭐ Featured Tools", keywords: ["contract", "drafter", "agreement", "legal", "nda", "employment"] },
   { name: "Escrow", route: "/escrow", category: "⭐ Featured Tools", keywords: ["escrow", "secure", "transaction"] },
+  { name: "Focus", route: "external:https://abcfocus.lovable.app", category: "⭐ Featured Tools", keywords: ["focus", "disconnect", "productivity", "concentration", "mindfulness"] },
 ]);
 
 // Tax Planning & Optimization
