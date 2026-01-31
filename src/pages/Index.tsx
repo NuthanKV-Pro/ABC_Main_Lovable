@@ -145,6 +145,16 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         tag: "WIP",
         tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
         starred: true
+      },
+      {
+        id: "insurance-real-return",
+        title: "Insurance Real Return Calc",
+        description: "True returns on insurance policies",
+        icon: Shield,
+        route: "external:https://abcinsurance1.lovable.app",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
       }
     ]
   },
@@ -649,6 +659,15 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         route: null,
         tag: "Coming Soon",
         tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
+      },
+      {
+        id: "learning-games",
+        title: "Learning Games",
+        description: "Learn as you play!",
+        icon: Sparkles,
+        route: null,
+        tag: "Coming Soon",
+        tagColor: "bg-muted text-muted-foreground border-muted-foreground/30"
       }
     ]
   }
@@ -932,7 +951,7 @@ const Index = () => {
             className="inline-block mb-6 px-6 py-2 rounded-full bg-primary/10 border border-primary/20"
           >
             <p className="text-primary font-medium flex items-center gap-2">
-              <span className="text-xl">✨</span> AI-Powered Tax Consultation
+              <span className="text-xl">✨</span> AI-Powered Consultation
             </p>
           </motion.div>
           
