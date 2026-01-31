@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard, Star, BookOpen, Crown } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard, Star, BookOpen, Crown, Rocket } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useRef, useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import SolarSystemBackground from "@/components/SolarSystemBackground";
 import PrototypeBanner from "@/components/PrototypeBanner";
+import OnboardingTour from "@/components/OnboardingTour";
 
 const modules = [
   {
@@ -935,6 +936,19 @@ const Index = () => {
                   <span className="text-muted-foreground">Credit Score Calc</span>
                   <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">C</kbd>
                 </div>
+                <div className="border-t my-2" />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-2"
+                  onClick={() => {
+                    localStorage.removeItem("abc-onboarding-completed");
+                    window.location.reload();
+                  }}
+                >
+                  <Rocket className="w-4 h-4" />
+                  Restart Tour
+                </Button>
               </div>
             </PopoverContent>
           </Popover>
@@ -1250,6 +1264,7 @@ const Index = () => {
 
       <Footer />
       <PrototypeBanner />
+      <OnboardingTour />
     </div>
   );
 };
