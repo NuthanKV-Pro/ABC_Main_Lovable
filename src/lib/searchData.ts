@@ -50,6 +50,7 @@ export const featuredTools: SearchItem[] = sortAlphabetically([
   { name: "Contract Drafter", route: "/contract-drafter", category: "⭐ Featured Tools", keywords: ["contract", "drafter", "agreement", "legal", "nda", "employment"] },
   { name: "Escrow", route: "/escrow", category: "⭐ Featured Tools", keywords: ["escrow", "secure", "transaction"] },
   { name: "Focus", route: "external:https://abcfocus.lovable.app", category: "⭐ Featured Tools", keywords: ["focus", "disconnect", "productivity", "concentration", "mindfulness"] },
+  { name: "Insurance Real Return Calc", route: "external:https://abcinsurance1.lovable.app", category: "⭐ Featured Tools", keywords: ["insurance", "real return", "policy", "ulip", "endowment"] },
 ]);
 
 // Tax Planning & Optimization
@@ -138,6 +139,12 @@ export const pages: SearchItem[] = sortAlphabetically([
   { name: "Profile Settings", route: "/profile", category: "Pages", keywords: ["profile", "settings", "account"] },
 ]);
 
+// Coming Soon
+export const comingSoonTools: SearchItem[] = sortAlphabetically([
+  { name: "When to Sell?", route: null as unknown as string, category: "Coming Soon", keywords: ["when", "sell", "exit", "timing", "investment"] },
+  { name: "Learning Games", route: null as unknown as string, category: "Coming Soon", keywords: ["learning", "games", "play", "education", "fun"] },
+]);
+
 // Combine all search items (already sorted within categories)
 export const getAllSearchItems = (): SearchItem[] => {
   return [
@@ -154,6 +161,7 @@ export const getAllSearchItems = (): SearchItem[] => {
     ...personalFinanceTools,
     ...businessTools,
     ...pages,
+    ...comingSoonTools,
   ];
 };
 
