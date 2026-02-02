@@ -150,9 +150,22 @@ export default function Landing() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 100, damping: 12, delay: 1.1 }}
-          className="mt-16 text-white/30 text-xs sm:text-sm"
+          className="mt-16 text-white/40 text-xs sm:text-sm"
         >
-          Built by Nuthan Kaparthy
+          Built by{" "}
+          <motion.span 
+            className="text-primary font-medium"
+            animate={{
+              textShadow: [
+                "0 0 8px hsl(var(--primary) / 0.4)",
+                "0 0 16px hsl(var(--primary) / 0.6)",
+                "0 0 8px hsl(var(--primary) / 0.4)",
+              ],
+            }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            Nuthan Kaparthy
+          </motion.span>
         </motion.p>
       </motion.div>
 
