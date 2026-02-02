@@ -1,0 +1,180 @@
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Rocket, Users, Briefcase, Sparkles } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import SolarSystemBackground from "@/components/SolarSystemBackground";
+
+export default function Landing() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <SolarSystemBackground />
+      
+      <motion.div
+        className="relative z-10 text-center px-4 max-w-4xl mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ staggerChildren: 0.2, delayChildren: 0.3 }}
+      >
+        {/* Logo/Title */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 100, damping: 12 }}
+          className="mb-8"
+        >
+          <motion.div
+            className="inline-flex items-center gap-3 mb-4"
+            animate={{ 
+              textShadow: [
+                "0 0 20px hsl(var(--primary) / 0.5)",
+                "0 0 40px hsl(var(--primary) / 0.8)",
+                "0 0 20px hsl(var(--primary) / 0.5)",
+              ],
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <Sparkles className="h-12 w-12 sm:h-16 sm:w-16 text-primary" />
+            <h1 className="text-5xl sm:text-7xl font-bold text-white tracking-tight">
+              ABC
+            </h1>
+          </motion.div>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 100, damping: 12, delay: 0.2 }}
+            className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto"
+          >
+            Your Complete Financial & Tax Management Platform
+          </motion.p>
+        </motion.div>
+
+        {/* Tagline */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 100, damping: 12, delay: 0.4 }}
+          className="text-white/50 text-sm sm:text-base mb-12 max-w-xl mx-auto"
+        >
+          Explore our suite of powerful tools, calculators, and applications designed to simplify your financial journey
+        </motion.p>
+
+        {/* Buttons */}
+        <motion.div 
+          className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          {/* Explore Prototypes Button */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 100, damping: 10, delay: 0.7 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <motion.div 
+              animate={{
+                boxShadow: [
+                  "0 0 20px hsl(var(--primary) / 0.3)",
+                  "0 0 40px hsl(var(--primary) / 0.5)",
+                  "0 0 20px hsl(var(--primary) / 0.3)",
+                ],
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="rounded-xl"
+            >
+              <Button
+                size="lg"
+                className="h-auto py-4 px-6 sm:px-8 text-base sm:text-lg font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-lg"
+                onClick={() => navigate("/prototypes")}
+              >
+                <Rocket className="mr-2 h-5 w-5" />
+                <span className="flex flex-col items-start">
+                  <span>Explore Working Prototypes</span>
+                  <span className="text-xs font-normal opacity-80">Modules & Tools</span>
+                </span>
+              </Button>
+            </motion.div>
+          </motion.div>
+
+          {/* Client-side MVP Button */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 100, damping: 10, delay: 0.8 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Button
+              size="lg"
+              variant="outline"
+              className="h-auto py-4 px-6 sm:px-8 text-base sm:text-lg font-semibold border-2 border-white/30 bg-white/5 hover:bg-white/10 text-white rounded-xl backdrop-blur-sm"
+              onClick={() => window.open("https://abcmvpb2c.lovable.app", "_blank", "noopener,noreferrer")}
+            >
+              <Users className="mr-2 h-5 w-5" />
+              <span className="flex flex-col items-start">
+                <span>Client-side Application</span>
+                <span className="text-xs font-normal opacity-70">MVP Demo</span>
+              </span>
+            </Button>
+          </motion.div>
+
+          {/* Consultant-side MVP Button */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 100, damping: 10, delay: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Button
+              size="lg"
+              variant="outline"
+              className="h-auto py-4 px-6 sm:px-8 text-base sm:text-lg font-semibold border-2 border-white/30 bg-white/5 hover:bg-white/10 text-white rounded-xl backdrop-blur-sm"
+              onClick={() => window.open("https://abcmvpb2b.lovable.app", "_blank", "noopener,noreferrer")}
+            >
+              <Briefcase className="mr-2 h-5 w-5" />
+              <span className="flex flex-col items-start">
+                <span>Consultant-side Application</span>
+                <span className="text-xs font-normal opacity-70">MVP Demo</span>
+              </span>
+            </Button>
+          </motion.div>
+        </motion.div>
+
+        {/* Footer text */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 100, damping: 12, delay: 1.1 }}
+          className="mt-16 text-white/30 text-xs sm:text-sm"
+        >
+          Built by Nuthan Kaparthy
+        </motion.p>
+      </motion.div>
+
+      {/* Animated gradient orbs */}
+      <motion.div
+        className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-primary/10 blur-3xl"
+        animate={{
+          x: [0, 50, 0],
+          y: [0, -30, 0],
+          scale: [1, 1.2, 1],
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-purple-500/10 blur-3xl"
+        animate={{
+          x: [0, -40, 0],
+          y: [0, 40, 0],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </div>
+  );
+}
