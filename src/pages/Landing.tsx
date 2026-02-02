@@ -55,9 +55,9 @@ export default function Landing() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 100, damping: 12, delay: 0.4 }}
-          className="text-white/50 text-sm sm:text-base mb-12 max-w-xl mx-auto"
+          className="text-white/50 text-lg sm:text-xl mb-12 max-w-xl mx-auto font-medium"
         >
-          Explore our suite of powerful tools, calculators, and applications designed to simplify your financial journey
+          Sky was never the limit ✨
         </motion.p>
 
         {/* Buttons */}
