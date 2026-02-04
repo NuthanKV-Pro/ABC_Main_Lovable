@@ -2,14 +2,14 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Rocket, Users, Briefcase, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import SolarSystemBackground from "@/components/SolarSystemBackground";
+import AuroraBackground from "@/components/AuroraBackground";
 
 export default function Landing() {
   const navigate = useNavigate();
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <SolarSystemBackground />
+      <AuroraBackground />
       
       <motion.div
         className="relative z-10 text-center px-4 max-w-4xl mx-auto"
