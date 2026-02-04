@@ -53,9 +53,21 @@ export default function Landing() {
         {/* Tagline */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 100, damping: 12, delay: 0.4 }}
-          className="text-white/50 text-lg sm:text-xl mb-12 max-w-xl mx-auto font-medium"
+          animate={{ 
+            opacity: 1, 
+            y: 0,
+            textShadow: [
+              "0 0 10px rgba(251, 191, 36, 0.4), 0 0 20px rgba(251, 191, 36, 0.2)",
+              "0 0 20px rgba(251, 191, 36, 0.6), 0 0 40px rgba(251, 191, 36, 0.4)",
+              "0 0 10px rgba(251, 191, 36, 0.4), 0 0 20px rgba(251, 191, 36, 0.2)",
+            ]
+          }}
+          transition={{ 
+            opacity: { type: "spring", stiffness: 100, damping: 12, delay: 0.4 },
+            y: { type: "spring", stiffness: 100, damping: 12, delay: 0.4 },
+            textShadow: { duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
+          }}
+          className="text-amber-400 text-lg sm:text-xl mb-12 max-w-xl mx-auto font-medium"
         >
           Sky was never the limit ✨
         </motion.p>
