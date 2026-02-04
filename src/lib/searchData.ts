@@ -59,7 +59,7 @@ export const taxPlanningTools: SearchItem[] = sortAlphabetically([
   { name: "Tax Saving Comparison", route: "/tax-saving-comparison", category: "Tax Planning", keywords: ["tax", "saving", "80c", "comparison"] },
   { name: "Advance Tax Calculator", route: "external:https://abcadv1.lovable.app", category: "Tax Planning", keywords: ["advance", "tax", "quarterly", "payment"] },
   { name: "Salary Optimisation Engine", route: "external:https://abcsalop.lovable.app", category: "Tax Planning", keywords: ["salary", "optimisation", "structure", "ctc"] },
-  { name: "HRA Calc", route: "external:https://abcsalop1.lovable.app/hra-calc", category: "Tax Planning", keywords: ["hra", "house rent", "allowance"] },
+  { name: "HRA Calc", route: "external:https://abcsalop.lovable.app/hra-calc", category: "Tax Planning", keywords: ["hra", "house rent", "allowance"] },
 ]);
 
 // Loan & EMI Calculators
