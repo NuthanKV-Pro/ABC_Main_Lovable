@@ -164,14 +164,14 @@ export default function Landing() {
           transition={{ type: "spring", stiffness: 100, damping: 12, delay: 1.1 }}
           className="mt-16 text-white/40 text-xs sm:text-sm"
         >
-          Built by{" "}
+          Built with ❤️‍🔥 by{" "}
           <motion.span 
-            className="text-primary font-medium"
+            className="text-amber-400 font-medium"
             animate={{
               textShadow: [
-                "0 0 8px hsl(var(--primary) / 0.4)",
-                "0 0 16px hsl(var(--primary) / 0.6)",
-                "0 0 8px hsl(var(--primary) / 0.4)",
+                "0 0 10px rgba(251, 191, 36, 0.4), 0 0 20px rgba(251, 191, 36, 0.2)",
+                "0 0 20px rgba(251, 191, 36, 0.6), 0 0 40px rgba(251, 191, 36, 0.4)",
+                "0 0 10px rgba(251, 191, 36, 0.4), 0 0 20px rgba(251, 191, 36, 0.2)",
               ],
             }}
             transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
