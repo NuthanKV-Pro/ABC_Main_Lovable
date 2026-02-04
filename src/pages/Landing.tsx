@@ -114,9 +114,9 @@ export default function Landing() {
               className="h-auto py-4 px-6 sm:px-8 text-base sm:text-lg font-semibold border-2 border-white/30 bg-white/5 hover:bg-white/10 text-white rounded-xl backdrop-blur-sm"
               onClick={() => window.open("https://abcmvpb2c.lovable.app", "_blank", "noopener,noreferrer")}
             >
-              <Users className="mr-2 h-5 w-5" />
+              <Users className="mr-2 h-5 w-5 text-amber-400" />
               <span className="flex flex-col items-start">
-                <span>Client-side Application</span>
+                <span className="text-amber-400">Client-side Application</span>
                 <span className="text-xs font-normal opacity-70">MVP Demo</span>
               </span>
             </Button>
@@ -136,9 +136,9 @@ export default function Landing() {
               className="h-auto py-4 px-6 sm:px-8 text-base sm:text-lg font-semibold border-2 border-white/30 bg-white/5 hover:bg-white/10 text-white rounded-xl backdrop-blur-sm"
               onClick={() => window.open("https://abcmvpb2b.lovable.app", "_blank", "noopener,noreferrer")}
             >
-              <Briefcase className="mr-2 h-5 w-5" />
+              <Briefcase className="mr-2 h-5 w-5 text-amber-400" />
               <span className="flex flex-col items-start">
-                <span>Consultant-side Application</span>
+                <span className="text-amber-400">Consultant-side Application</span>
                 <span className="text-xs font-normal opacity-70">MVP Demo</span>
               </span>
             </Button>
