@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, ExternalLink, Clock } from "lucide-react";
+import { Search, ExternalLink, Clock, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -16,6 +16,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { getAllSearchItems, SearchItem } from "@/lib/searchData";
+import * as XLSX from "xlsx";
 
 const SearchBar = () => {
   const [open, setOpen] = useState(false);
@@ -42,6 +43,31 @@ const SearchBar = () => {
     
     // Handle internal routes
     navigate(route);
+  };
+
+  const handleExportExcel = () => {
+    const allItems = getAllSearchItems();
+    
+    const exportData = allItems.map((item, index) => ({
+      "Sl No": index + 1,
+      "Name": item.name,
+      "Tag": item.category,
+      "Description": item.keywords?.join(", ") || ""
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Modules & Tools");
+    
+    // Auto-size columns
+    worksheet["!cols"] = [
+      { wch: 8 },   // Sl No
+      { wch: 30 },  // Name
+      { wch: 25 },  // Tag
+      { wch: 50 }   // Description
+    ];
+    
+    XLSX.writeFile(workbook, "Modules_and_Tools_Directory.xlsx");
   };
 
   // Get all search items from centralized data
@@ -80,11 +106,23 @@ const SearchBar = () => {
       </PopoverTrigger>
       <PopoverContent className="w-[280px] md:w-[350px] p-0" align="end">
         <Command>
-          <CommandInput 
-            placeholder="Search modules & tools..." 
-            value={search}
-            onValueChange={setSearch}
-          />
+          <div className="flex items-center border-b">
+            <CommandInput 
+              placeholder="Search modules & tools..." 
+              value={search}
+              onValueChange={setSearch}
+              className="flex-1"
+            />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleExportExcel}
+              className="h-9 w-9 mr-1 shrink-0"
+              title="Export to Excel"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+          </div>
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             {Object.entries(groupedItems).map(([category, items]) => (
