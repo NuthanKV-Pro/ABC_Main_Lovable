@@ -46,7 +46,7 @@ export default function Landing() {
             transition={{ type: "spring", stiffness: 100, damping: 12, delay: 0.2 }}
             className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto"
           >
-            Your Complete Financial & Tax Management Platform
+            Democratising The Expertise
           </motion.p>
         </motion.div>
 
