@@ -149,6 +149,43 @@ export default function Landing() {
             </div>
           </motion.div>
 
+          {/* Client-side MVP V2 Button */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 100, damping: 10, delay: 0.85 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <div className="relative">
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-auto py-4 px-6 sm:px-8 text-base sm:text-lg font-semibold border-2 border-amber-400/40 bg-amber-400/5 hover:bg-amber-400/10 text-white rounded-xl backdrop-blur-sm"
+                onClick={() => window.open("https://abcmvpb2cv2.lovable.app", "_blank", "noopener,noreferrer")}
+              >
+                <Users className="mr-2 h-5 w-5 text-amber-400" />
+                <span className="flex flex-col items-start">
+                  <span className="text-amber-400">Client-side Application</span>
+                  <span className="text-xs font-normal opacity-70">MVP Demo — Version 2</span>
+                </span>
+              </Button>
+              <motion.div
+                className="absolute pointer-events-none"
+                style={{ top: "-6px", right: "-6px" }}
+                animate={{
+                  x: [0, 20, 40, 20, 0, -20, -40, -20, 0],
+                  y: [0, -8, 0, 8, 12, 8, 0, -8, 0],
+                  scale: [1, 1.2, 1, 0.9, 1, 1.2, 1, 0.9, 1],
+                  rotate: [0, -45, -90, -135, -180, -225, -270, -315, -360],
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              >
+                <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.8)]" />
+              </motion.div>
+            </div>
+          </motion.div>
+
           {/* Consultant-side MVP Button */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
