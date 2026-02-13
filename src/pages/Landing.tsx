@@ -133,19 +133,6 @@ export default function Landing() {
                   <span className="text-xs font-normal opacity-70">MVP Demo</span>
                 </span>
               </Button>
-              <motion.div
-                className="absolute pointer-events-none"
-                style={{ top: "-6px", right: "-6px" }}
-                animate={{
-                  x: [0, -20, -40, -20, 0, 20, 40, 20, 0],
-                  y: [0, -8, 0, 8, 12, 8, 0, -8, 0],
-                  scale: [1, 1.2, 1, 0.9, 1, 1.2, 1, 0.9, 1],
-                  rotate: [0, 45, 90, 135, 180, 225, 270, 315, 360]
-                }}
-                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}>
-
-                <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.8)]" />
-              </motion.div>
             </div>
           </motion.div>
 
@@ -170,19 +157,6 @@ export default function Landing() {
 
 
 
-              <motion.div
-                className="absolute pointer-events-none"
-                style={{ top: "-6px", right: "-6px" }}
-                animate={{
-                  x: [0, 20, 40, 20, 0, -20, -40, -20, 0],
-                  y: [0, -8, 0, 8, 12, 8, 0, -8, 0],
-                  scale: [1, 1.2, 1, 0.9, 1, 1.2, 1, 0.9, 1],
-                  rotate: [0, -45, -90, -135, -180, -225, -270, -315, -360]
-                }}
-                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}>
-
-                <Star className="h-3.5 w-3.5 text-amber-400 fill-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.8)]" />
-              </motion.div>
             </div>
           </motion.div>
 
