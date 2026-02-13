@@ -133,6 +133,23 @@ export default function Landing() {
                   <span className="text-xs font-normal opacity-70">MVP Demo</span>
                 </span>
               </Button>
+              <motion.div
+                className="absolute -top-3 -right-3 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg"
+                initial={{ scale: 0 }}
+                animate={{
+                  scale: [0, 1.3, 1],
+                  boxShadow: [
+                    "0 0 0px rgba(220,38,38,0.4)",
+                    "0 0 16px rgba(220,38,38,0.8)",
+                    "0 0 8px rgba(220,38,38,0.4)"
+                  ]
+                }}
+                transition={{
+                  scale: { duration: 0.5, ease: "easeOut" },
+                  boxShadow: { duration: 1.5, repeat: Infinity, ease: "easeInOut" }
+                }}>
+                Viral App 🔥
+              </motion.div>
             </div>
           </motion.div>
 
