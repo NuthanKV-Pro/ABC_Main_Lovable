@@ -800,9 +800,16 @@ For a detailed analysis, please consider:
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Home
           </Link>
-          <div className="flex items-center gap-3 mb-2">
-            <Scale className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">Legal Interpretations</h1>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <Scale className="h-8 w-8 text-primary" />
+              <h1 className="text-3xl font-bold">Legal Interpretations</h1>
+            </div>
+            <a href="https://smartcaselaws.lovable.app" target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" className="border-yellow-500/50 hover:bg-yellow-500/10 text-yellow-500 font-semibold">
+                V2 <ExternalLink className="h-4 w-4 ml-1" />
+              </Button>
+            </a>
           </div>
           <p className="text-muted-foreground">Search case laws, analyze legal provisions, and understand judicial precedents</p>
         </div>
