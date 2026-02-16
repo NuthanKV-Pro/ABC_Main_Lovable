@@ -88,6 +88,7 @@ interface Tool {
   tag: string;
   tagColor: string;
   starred?: boolean;
+  waitlistUrl?: string;
 }
 
 // Categorized Amazing Tools
@@ -197,8 +198,9 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         description: "Optimize your salary structure",
         icon: Wallet,
         route: "external:https://abcsalop1.lovable.app",
-        tag: "WIP",
-        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+        tag: "Prototype",
+        tagColor: "bg-red-500/20 text-red-400 border-red-500/30",
+        waitlistUrl: "https://forms.gle/A3sMWtM4mRypWDE88"
       },
       {
         id: "hra-calc",
@@ -1237,7 +1239,7 @@ const Index = () => {
                                 <CardTitle className="text-base">{tool.title}</CardTitle>
                                 <CardDescription className="text-sm">{tool.description}</CardDescription>
                               </CardHeader>
-                              <CardContent className="pt-0">
+                              <CardContent className="pt-0 space-y-2">
                                 <Button
                                   className="w-full"
                                   size="sm"
@@ -1256,6 +1258,19 @@ const Index = () => {
                                 >
                                   {isDisabled ? "Coming Soon" : "Open Tool"}
                                 </Button>
+                                {tool.waitlistUrl && (
+                                  <Button
+                                    className="w-full"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.open(tool.waitlistUrl, '_blank', 'noopener,noreferrer');
+                                    }}
+                                  >
+                                    🚀 Join Waitlist
+                                  </Button>
+                                )}
                               </CardContent>
                             </Card>
                           );
