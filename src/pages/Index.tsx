@@ -157,6 +157,17 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         tag: "Live",
         tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
         starred: true
+      },
+      {
+        id: "salary-optimisation",
+        title: "Salary Optimisation Engine",
+        description: "Optimize your salary structure",
+        icon: Wallet,
+        route: "external:https://abcsalop1.lovable.app",
+        tag: "Prototype",
+        tagColor: "bg-red-500/20 text-red-400 border-red-500/30",
+        starred: true,
+        waitlistUrl: "https://forms.gle/A3sMWtM4mRypWDE88"
       }
     ]
   },
@@ -191,16 +202,6 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         route: "external:https://abcadv1.lovable.app",
         tag: "WIP",
         tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
-      },
-      {
-        id: "salary-optimisation",
-        title: "Salary Optimisation Engine",
-        description: "Optimize your salary structure",
-        icon: Wallet,
-        route: "external:https://abcsalop1.lovable.app",
-        tag: "Prototype",
-        tagColor: "bg-red-500/20 text-red-400 border-red-500/30",
-        waitlistUrl: "https://forms.gle/A3sMWtM4mRypWDE88"
       },
       {
         id: "hra-calc",
