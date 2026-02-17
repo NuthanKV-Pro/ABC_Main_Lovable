@@ -23,6 +23,12 @@ import jsPDF from "jspdf";
 const contractTypes = [
   { value: "employment", label: "Employment Agreement" },
   { value: "nda", label: "Non-Disclosure Agreement (NDA)" },
+  { value: "non-compete", label: "Non-Compete Agreement" },
+  { value: "offer-letter", label: "Offer Letter" },
+  { value: "shareholders", label: "Shareholders' Agreement" },
+  { value: "term-sheet", label: "Term Sheet" },
+  { value: "investment", label: "Investment Agreement" },
+  { value: "share-purchase", label: "Share Purchase Agreement" },
   { value: "service", label: "Service Agreement" },
   { value: "rental", label: "Rental/Lease Agreement" },
   { value: "partnership", label: "Partnership Agreement" },
@@ -34,7 +40,6 @@ const contractTypes = [
   { value: "licensing", label: "Licensing Agreement" },
   { value: "mou", label: "Memorandum of Understanding (MOU)" },
   { value: "joint-venture", label: "Joint Venture Agreement" },
-  { value: "share-purchase", label: "Share Purchase Agreement" },
   { value: "power-of-attorney", label: "Power of Attorney" },
 ];
 
@@ -2437,6 +2442,230 @@ const ContractDrafter = () => {
         contract += `The Seller shall indemnify the Buyer against any claims arising from pre-sale liabilities.\n\n`;
         contract += `9. CLOSING DATE\n`;
         contract += `The transaction shall be completed on or before ${details.endDate || "[Closing Date]"}.\n\n`;
+        break;
+
+      case "non-compete":
+        contract += `RECITALS:\n`;
+        contract += `WHEREAS, the parties are entering into or have entered into a business relationship and the First Party wishes to protect its legitimate business interests.\n\n`;
+        contract += `1. NON-COMPETE COVENANT\n`;
+        contract += `The Second Party agrees that during the term of this Agreement and for a period of [Duration] months following its termination, they shall not directly or indirectly:\n`;
+        contract += `  a) Engage in any business that competes with the First Party's business.\n`;
+        contract += `  b) Solicit or attempt to solicit any clients, customers, or accounts of the First Party.\n`;
+        contract += `  c) Recruit or attempt to recruit any employees or contractors of the First Party.\n\n`;
+        contract += `2. GEOGRAPHIC SCOPE\n`;
+        contract += `This non-compete restriction applies within ${details.jurisdiction || "[Geographic Area/Territory]"}.\n\n`;
+        contract += `3. SCOPE OF RESTRICTED ACTIVITIES\n`;
+        contract += `${details.purpose || "The restricted activities include [Description of Competing Business Activities]."}\n\n`;
+        contract += `4. CONSIDERATION\n`;
+        contract += `In consideration for the non-compete obligations, the First Party shall pay ₹${details.amount || "[Amount]"} to the Second Party.\n\n`;
+        contract += `5. TERM\n`;
+        contract += `This Agreement shall be effective from ${details.effectiveDate || "[Start Date]"} and the non-compete restrictions shall survive for [Duration] months after ${details.endDate || "[End Date]"}.\n\n`;
+        contract += `6. REMEDIES FOR BREACH\n`;
+        contract += `In the event of a breach, the First Party shall be entitled to seek injunctive relief and/or damages, including attorney's fees.\n\n`;
+        contract += `7. SEVERABILITY\n`;
+        contract += `If any provision of this non-compete is found to be overly broad, a court may modify and enforce it to the extent it deems reasonable.\n\n`;
+        contract += `8. REASONABLENESS\n`;
+        contract += `Both parties acknowledge that the restrictions contained herein are reasonable and necessary for the protection of the First Party's legitimate business interests.\n\n`;
+        break;
+
+      case "offer-letter":
+        contract += `OFFER OF EMPLOYMENT\n\n`;
+        contract += `Dear ${details.party2Name},\n\n`;
+        contract += `We are pleased to offer you the position of ${details.purpose || "[Position Title]"} at ${details.party1Name}. We believe your skills and experience will be a valuable addition to our team.\n\n`;
+        contract += `1. POSITION AND REPORTING\n`;
+        contract += `Title: ${details.purpose || "[Position Title]"}\n`;
+        contract += `Department: [Department Name]\n`;
+        contract += `Reporting To: [Manager Name/Title]\n`;
+        contract += `Location: ${details.party1Address || "[Office Location]"}\n\n`;
+        contract += `2. START DATE\n`;
+        contract += `Your employment is expected to commence on ${details.effectiveDate || "[Start Date]"}.\n\n`;
+        contract += `3. COMPENSATION\n`;
+        contract += `Annual CTC: ₹${details.amount || "[Amount]"}\n`;
+        contract += `The compensation structure is as follows:\n`;
+        contract += `  a) Basic Salary: ₹[Amount] per annum\n`;
+        contract += `  b) HRA: ₹[Amount] per annum\n`;
+        contract += `  c) Special Allowance: ₹[Amount] per annum\n`;
+        contract += `  d) PF Contribution: As per statutory requirements\n`;
+        contract += `  e) Performance Bonus: As per company policy\n\n`;
+        contract += `4. PROBATION PERIOD\n`;
+        contract += `You will be on probation for [Duration] months from the date of joining. During this period, either party may terminate the employment with [Notice Period] notice.\n\n`;
+        contract += `5. BENEFITS\n`;
+        contract += `  a) Medical Insurance: Group health insurance coverage\n`;
+        contract += `  b) Leave Policy: As per company HR policy\n`;
+        contract += `  c) Other Benefits: [List additional benefits]\n\n`;
+        contract += `6. TERMS AND CONDITIONS\n`;
+        contract += `This offer is subject to:\n`;
+        contract += `  a) Successful background verification\n`;
+        contract += `  b) Submission of required documents\n`;
+        contract += `  c) Acceptance of company policies and code of conduct\n\n`;
+        contract += `7. ACCEPTANCE\n`;
+        contract += `Please sign and return this offer letter by ${details.endDate || "[Acceptance Deadline]"} to confirm your acceptance.\n\n`;
+        contract += `We look forward to having you on our team!\n\n`;
+        contract += `Warm regards,\n`;
+        contract += `${details.party1Name}\n\n`;
+        break;
+
+      case "shareholders":
+        contract += `RECITALS:\n`;
+        contract += `WHEREAS, the parties are shareholders of [Company Name] ("the Company") and wish to regulate their rights, obligations, and the management of the Company.\n\n`;
+        contract += `1. SHARE CAPITAL AND OWNERSHIP\n`;
+        contract += `The total share capital of the Company is ₹${details.amount || "[Amount]"}.\n`;
+        contract += `The shareholding pattern is as follows:\n`;
+        contract += `  a) ${details.party1Name}: [Number] shares ([Percentage]%)\n`;
+        contract += `  b) ${details.party2Name}: [Number] shares ([Percentage]%)\n\n`;
+        contract += `2. BOARD OF DIRECTORS\n`;
+        contract += `  a) The Board shall consist of [Number] directors.\n`;
+        contract += `  b) Each shareholder holding more than [Threshold]% shall be entitled to nominate [Number] director(s).\n`;
+        contract += `  c) Board meetings shall be held at least once every quarter.\n\n`;
+        contract += `3. MANAGEMENT AND DECISION MAKING\n`;
+        contract += `  a) Day-to-day management shall be handled by the Managing Director/CEO.\n`;
+        contract += `  b) Reserved Matters requiring unanimous/supermajority consent:\n`;
+        contract += `    - Amendment of Articles of Association\n`;
+        contract += `    - Issuance of new shares or securities\n`;
+        contract += `    - Mergers, acquisitions, or sale of substantial assets\n`;
+        contract += `    - Capital expenditure exceeding ₹[Threshold]\n`;
+        contract += `    - Related party transactions\n`;
+        contract += `    - Change in business activity\n\n`;
+        contract += `4. TRANSFER OF SHARES\n`;
+        contract += `  a) Right of First Refusal (ROFR): Any shareholder wishing to sell shares must first offer them to existing shareholders.\n`;
+        contract += `  b) Tag-Along Rights: Minority shareholders may join in any sale by majority shareholders on the same terms.\n`;
+        contract += `  c) Drag-Along Rights: Majority shareholders holding [Threshold]%+ may require minority shareholders to join in a sale.\n`;
+        contract += `  d) Lock-in Period: Shareholders shall not transfer shares for [Duration] from the date of this Agreement.\n\n`;
+        contract += `5. DIVIDEND POLICY\n`;
+        contract += `Dividends shall be declared as recommended by the Board, subject to availability of distributable profits and applicable laws.\n\n`;
+        contract += `6. ANTI-DILUTION\n`;
+        contract += `Each shareholder shall have pre-emptive rights to subscribe to new shares in proportion to their existing holdings.\n\n`;
+        contract += `7. NON-COMPETE AND NON-SOLICITATION\n`;
+        contract += `During the term of this Agreement and for [Duration] months thereafter, no shareholder shall engage in competing business or solicit Company employees.\n\n`;
+        contract += `8. CONFIDENTIALITY\n`;
+        contract += `All shareholders shall maintain strict confidentiality of Company information and the terms of this Agreement.\n\n`;
+        contract += `9. DEADLOCK RESOLUTION\n`;
+        contract += `In the event of a deadlock, the parties shall:\n`;
+        contract += `  a) First attempt good-faith negotiation for 30 days\n`;
+        contract += `  b) If unresolved, submit to mediation\n`;
+        contract += `  c) If still unresolved, either party may trigger a buy-sell mechanism\n\n`;
+        contract += `10. EXIT MECHANISMS\n`;
+        contract += `  a) IPO: Shareholders agree to cooperate in any future public offering.\n`;
+        contract += `  b) Buy-Back: The Company may buy back shares subject to applicable laws.\n`;
+        contract += `  c) Put/Call Options: [Details of any put/call arrangements]\n\n`;
+        contract += `11. TERM\n`;
+        contract += `This Agreement shall commence on ${details.effectiveDate || "[Start Date]"} and continue until ${details.endDate || "[End Date]"} or until terminated by mutual consent.\n\n`;
+        break;
+
+      case "term-sheet":
+        contract += `TERM SHEET FOR PROPOSED INVESTMENT\n`;
+        contract += `(Non-Binding except where stated)\n\n`;
+        contract += `${"─".repeat(60)}\n\n`;
+        contract += `1. COMPANY DETAILS\n`;
+        contract += `Company: ${details.party2Name}\n`;
+        contract += `Business: ${details.purpose || "[Description of Business]"}\n`;
+        contract += `Registered Address: ${details.party2Address || "[Address]"}\n\n`;
+        contract += `2. INVESTOR DETAILS\n`;
+        contract += `Investor: ${details.party1Name}\n`;
+        contract += `Address: ${details.party1Address || "[Address]"}\n\n`;
+        contract += `3. INVESTMENT AMOUNT\n`;
+        contract += `Total Investment: ₹${details.amount || "[Amount]"}\n`;
+        contract += `Type of Security: [Equity Shares / Compulsorily Convertible Preference Shares / Convertible Notes]\n`;
+        contract += `Pre-Money Valuation: ₹[Valuation]\n`;
+        contract += `Post-Money Valuation: ₹[Valuation]\n`;
+        contract += `Percentage Stake: [Percentage]%\n\n`;
+        contract += `4. USE OF PROCEEDS\n`;
+        contract += `The investment shall be utilized for:\n`;
+        contract += `  a) Product Development: [Percentage]%\n`;
+        contract += `  b) Marketing & Sales: [Percentage]%\n`;
+        contract += `  c) Working Capital: [Percentage]%\n`;
+        contract += `  d) Hiring & Operations: [Percentage]%\n\n`;
+        contract += `5. KEY TERMS\n`;
+        contract += `  a) Board Seat: The Investor shall be entitled to [Number] Board seat(s).\n`;
+        contract += `  b) Anti-Dilution: [Full Ratchet / Weighted Average] anti-dilution protection.\n`;
+        contract += `  c) Liquidation Preference: [1x/2x] non-participating liquidation preference.\n`;
+        contract += `  d) Vesting: Founders' shares to vest over [Duration] years with [Duration] month cliff.\n\n`;
+        contract += `6. INVESTOR RIGHTS\n`;
+        contract += `  a) Information Rights: Quarterly financials, annual audited statements.\n`;
+        contract += `  b) Inspection Rights: Access to books and records upon reasonable notice.\n`;
+        contract += `  c) Pro-Rata Rights: Right to participate in future funding rounds.\n`;
+        contract += `  d) Approval Rights on Reserved Matters.\n\n`;
+        contract += `7. FOUNDER OBLIGATIONS\n`;
+        contract += `  a) Full-time commitment to the Company.\n`;
+        contract += `  b) Non-compete for the term of engagement + [Duration] months.\n`;
+        contract += `  c) IP Assignment: All IP created shall vest with the Company.\n\n`;
+        contract += `8. CONDITIONS PRECEDENT\n`;
+        contract += `  a) Satisfactory due diligence\n`;
+        contract += `  b) Execution of definitive agreements (SHA, SSA, Employment Agreements)\n`;
+        contract += `  c) Regulatory approvals, if any\n`;
+        contract += `  d) No material adverse change\n\n`;
+        contract += `9. EXCLUSIVITY\n`;
+        contract += `The Company shall not solicit or negotiate with other investors for a period of [Duration] days from the date of this Term Sheet.\n\n`;
+        contract += `10. TIMELINE\n`;
+        contract += `Due Diligence Completion: ${details.effectiveDate || "[Date]"}\n`;
+        contract += `Definitive Agreements: [Date]\n`;
+        contract += `Closing: ${details.endDate || "[Date]"}\n\n`;
+        contract += `11. BINDING PROVISIONS\n`;
+        contract += `Only Clauses 9 (Exclusivity), 12 (Confidentiality), and 13 (Governing Law) of this Term Sheet are legally binding.\n\n`;
+        contract += `12. CONFIDENTIALITY\n`;
+        contract += `Both parties shall keep the terms of this Term Sheet confidential and shall not disclose them without prior written consent.\n\n`;
+        break;
+
+      case "investment":
+        contract += `RECITALS:\n`;
+        contract += `WHEREAS, the Company is engaged in ${details.purpose || "[Description of Business]"} and seeks investment for growth and expansion.\n`;
+        contract += `WHEREAS, the Investor wishes to invest in the Company on the terms set forth herein.\n\n`;
+        contract += `1. INVESTMENT\n`;
+        contract += `The Investor agrees to invest ₹${details.amount || "[Amount]"} in the Company in exchange for [Number] [equity shares / preference shares / convertible instruments] representing [Percentage]% of the Company's fully diluted share capital.\n\n`;
+        contract += `2. VALUATION\n`;
+        contract += `  a) Pre-Money Valuation: ₹[Amount]\n`;
+        contract += `  b) Post-Money Valuation: ₹[Amount]\n`;
+        contract += `  c) Price Per Share: ₹[Amount]\n\n`;
+        contract += `3. CLOSING\n`;
+        contract += `  a) The closing shall take place on or before ${details.endDate || "[Closing Date]"}.\n`;
+        contract += `  b) At closing, the Investor shall transfer the investment amount and the Company shall issue the securities.\n\n`;
+        contract += `4. CONDITIONS PRECEDENT TO CLOSING\n`;
+        contract += `  a) Completion of satisfactory due diligence by the Investor.\n`;
+        contract += `  b) Execution of the Shareholders' Agreement.\n`;
+        contract += `  c) Receipt of all regulatory and board approvals.\n`;
+        contract += `  d) No material adverse change in the Company's business.\n`;
+        contract += `  e) Delivery of all closing documents.\n\n`;
+        contract += `5. REPRESENTATIONS AND WARRANTIES BY THE COMPANY\n`;
+        contract += `The Company represents and warrants that:\n`;
+        contract += `  a) It is duly incorporated and validly existing under applicable laws.\n`;
+        contract += `  b) The financial statements provided are accurate and complete.\n`;
+        contract += `  c) There is no pending or threatened litigation that may materially affect the Company.\n`;
+        contract += `  d) All intellectual property is owned by or licensed to the Company.\n`;
+        contract += `  e) The Company is in compliance with all applicable laws and regulations.\n`;
+        contract += `  f) All material contracts have been disclosed to the Investor.\n\n`;
+        contract += `6. REPRESENTATIONS AND WARRANTIES BY THE INVESTOR\n`;
+        contract += `The Investor represents and warrants that:\n`;
+        contract += `  a) They have the legal capacity and authority to enter into this Agreement.\n`;
+        contract += `  b) The funds being invested are from legitimate sources.\n`;
+        contract += `  c) They are an accredited/sophisticated investor.\n\n`;
+        contract += `7. INVESTOR RIGHTS\n`;
+        contract += `  a) Board Representation: The Investor shall be entitled to appoint [Number] director(s) to the Board.\n`;
+        contract += `  b) Information Rights: Monthly MIS, quarterly financials, annual audited statements.\n`;
+        contract += `  c) Anti-Dilution: [Full Ratchet / Weighted Average] protection in case of down rounds.\n`;
+        contract += `  d) Liquidation Preference: [1x] non-participating preference on liquidation events.\n`;
+        contract += `  e) Pre-Emptive Rights: Right to participate in future issuances to maintain pro-rata ownership.\n\n`;
+        contract += `8. AFFIRMATIVE COVENANTS\n`;
+        contract += `The Company shall:\n`;
+        contract += `  a) Maintain proper books and records.\n`;
+        contract += `  b) Comply with all applicable laws.\n`;
+        contract += `  c) Maintain adequate insurance.\n`;
+        contract += `  d) Use the investment proceeds only for agreed purposes.\n\n`;
+        contract += `9. NEGATIVE COVENANTS (RESERVED MATTERS)\n`;
+        contract += `Without Investor consent, the Company shall not:\n`;
+        contract += `  a) Issue new shares or securities.\n`;
+        contract += `  b) Declare dividends.\n`;
+        contract += `  c) Incur debt beyond ₹[Threshold].\n`;
+        contract += `  d) Enter into related party transactions.\n`;
+        contract += `  e) Change the nature of business.\n`;
+        contract += `  f) Amend constitutional documents.\n\n`;
+        contract += `10. TRANSFER RESTRICTIONS\n`;
+        contract += `  a) Lock-in: Founders shall not transfer shares for [Duration] from closing.\n`;
+        contract += `  b) ROFR: Right of first refusal on any proposed transfer.\n`;
+        contract += `  c) Tag-Along and Drag-Along rights as per Shareholders' Agreement.\n\n`;
+        contract += `11. INDEMNIFICATION\n`;
+        contract += `The Company and Founders shall jointly and severally indemnify the Investor against any losses arising from breach of representations, warranties, or covenants.\n\n`;
+        contract += `12. TERM\n`;
+        contract += `This Agreement shall be effective from ${details.effectiveDate || "[Start Date]"} and remain in force until the Investor exits the Company.\n\n`;
         break;
 
       case "power-of-attorney":
