@@ -149,6 +149,16 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         starred: true
       },
       {
+        id: "clause-finder",
+        title: "Clause Finder",
+        description: "Search & learn legal clauses",
+        icon: BookOpen,
+        route: "/clause-finder",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
+      },
+      {
         id: "insurance-real-return",
         title: "Insurance Real Return Calc",
         description: "True returns on insurance policies",
