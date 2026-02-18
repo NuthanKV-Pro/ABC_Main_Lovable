@@ -70,6 +70,7 @@ import ContractDrafter from "./pages/ContractDrafter";
 import LegalInterpretations from "./pages/LegalInterpretations";
 import DeductionPlayground from "./pages/DeductionPlayground";
 import Escrow from "./pages/Escrow";
+import ClauseFinder from "./pages/ClauseFinder";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -147,6 +148,7 @@ const App = () => (
           <Route path="/legal-interpretations" element={<LegalInterpretations />} />
           <Route path="/deduction-playground" element={<DeductionPlayground />} />
           <Route path="/escrow" element={<Escrow />} />
+          <Route path="/clause-finder" element={<ClauseFinder />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

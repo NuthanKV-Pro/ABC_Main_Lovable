@@ -49,6 +49,7 @@ export const featuredTools: SearchItem[] = sortAlphabetically([
   { name: "Deduction Playground", route: "/deduction-playground", category: "⭐ Featured Tools", keywords: ["deduction", "playground", "80c", "80d", "tax saving", "regime", "comparison", "roi"] },
   { name: "Contract Drafter", route: "/contract-drafter", category: "⭐ Featured Tools", keywords: ["contract", "drafter", "agreement", "legal", "nda", "employment"] },
   { name: "Escrow", route: "/escrow", category: "⭐ Featured Tools", keywords: ["escrow", "secure", "transaction"] },
+  { name: "Clause Finder", route: "/clause-finder", category: "⭐ Featured Tools", keywords: ["clause", "finder", "legal", "contract", "NDA", "shareholders", "agreement"] },
   { name: "Focus", route: "external:https://abcfocus.lovable.app", category: "⭐ Featured Tools", keywords: ["focus", "disconnect", "productivity", "concentration", "mindfulness"] },
   { name: "Insurance Real Return Calc", route: "external:https://abcinsurance1.lovable.app", category: "⭐ Featured Tools", keywords: ["insurance", "real return", "policy", "ulip", "endowment"] },
   { name: "Salary Optimisation Engine", route: "external:https://abcsalop.lovable.app", category: "⭐ Featured Tools", keywords: ["salary", "optimisation", "structure", "ctc"] },
