@@ -48,7 +48,7 @@ export const featuredTools: SearchItem[] = sortAlphabetically([
   { name: "Tax Loss Harvesting", route: "/tax-loss-harvesting", category: "⭐ Featured Tools", keywords: ["tax", "loss", "harvesting", "capital gains", "offset"] },
   { name: "Deduction Playground", route: "/deduction-playground", category: "⭐ Featured Tools", keywords: ["deduction", "playground", "80c", "80d", "tax saving", "regime", "comparison", "roi"] },
   { name: "Contract Drafter", route: "/contract-drafter", category: "⭐ Featured Tools", keywords: ["contract", "drafter", "agreement", "legal", "nda", "employment"] },
-  { name: "Escrow", route: "/escrow", category: "⭐ Featured Tools", keywords: ["escrow", "secure", "transaction"] },
+  
   { name: "Clause Finder", route: "/clause-finder", category: "⭐ Featured Tools", keywords: ["clause", "finder", "legal", "contract", "NDA", "shareholders", "agreement"] },
   { name: "Focus", route: "external:https://abcfocus.lovable.app", category: "⭐ Featured Tools", keywords: ["focus", "disconnect", "productivity", "concentration", "mindfulness"] },
   { name: "Insurance Real Return Calc", route: "external:https://abcinsurance1.lovable.app", category: "⭐ Featured Tools", keywords: ["insurance", "real return", "policy", "ulip", "endowment"] },
@@ -132,6 +132,7 @@ export const businessTools: SearchItem[] = sortAlphabetically([
   { name: "Cash Flow Budgeting Tool", route: "/cash-flow-budgeting", category: "Business Finance", keywords: ["cash flow", "budgeting", "inflow", "outflow", "projection"] },
   { name: "Factoring Tool", route: "/factoring-tool", category: "Business Finance", keywords: ["factoring", "receivables", "invoice", "discount", "financing"] },
   { name: "Dividend Decision Tool", route: "/dividend-decision", category: "Business Finance", keywords: ["dividend", "gordon", "lintner", "payout", "retention", "policy"] },
+  { name: "Escrow", route: "/escrow", category: "Business Finance", keywords: ["escrow", "secure", "transaction"] },
   { name: "Product Builder", route: "external:https://abcprodev1.lovable.app", category: "Business Finance", keywords: ["product", "builder", "idea", "blueprint"] },
 ]);
 

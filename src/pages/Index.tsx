@@ -139,16 +139,6 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         starred: true
       },
       {
-        id: "escrow",
-        title: "Escrow",
-        description: "Secure transaction management",
-        icon: ShieldCheck,
-        route: "/escrow",
-        tag: "WIP",
-        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-        starred: true
-      },
-      {
         id: "clause-finder",
         title: "Clause Finder",
         description: "Search & learn legal clauses",
@@ -655,6 +645,15 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         description: "Framework for idea-to-blueprint development",
         icon: Sparkles,
         route: "external:https://abcprodev1.lovable.app",
+        tag: "WIP",
+        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+      },
+      {
+        id: "escrow",
+        title: "Escrow",
+        description: "Secure transaction management",
+        icon: ShieldCheck,
+        route: "/escrow",
         tag: "WIP",
         tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
       }
