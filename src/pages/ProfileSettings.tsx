@@ -35,7 +35,7 @@ const ProfileSettings = () => {
     resetProfile();
     setFormData({
       name: 'Shankaran Pillai',
-      pan: 'ILOVE1432U',
+      pan: 'ABCDE1234F',
       email: '',
       phone: '',
       address: '',
@@ -55,7 +55,7 @@ const ProfileSettings = () => {
     // Reset form to defaults
     setFormData({
       name: 'Shankaran Pillai',
-      pan: 'ILOVE1432U',
+      pan: 'ABCDE1234F',
       email: '',
       phone: '',
       address: '',
