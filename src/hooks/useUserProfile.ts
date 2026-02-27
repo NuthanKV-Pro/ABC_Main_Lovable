@@ -12,7 +12,7 @@ export interface UserProfile {
 
 const DEFAULT_PROFILE: UserProfile = {
   name: 'Shankaran Pillai',
-  pan: 'ILOVE1432U',
+  pan: 'ABCDE1234F',
   email: '',
   phone: '',
   address: '',
