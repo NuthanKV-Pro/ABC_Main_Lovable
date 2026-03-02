@@ -360,6 +360,15 @@ const BusinessValuation = () => {
   // ── DCF Calc
   const dcfResult = useMemo(() => calcDCF(dcf), [dcf]);
 
+  // ── Terminal Value Comparison (Gordon vs Exit Multiple side-by-side)
+  const tvComparison = useMemo(() => {
+    const gordonResult = calcDCF({ ...dcf, terminalMethod: "gordon" });
+    const exitResult = calcDCF({ ...dcf, terminalMethod: "exitMultiple" });
+    const diff = exitResult.equityValue - gordonResult.equityValue;
+    const diffPct = gordonResult.equityValue !== 0 ? (diff / Math.abs(gordonResult.equityValue)) * 100 : 0;
+    return { gordon: gordonResult, exit: exitResult, diff, diffPct };
+  }, [dcf]);
+
   // ── Comps Calc
   const compsResult = useMemo(() => {
     const avgEvEbitda = comps.reduce((s, c) => s + c.evEbitda, 0) / comps.length;
@@ -786,6 +795,91 @@ const BusinessValuation = () => {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Terminal Value Comparison */}
+            <Card className="border-border/50">
+              <CardHeader className="py-3 px-4">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" /> Terminal Value Method Comparison — Gordon Growth vs Exit Multiple
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Gordon Growth: g = {dcf.terminalGrowth}% perpetuity | Exit Multiple: {dcf.exitMultiple}x EV/EBITDA on terminal year
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 pt-0 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Gordon Side */}
+                  <div className="space-y-2 p-3 rounded-lg border border-border/50 bg-muted/10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant={dcf.terminalMethod === "gordon" ? "default" : "secondary"} className="text-[10px]">
+                        {dcf.terminalMethod === "gordon" ? "● Active" : "○ Inactive"}
+                      </Badge>
+                      <span className="text-sm font-semibold">Gordon Growth Model</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">TV = FCF₁ × (1+g) / (WACC − g)</p>
+                    {metricCard("Terminal Value", fmt(tvComparison.gordon.terminalValue), `g = ${dcf.terminalGrowth}%`)}
+                    {metricCard("PV of Terminal", fmt(tvComparison.gordon.pvTerminal), `${((tvComparison.gordon.pvTerminal / tvComparison.gordon.enterpriseValue) * 100).toFixed(0)}% of EV`)}
+                    {metricCard("Enterprise Value", fmt(tvComparison.gordon.enterpriseValue))}
+                    {metricCard("Equity Value", fmt(tvComparison.gordon.equityValue))}
+                    {metricCard("Price / Share", fmt(tvComparison.gordon.sharePrice))}
+                  </div>
+
+                  {/* Exit Multiple Side */}
+                  <div className="space-y-2 p-3 rounded-lg border border-border/50 bg-muted/10">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant={dcf.terminalMethod === "exitMultiple" ? "default" : "secondary"} className="text-[10px]">
+                        {dcf.terminalMethod === "exitMultiple" ? "● Active" : "○ Inactive"}
+                      </Badge>
+                      <span className="text-sm font-semibold">Exit Multiple Method</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">TV = EBITDA_n × Exit Multiple</p>
+                    {metricCard("Terminal Value", fmt(tvComparison.exit.terminalValue), `${dcf.exitMultiple}x EBITDA`)}
+                    {metricCard("PV of Terminal", fmt(tvComparison.exit.pvTerminal), `${((tvComparison.exit.pvTerminal / tvComparison.exit.enterpriseValue) * 100).toFixed(0)}% of EV`)}
+                    {metricCard("Enterprise Value", fmt(tvComparison.exit.enterpriseValue))}
+                    {metricCard("Equity Value", fmt(tvComparison.exit.equityValue))}
+                    {metricCard("Price / Share", fmt(tvComparison.exit.sharePrice))}
+                  </div>
+                </div>
+
+                {/* Difference Summary */}
+                <div className={`p-3 rounded-lg border ${tvComparison.diff >= 0 ? "border-chart-2/30 bg-chart-2/5" : "border-destructive/30 bg-destructive/5"}`}>
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Valuation Difference (Exit Multiple − Gordon Growth)</p>
+                      <p className="text-lg font-bold">{tvComparison.diff >= 0 ? "+" : ""}{fmt(tvComparison.diff)} <span className="text-sm font-normal text-muted-foreground">({tvComparison.diffPct >= 0 ? "+" : ""}{tvComparison.diffPct.toFixed(1)}%)</span></p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground">Implied Exit Multiple from Gordon</p>
+                      <p className="text-sm font-semibold">
+                        {tvComparison.gordon.years.length > 0
+                          ? `${(tvComparison.gordon.terminalValue / (tvComparison.gordon.years[tvComparison.gordon.years.length - 1]?.ebitda || 1)).toFixed(1)}x EV/EBITDA`
+                          : "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Visual Bar Comparison */}
+                <div className="h-[180px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={[
+                      { metric: "Terminal Value", gordon: tvComparison.gordon.terminalValue, exit: tvComparison.exit.terminalValue },
+                      { metric: "Enterprise Value", gordon: tvComparison.gordon.enterpriseValue, exit: tvComparison.exit.enterpriseValue },
+                      { metric: "Equity Value", gordon: tvComparison.gordon.equityValue, exit: tvComparison.exit.equityValue },
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis dataKey="metric" className="text-xs" />
+                      <YAxis tickFormatter={v => fmt(v)} className="text-xs" />
+                      <RechartsTooltip formatter={(v: number) => fmt(v)} />
+                      <Legend />
+                      <Bar dataKey="gordon" name="Gordon Growth" fill="hsl(var(--primary))" opacity={0.7} />
+                      <Bar dataKey="exit" name="Exit Multiple" fill="hsl(var(--chart-2))" opacity={0.7} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
           </TabsContent>
 
           {/* ═══════════════ COMPS TAB ═══════════════ */}
