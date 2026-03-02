@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Search, BookOpen, Copy, Check, ChevronDown, ChevronRight, FileText, Shield, Users, Briefcase, Scale, Handshake, Lock, UserCheck, Cpu, Rocket, ScrollText, Copyright, Fingerprint, Globe } from "lucide-react";
+import { ArrowLeft, Search, BookOpen, Copy, Check, ChevronDown, ChevronRight, FileText, Shield, Users, Briefcase, Scale, Handshake, Lock, UserCheck, Cpu, Rocket, ScrollText, Copyright, Fingerprint, Globe, Building2, Landmark, HardHat, Leaf, ShieldCheck, ShoppingCart, Download, FileDown, Pen } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
 
 interface Clause {
   id: string;
@@ -591,6 +592,228 @@ const clauseDatabase: ClauseCategory[] = [
         importance: "recommended"
       }
     ]
+  },
+  {
+    id: "real-estate",
+    name: "Real Estate & Property Law",
+    icon: Building2,
+    description: "Property transactions, RERA compliance, lease agreements, and construction contracts under Indian law",
+    contractTypes: ["Sale Agreement", "Lease Agreement", "Development Agreement", "Joint Development Agreement"],
+    clauses: [
+      {
+        id: "rera-compliance",
+        title: "RERA Compliance & Registration",
+        description: "Mandatory compliance with the Real Estate (Regulation and Development) Act, 2016.",
+        fullText: `RERA Compliance (Real Estate (Regulation and Development) Act, 2016):\n\n(a) The Promoter represents and warrants that the Project is duly registered with the Real Estate Regulatory Authority under Section 3 of the RERA Act, 2016 (RERA Registration No. [●]);\n(b) The Promoter shall not advertise, market, book, sell, or offer for sale any apartment/plot without RERA registration (Section 3(1));\n(c) Allotment Letter: The Allotment Letter shall be issued in the prescribed format and shall contain all particulars as specified under Section 13;\n(d) Agreement for Sale: The Agreement for Sale shall be executed in the prescribed form (as per state RERA rules) and registered under the Registration Act, 1908;\n(e) Carpet Area: The sale shall be based on carpet area as defined in Section 2(k) — the net usable floor area excluding external walls, service areas, and common areas;\n(f) Structural Defect Liability: The Promoter shall be liable for structural defects or deficiencies in workmanship/quality for [5] years from the date of possession (Section 14(3));\n(g) Delayed Possession: If the Promoter fails to deliver possession by the committed date, the Allottee shall be entitled to interest at SBI's highest marginal cost of lending rate + 2% p.a. on the amount paid;\n(h) Escrow Account: 70% of the amounts realised shall be deposited in a separate escrow account to be used only for construction costs and land payment (Section 4(2)(l)(D));\n(i) Quarterly Updates: The Promoter shall upload quarterly progress reports (including photographs) on the RERA website.`,
+        tags: ["RERA", "real estate", "carpet area", "structural defect", "escrow", "possession"],
+        importance: "essential"
+      },
+      {
+        id: "lease-agreement",
+        title: "Commercial Lease Agreement",
+        description: "Standard terms for commercial property lease under the Transfer of Property Act, 1882.",
+        fullText: `Commercial Lease Agreement:\n\n(a) Demised Premises: The Lessor hereby leases to the Lessee the commercial premises situated at [●], admeasuring [●] sq. ft. (carpet area), more particularly described in Schedule A;\n(b) Lease Term: [●] years commencing from [●], with an option to renew for [●] additional terms of [●] years each, upon mutual agreement;\n(c) Monthly Rent: ₹[●] per month (₹[●] per sq. ft.), payable by the [5th] of each month. Rent escalation of [●]% every [●] years;\n(d) Security Deposit: ₹[●] (equivalent to [●] months' rent), refundable within [30] days of lease termination, after deducting unpaid dues and repair costs;\n(e) Permitted Use: The premises shall be used exclusively for [●]. Any change of use requires the Lessor's prior written consent;\n(f) Maintenance: Structural repairs — Lessor's responsibility. Interior maintenance, fixtures, and day-to-day upkeep — Lessee's responsibility;\n(g) Stamp Duty & Registration: This lease shall be executed on appropriate stamp paper as per the Indian Stamp Act, 1899 (state-specific rates) and registered under Section 17 of the Registration Act, 1908 (mandatory for leases exceeding 11 months);\n(h) GST: GST at the applicable rate (currently 18%) shall be payable on rent for commercial properties;\n(i) Lock-In Period: The first [●] months shall be a lock-in period during which neither party may terminate;\n(j) Termination: After the lock-in period, either party may terminate with [●] months' prior written notice.`,
+        tags: ["lease", "commercial", "rent", "stamp duty", "Registration Act", "GST", "lock-in"],
+        importance: "essential"
+      },
+      {
+        id: "sale-agreement-property",
+        title: "Agreement for Sale of Immovable Property",
+        description: "Key terms for sale of land/building under the Transfer of Property Act and Registration Act.",
+        fullText: `Agreement for Sale — Immovable Property:\n\n(a) The Vendor agrees to sell and the Purchaser agrees to purchase the immovable property described in Schedule A ("Property"), free from all encumbrances, charges, liens, and litigation;\n(b) Total Consideration: ₹[●] (Rupees [●] only), payable as follows:\n   - Earnest Money / Token Advance: ₹[●] on execution of this Agreement;\n   - Balance: ₹[●] at the time of execution and registration of the Sale Deed;\n(c) Title: The Vendor represents that they have clear, marketable, and undisputed title to the Property and shall provide original title documents, chain of title for [30+] years, EC (Encumbrance Certificate), tax receipts, and approved plan;\n(d) Due Diligence: The Purchaser shall have [●] days to conduct title search, verify approvals, and conduct physical inspection;\n(e) Sale Deed: The Sale Deed shall be executed on non-judicial stamp paper of appropriate value (as per state Stamp Duty rates) and registered at the Sub-Registrar's office under Section 17 of the Registration Act, 1908;\n(f) Stamp Duty & Registration Charges: To be borne by the Purchaser (rates vary by state — e.g., Maharashtra: 5-6%, Karnataka: 5.6%, Delhi: 4-6%);\n(g) TDS: The Purchaser shall deduct TDS at 1% under Section 194-IA of the Income Tax Act if the consideration exceeds ₹50 lakhs;\n(h) Mutation: Post-registration, the Purchaser shall apply for mutation in revenue records;\n(i) Default: If the Vendor defaults, the earnest money shall be refunded with interest at [●]% p.a. If the Purchaser defaults, the earnest money shall stand forfeited.`,
+        tags: ["sale agreement", "immovable property", "title", "stamp duty", "TDS 194-IA", "registration"],
+        importance: "essential"
+      },
+      {
+        id: "jda",
+        title: "Joint Development Agreement (JDA)",
+        description: "Agreement between landowner and developer for joint property development.",
+        fullText: `Joint Development Agreement:\n\n(a) The Landowner owns the Property and the Developer has expertise in real estate development. The Parties agree to jointly develop the Property;\n(b) Revenue Sharing: The built-up area / revenue shall be shared in the ratio of [●]% (Landowner) : [●]% (Developer);\n(c) Development Rights: The Landowner grants the Developer an irrevocable license and power of attorney to develop the Property, obtain approvals, and construct;\n(d) Approvals: The Developer shall obtain all necessary approvals including building plan sanction, environmental clearance (if applicable), fire NOC, and RERA registration at the Developer's cost;\n(e) Timeline: The Developer shall complete construction within [●] months from receipt of all approvals. Delay beyond [●] months shall attract a penalty of ₹[●] per month;\n(f) Capital Gains: The Landowner acknowledges that capital gains tax liability under Section 45(5A) of the Income Tax Act (as applicable from AY 2018-19) shall arise in the year in which the certificate of completion is issued;\n(g) GPA: The General Power of Attorney granted to the Developer shall be irrevocable during the term and shall be registered;\n(h) Landowner's Obligations: The Landowner shall ensure clear title, deliver physical possession, and execute all documents necessary for approvals and sale;\n(i) Developer's Obligations: The Developer shall bear all construction costs, maintain quality as per specifications in Schedule [●], and provide structural warranty for [5] years.`,
+        tags: ["JDA", "joint development", "landowner", "developer", "Section 45(5A)", "GPA", "RERA"],
+        importance: "recommended"
+      }
+    ]
+  },
+  {
+    id: "banking-finance",
+    name: "Banking & Finance",
+    icon: Landmark,
+    description: "Loan agreements, security interests, SARFAESI, and banking contracts under Indian law",
+    contractTypes: ["Loan Agreement", "Facility Agreement", "Security Agreement", "Guarantee Agreement"],
+    clauses: [
+      {
+        id: "loan-agreement",
+        title: "Term Loan Agreement",
+        description: "Standard term loan facility terms including disbursement, repayment, and security.",
+        fullText: `Term Loan Agreement:\n\n(a) Facility: The Lender hereby agrees to provide a term loan facility of ₹[●] ("Loan") to the Borrower for the purpose of [●];\n(b) Disbursement: The Loan shall be disbursed in [single tranche / multiple tranches] within [●] days of fulfilment of Conditions Precedent;\n(c) Interest Rate: [●]% per annum ([fixed / floating — linked to RBI Repo Rate / MCLR + spread of [●]%]), calculated on a reducing balance basis. Interest shall be payable [monthly / quarterly];\n(d) Repayment: [●] equal monthly instalments (EMIs) of ₹[●] each, commencing [●] months from the date of first disbursement (moratorium period of [●] months);\n(e) Prepayment: The Borrower may prepay the Loan in part or in full, subject to a prepayment premium of [●]% on the prepaid amount (if within [●] years);\n(f) Security: The Loan shall be secured by: (i) first charge on [asset description]; (ii) personal guarantee of [●]; (iii) pledge of [●] shares;\n(g) Events of Default: (i) non-payment for [●] days; (ii) breach of financial covenants; (iii) cross-default; (iv) material adverse change; (v) insolvency proceedings;\n(h) Financial Covenants: The Borrower shall maintain: Debt-to-Equity ratio of not more than [●]:1; DSCR of not less than [●]:1; Current Ratio of not less than [●]:1;\n(i) CERSAI Registration: The charge shall be registered with CERSAI within [30] days of creation;\n(j) NPA Classification: The Parties acknowledge that the account shall be classified as NPA in accordance with RBI's Master Direction on Income Recognition and Asset Classification (IRAC Norms).`,
+        tags: ["term loan", "EMI", "MCLR", "CERSAI", "NPA", "financial covenants", "security"],
+        importance: "essential"
+      },
+      {
+        id: "sarfaesi",
+        title: "SARFAESI Act — Security Enforcement",
+        description: "Rights of secured creditors under the Securitisation and Reconstruction of Financial Assets Act, 2002.",
+        fullText: `SARFAESI Act Enforcement Clause:\n\n(a) The Borrower acknowledges that the Lender (being a "Secured Creditor" under SARFAESI Act, 2002) shall have the right to enforce security without court intervention if the account is classified as NPA;\n(b) Section 13(2) Notice: Upon classification as NPA, the Lender may issue a demand notice requiring the Borrower to discharge liabilities within 60 days;\n(c) Enforcement Measures (Section 13(4)): If the Borrower fails to comply, the Lender may: (i) take possession of the secured asset; (ii) sell or lease the secured asset; (iii) appoint a manager to manage the asset; (iv) take over management of the Borrower's business;\n(d) DRT Proceedings: Alternatively, the Lender may file an application before the Debt Recovery Tribunal (DRT) under the Recovery of Debts and Bankruptcy Act, 1993;\n(e) Section 17 Appeal: The Borrower may file an appeal before the DRT within [45] days of any action taken under Section 13(4);\n(f) Priority: The Lender's charge shall rank in priority as per CERSAI registration date. Government dues under Section 26E shall not have priority over secured creditors;\n(g) Limitation: Proceedings under SARFAESI must be initiated within 3 years from the date the account is classified as NPA (as per the Limitation Act, 1963, read with SC judgments);\n(h) Threshold: SARFAESI is applicable where the outstanding debt is ₹20 lakhs or more.`,
+        tags: ["SARFAESI", "NPA", "DRT", "secured creditor", "Section 13", "enforcement", "CERSAI"],
+        importance: "essential"
+      },
+      {
+        id: "personal-guarantee",
+        title: "Personal / Corporate Guarantee",
+        description: "Guarantee obligations and enforceability under the Indian Contract Act, 1872.",
+        fullText: `Guarantee Agreement (Indian Contract Act, 1872 — Sections 126-147):\n\n(a) The Guarantor hereby irrevocably and unconditionally guarantees to the Lender the due and punctual payment and performance of all obligations of the Borrower under the Loan Agreement;\n(b) Nature: This is a continuing guarantee (Section 129) covering all present and future obligations up to a maximum of ₹[●];\n(c) Co-Extensive Liability: The Guarantor's liability is co-extensive with that of the Borrower (Section 128) unless otherwise agreed;\n(d) Demand: The Lender may demand payment from the Guarantor without first proceeding against the Borrower or the security;\n(e) No Discharge: The Guarantor shall not be discharged by: (i) any variation in the terms of the Loan; (ii) any forbearance or extension of time granted to the Borrower; (iii) release of any co-guarantor or security;\n(f) Subrogation: Upon payment, the Guarantor shall be subrogated to all rights of the Lender against the Borrower (Section 140);\n(g) IBC Implications: The Guarantor acknowledges that under the Insolvency and Bankruptcy Code, 2016, a personal guarantor may be subject to insolvency proceedings independently of the corporate debtor;\n(h) Revocation: This guarantee may only be revoked for future transactions by [90] days' prior written notice (Section 130). Outstanding obligations shall remain covered.`,
+        tags: ["guarantee", "surety", "Section 128", "Indian Contract Act", "IBC", "continuing guarantee"],
+        importance: "essential"
+      },
+      {
+        id: "hypothecation",
+        title: "Hypothecation Agreement (Movable Assets)",
+        description: "Creation of charge over movable assets without transfer of possession.",
+        fullText: `Hypothecation Agreement:\n\n(a) The Borrower hereby creates a first and exclusive charge by way of hypothecation over the movable assets described in Schedule [●] ("Hypothecated Assets") in favour of the Lender as security for the Loan;\n(b) Assets Covered: [Inventory / receivables / machinery / vehicles / stock-in-trade], both present and future, valued at approximately ₹[●];\n(c) Possession: The Borrower shall retain possession and use of the Hypothecated Assets in the ordinary course of business;\n(d) Insurance: The Borrower shall insure the Hypothecated Assets at full replacement value with the Lender noted as loss payee;\n(e) Maintenance: The Borrower shall maintain the assets in good condition and shall not sell, transfer, or encumber without the Lender's prior consent;\n(f) Stock Statements: The Borrower shall submit monthly stock/debtors statements within [7] days of month-end;\n(g) Margin: The Borrower shall maintain a margin of [●]% between the value of Hypothecated Assets and the outstanding Loan;\n(h) Registration: The charge shall be registered with: (i) the Registrar of Companies (ROC) under Section 77 of the Companies Act, 2013, within [30] days; (ii) CERSAI within [30] days;\n(i) Enforcement: Upon default, the Lender may take possession of the Hypothecated Assets and sell them in accordance with the SARFAESI Act or through private sale with reasonable notice.`,
+        tags: ["hypothecation", "movable assets", "charge", "CERSAI", "ROC", "stock statement", "Section 77"],
+        importance: "recommended"
+      }
+    ]
+  },
+  {
+    id: "labour-law",
+    name: "Labour & Employment Law",
+    icon: HardHat,
+    description: "Labour compliance, workplace safety, social security, and industrial relations under Indian labour codes",
+    contractTypes: ["Employment Agreement", "Contractor Agreement", "Standing Orders", "Settlement Agreement"],
+    clauses: [
+      {
+        id: "labour-codes-compliance",
+        title: "New Labour Codes Compliance",
+        description: "Compliance with India's four new Labour Codes consolidating 29+ central labour laws.",
+        fullText: `Labour Codes Compliance:\n\nThe Employer shall comply with the four Labour Codes enacted by Parliament (upon notification by states):\n\n(a) Code on Wages, 2019:\n   - Minimum wages as notified by the Central/State Government for the applicable scheduled employment;\n   - Wages shall be paid before the 7th (establishments with <1000 employees) or 10th (>1000) of the following month;\n   - Equal remuneration for equal work regardless of gender (Section 3);\n\n(b) Code on Social Security, 2020:\n   - EPF contribution: 12% of basic wages (employer + employee) for establishments with ≥20 employees;\n   - ESI contribution for employees earning ≤₹21,000/month;\n   - Gratuity payable after 5 years of continuous service (1 year for fixed-term employees) at 15 days' wages per year of service;\n\n(c) Industrial Relations Code, 2020:\n   - Standing Orders mandatory for establishments with ≥300 workers;\n   - Prior government permission required for retrenchment, lay-off, or closure if ≥300 workers;\n   - Fixed Term Employment permitted with same benefits as permanent employees on a pro-rata basis;\n\n(d) Occupational Safety, Health and Working Conditions Code, 2020:\n   - Maximum working hours: 8 hours/day, 48 hours/week;\n   - Overtime wages at twice the ordinary rate;\n   - Annual health check-ups for employees in hazardous processes;\n   - Inter-state migrant workers entitled to lump-sum travel allowance.`,
+        tags: ["Labour Codes", "wages", "EPF", "ESI", "gratuity", "standing orders", "fixed term"],
+        importance: "essential"
+      },
+      {
+        id: "posh-compliance",
+        title: "Prevention of Sexual Harassment (POSH)",
+        description: "Mandatory POSH compliance under the Sexual Harassment of Women at Workplace Act, 2013.",
+        fullText: `POSH Compliance (Sexual Harassment of Women at Workplace (Prevention, Prohibition and Redressal) Act, 2013):\n\n(a) The Employer shall constitute an Internal Complaints Committee (ICC) at each workplace/branch with ≥10 employees, comprising:\n   - Presiding Officer: Senior woman employee;\n   - ≥2 members from amongst employees committed to women's causes;\n   - 1 external member from an NGO or person familiar with the issues;\n\n(b) The ICC shall:\n   (i) Receive and inquire into complaints within [90] days;\n   (ii) Submit annual report to the employer and the District Officer;\n   (iii) Recommend action within [60] days of completion of inquiry;\n\n(c) Employer's Obligations:\n   (i) Provide a safe working environment;\n   (ii) Display conspicuously the penal consequences of sexual harassment and the ICC composition;\n   (iii) Conduct POSH awareness workshops at least annually;\n   (iv) Include POSH policy in the employee handbook;\n\n(d) Penalties: Non-compliance attracts a fine of up to ₹50,000 (first offence) and cancellation of business license (repeated offence);\n(e) Confidentiality: The identity of the complainant, respondent, and witnesses shall be kept confidential;\n(f) The Employee acknowledges receipt of the Company's POSH Policy and undertakes to abide by its provisions.`,
+        tags: ["POSH", "sexual harassment", "ICC", "workplace safety", "women", "compliance"],
+        importance: "essential"
+      },
+      {
+        id: "contractor-labour",
+        title: "Contract Labour Engagement",
+        description: "Terms for engagement of contract labour under the Contract Labour Act and labour codes.",
+        fullText: `Contract Labour Terms:\n\n(a) The Contractor is engaged as an independent contractor and shall not be deemed an employee of the Principal Employer;\n(b) Registration: The Principal Employer shall obtain registration under the Contract Labour (Regulation & Abolition) Act, 1970 (applicable to establishments with ≥20 contract workers). The Contractor shall obtain a license;\n(c) Wages: The Contractor shall ensure that contract workers are paid:\n   - Not less than the minimum wages applicable;\n   - In accordance with the Code on Wages, 2019;\n   - Within the prescribed time limits;\n(d) Statutory Compliance: The Contractor shall be solely responsible for:\n   - EPF and ESI contributions for contract workers;\n   - Maintaining registers and records as prescribed;\n   - Payment of bonus under the Payment of Bonus Act;\n(e) Principal Employer Liability: If the Contractor fails to pay wages within the prescribed period, the Principal Employer shall be liable to pay and may recover from the Contractor;\n(f) No Employer-Employee Relationship: The contract workers shall have no claim of employment, regularisation, or absorption against the Principal Employer;\n(g) Indemnification: The Contractor shall indemnify the Principal Employer against all claims, penalties, and statutory dues arising from non-compliance;\n(h) Safety: The Contractor shall comply with all applicable safety standards under the Factories Act, 1948 / OSH Code, 2020.`,
+        tags: ["contract labour", "principal employer", "CLRA", "minimum wages", "EPF", "ESI", "indemnification"],
+        importance: "recommended"
+      },
+      {
+        id: "workplace-safety",
+        title: "Workplace Health & Safety Policy",
+        description: "Occupational safety obligations under the OSH Code, 2020 and Factories Act, 1948.",
+        fullText: `Workplace Health & Safety:\n\n(a) The Employer shall ensure a safe and healthy working environment in compliance with the Occupational Safety, Health and Working Conditions Code, 2020 ("OSH Code") and, until its full notification, the Factories Act, 1948;\n(b) Safety Measures:\n   (i) Proper ventilation, lighting, and temperature control;\n   (ii) Fire safety equipment, exit signage, and regular fire drills;\n   (iii) First aid facilities and trained first aiders;\n   (iv) Personal Protective Equipment (PPE) for hazardous operations;\n(c) Safety Committee: Establishments with ≥[250] workers shall constitute a Safety Committee with equal representation of management and workers;\n(d) Accident Reporting: All workplace accidents resulting in death, serious bodily injury, or dangerous occurrences shall be reported to the Inspector within [●] hours;\n(e) Annual Health Check-Up: Employees engaged in hazardous processes shall undergo annual medical examinations at the Employer's cost;\n(f) Working Hours: Maximum [48] hours per week, [8] hours per day. Spread-over not to exceed [10.5] hours. Weekly rest of at least [1] day;\n(g) Overtime: Overtime wages payable at [2x] the ordinary rate;\n(h) Women's Safety: Women may work in all shifts (including night shifts) subject to adequate safety and transport arrangements;\n(i) Penalty: Contravention of safety provisions may attract imprisonment up to [2] years and/or fine up to ₹[5] lakhs.`,
+        tags: ["workplace safety", "OSH Code", "Factories Act", "fire safety", "PPE", "overtime", "night shift"],
+        importance: "recommended"
+      }
+    ]
+  },
+  {
+    id: "environmental-esg",
+    name: "Environmental & ESG",
+    icon: Leaf,
+    description: "Environmental clearance, pollution control, ESG commitments, and sustainability clauses",
+    contractTypes: ["Project Agreement", "Supply Agreement", "Investment Agreement", "ESG Disclosure Agreement"],
+    clauses: [
+      {
+        id: "environmental-clearance",
+        title: "Environmental Clearance & Compliance",
+        description: "Obligations under the Environment Protection Act, 1986 and EIA Notification, 2006.",
+        fullText: `Environmental Clearance & Compliance:\n\n(a) The Project Proponent shall obtain Environmental Clearance (EC) from the Ministry of Environment, Forest and Climate Change (MoEFCC) or the State Environment Impact Assessment Authority (SEIAA) as applicable, prior to commencement of the Project, in compliance with the EIA Notification, 2006 (as amended);\n(b) Category: The Project falls under Category [A/B1/B2] of the EIA Notification Schedule;\n(c) EIA Report: An Environmental Impact Assessment report prepared by a QCI-NABET accredited consultant shall be submitted along with the application;\n(d) Public Hearing: For Category A and B1 projects, a public hearing shall be conducted as per the prescribed procedure;\n(e) Conditions: The Project Proponent shall strictly comply with all conditions imposed in the EC, including:\n   (i) Air and water quality monitoring;\n   (ii) Waste management and disposal;\n   (iii) Green belt development (33% of project area);\n   (iv) Corporate Environment Responsibility (CER) fund contribution;\n(f) Consent to Establish & Operate: Separate consents under the Water (Prevention and Control of Pollution) Act, 1974 and the Air (Prevention and Control of Pollution) Act, 1981 shall be obtained from the State Pollution Control Board (SPCB);\n(g) Hazardous Waste: Compliance with the Hazardous and Other Wastes (Management and Transboundary Movement) Rules, 2016;\n(h) Non-Compliance: Violation may attract penalties under Section 15 of the Environment Protection Act (imprisonment up to 5 years and/or fine up to ₹1 lakh per day of violation).`,
+        tags: ["environmental clearance", "EIA", "MoEFCC", "SPCB", "pollution", "green belt", "CER"],
+        importance: "essential"
+      },
+      {
+        id: "esg-commitment",
+        title: "ESG Commitment & Reporting",
+        description: "Environmental, Social, and Governance obligations for investments and corporate governance.",
+        fullText: `ESG Commitment Clause:\n\n(a) The Company commits to integrating Environmental, Social, and Governance (ESG) principles into its business operations and decision-making;\n(b) Environmental:\n   (i) Carbon footprint measurement and annual reduction targets;\n   (ii) Energy efficiency improvements and renewable energy adoption;\n   (iii) Water conservation and waste reduction programmes;\n   (iv) Compliance with SEBI's Business Responsibility and Sustainability Report (BRSR) framework (mandatory for top 1000 listed companies);\n(c) Social:\n   (i) CSR expenditure of at least 2% of average net profits (Section 135, Companies Act, 2013) for companies meeting the threshold;\n   (ii) Diversity & inclusion targets — [●]% women in workforce and [●]% in leadership by [year];\n   (iii) Community engagement and stakeholder welfare programmes;\n   (iv) Fair wages and supply chain labour standards;\n(d) Governance:\n   (i) Board independence — at least [1/3] independent directors;\n   (ii) Whistleblower mechanism under Section 177(9) of the Companies Act;\n   (iii) Anti-bribery and anti-corruption policy compliant with the Prevention of Corruption Act, 1988;\n   (iv) Related party transaction governance;\n(e) Reporting: Annual ESG/sustainability report aligned with GRI Standards / BRSR format;\n(f) Investor Representation: The Company represents that no material ESG risk or controversy exists that could have a Material Adverse Effect.`,
+        tags: ["ESG", "BRSR", "CSR", "Section 135", "sustainability", "carbon footprint", "diversity"],
+        importance: "recommended"
+      },
+      {
+        id: "carbon-credit",
+        title: "Carbon Credit & Green Energy Clause",
+        description: "Terms for carbon credit trading and renewable energy obligations under Indian regulatory framework.",
+        fullText: `Carbon Credit & Green Energy:\n\n(a) Carbon Credit Trading: The Company shall participate in the Indian Carbon Market (ICM) as established under the Energy Conservation (Amendment) Act, 2022, and comply with the Carbon Credit Trading Scheme, 2023 notified by MoEFCC;\n(b) Carbon Credits: Any Certified Emission Reductions (CERs) or Indian Carbon Credits generated from the Project shall be [owned by the Company / shared between the Parties in the ratio of [●]:[●]];\n(c) Renewable Purchase Obligation (RPO): The Company shall procure at least [●]% of its total electricity consumption from renewable sources, in compliance with the applicable State Electricity Regulatory Commission's RPO regulations;\n(d) Green Energy Certificate: Renewable Energy Certificates (RECs) purchased to meet RPO shall be procured from the Indian Energy Exchange (IEX) or Power Exchange India Limited (PXIL);\n(e) PAT Scheme: If the Company is a Designated Consumer under the Perform, Achieve and Trade (PAT) scheme of BEE, it shall achieve the notified specific energy consumption targets;\n(f) Green Building: The Project shall aim for [IGBC Gold / GRIHA 3-star / equivalent] green building certification;\n(g) Extended Producer Responsibility (EPR): For applicable products, the Company shall comply with EPR obligations under the Plastic Waste Management Rules, 2016 and E-Waste Management Rules, 2022;\n(h) Representation: The Company represents that its operations do not cause significant harm to any environmental objective ("Do No Significant Harm" principle).`,
+        tags: ["carbon credit", "ICM", "renewable energy", "RPO", "PAT scheme", "green building", "EPR"],
+        importance: "optional"
+      }
+    ]
+  },
+  {
+    id: "data-privacy-cyber",
+    name: "Data Privacy & Cyber Law",
+    icon: ShieldCheck,
+    description: "DPDPA 2023 deep-dive, cyber security, data breach response, and cross-border data transfer",
+    contractTypes: ["Privacy Policy", "Data Processing Agreement", "Cyber Insurance", "IT Services Agreement"],
+    clauses: [
+      {
+        id: "dpdpa-consent",
+        title: "DPDPA 2023 — Consent Management",
+        description: "Consent collection and management framework under India's Digital Personal Data Protection Act, 2023.",
+        fullText: `Consent Management (DPDPA 2023):\n\n(a) The Data Fiduciary shall obtain free, specific, informed, unconditional, and unambiguous consent from the Data Principal before processing their personal data (Section 6);\n(b) Notice: Prior to seeking consent, the Data Fiduciary shall provide a clear notice in plain language (and in any language specified in the Eighth Schedule of the Constitution) containing:\n   (i) Description of personal data to be collected;\n   (ii) Purpose of processing;\n   (iii) How to exercise rights (access, correction, erasure, grievance, nomination);\n   (iv) How to file a complaint with the Data Protection Board of India;\n(c) Consent Manager: The Data Fiduciary may engage a Consent Manager (registered with the Board) to enable Data Principals to give, manage, review, and withdraw consent through an accessible and transparent platform;\n(d) Withdrawal: The Data Principal may withdraw consent at any time with the same ease with which it was given. Withdrawal shall not affect the lawfulness of processing done prior to withdrawal;\n(e) Children's Data: For personal data of children (under 18 years) or persons with disabilities, verifiable consent of the parent or lawful guardian is required (Section 9). The Data Fiduciary shall not undertake tracking, behavioural monitoring, or targeted advertising directed at children;\n(f) Deemed Consent (Section 7): Consent is deemed for: (i) voluntary provision of data for a specified purpose; (ii) state functions; (iii) medical emergencies; (iv) employment purposes; (v) public interest;\n(g) Penalties: Processing without valid consent may attract penalties up to ₹250 crore per instance as determined by the Data Protection Board.`,
+        tags: ["DPDPA", "consent", "Data Principal", "children", "consent manager", "penalty", "Section 6"],
+        importance: "essential"
+      },
+      {
+        id: "cyber-security-incident",
+        title: "Cyber Security Incident Response",
+        description: "Obligations for reporting and managing cyber security incidents under CERT-In directions.",
+        fullText: `Cyber Security Incident Response:\n\n(a) CERT-In Compliance: The Service Provider shall comply with CERT-In Directions dated 28 April 2022 (effective 25 June 2022) regarding cyber incident reporting;\n(b) Mandatory Reporting: The following incidents shall be reported to CERT-In within [6] hours of detection:\n   - Targeted scanning/probing of critical networks;\n   - Compromise of critical systems or information;\n   - Unauthorised access to IT systems/data;\n   - Defacement of websites;\n   - Malicious code attacks (ransomware, cryptomining);\n   - Attacks on servers, databases, and infrastructure;\n   - Data breaches or data leaks;\n   - Attacks on IoT devices and associated systems;\n(c) Log Retention: The Service Provider shall maintain logs of all ICT systems for a rolling period of [180] days within Indian jurisdiction;\n(d) Synchronisation: All ICT system clocks shall be synchronised with NTP servers of NIC or NPL;\n(e) KYC for VPN/VPS: If the Service Provider offers VPN, VPS, or cloud services, subscriber KYC records shall be maintained for [5] years after cancellation;\n(f) Data Breach Response Plan: The Service Provider shall maintain a documented incident response plan covering: detection, containment, eradication, recovery, and post-incident review;\n(g) Notification to Affected Parties: The Data Fiduciary shall notify affected Data Principals "without unreasonable delay" of any personal data breach under DPDPA 2023;\n(h) Penalties: Non-reporting or delayed reporting to CERT-In may attract penalties under the IT Act, 2000.`,
+        tags: ["CERT-In", "cyber incident", "data breach", "6 hours", "log retention", "IT Act", "ransomware"],
+        importance: "essential"
+      },
+      {
+        id: "cross-border-data",
+        title: "Cross-Border Data Transfer",
+        description: "Restrictions and mechanisms for international transfer of personal data from India.",
+        fullText: `Cross-Border Data Transfer:\n\n(a) DPDPA 2023 Framework: Personal data may be transferred outside India to any country or territory, EXCEPT to countries/territories specifically restricted by the Central Government through notification under Section 16(1);\n(b) Restricted Countries: The Data Fiduciary shall not transfer personal data to any country that appears on the negative list notified by the Government (to be published);\n(c) Contractual Safeguards: Notwithstanding the above, the Parties agree to implement the following safeguards for cross-border transfers:\n   (i) The recipient shall maintain security safeguards equivalent to those required under DPDPA;\n   (ii) The recipient shall process data only for the specified purpose;\n   (iii) The recipient shall assist in responding to Data Principal rights requests;\n   (iv) The recipient shall notify the transferor of any data breach;\n(d) Sectoral Restrictions:\n   - RBI: Payment system data must be stored in India (RBI Circular 2018);\n   - SEBI: Certain market data and investor data subject to localisation;\n   - Telecom: Subscriber data subject to DoT licensing conditions;\n(e) Government Access: The recipient shall not disclose personal data to any foreign government unless legally required, and shall promptly notify the transferor;\n(f) Standard Contractual Clauses: Until India notifies specific transfer mechanisms, the Parties shall execute standard contractual clauses substantially in the form attached as Annexure [●];\n(g) Audit: The Data Fiduciary shall have the right to audit the recipient's data protection practices annually.`,
+        tags: ["cross-border", "data transfer", "Section 16", "DPDPA", "RBI", "localisation", "SCC"],
+        importance: "recommended"
+      }
+    ]
+  },
+  {
+    id: "consumer-protection",
+    name: "Consumer Protection & E-Commerce",
+    icon: ShoppingCart,
+    description: "Consumer rights, e-commerce regulations, product liability, and advertising standards",
+    contractTypes: ["Terms of Service", "E-Commerce Agreement", "Product Warranty", "Marketplace Agreement"],
+    clauses: [
+      {
+        id: "consumer-rights",
+        title: "Consumer Rights & Product Liability",
+        description: "Obligations under the Consumer Protection Act, 2019 and product liability framework.",
+        fullText: `Consumer Rights & Product Liability (Consumer Protection Act, 2019):\n\n(a) Consumer Rights: The Company acknowledges the following rights of consumers:\n   (i) Right to be protected against marketing of hazardous goods/services;\n   (ii) Right to be informed about quality, quantity, standard, and price;\n   (iii) Right to be assured access to a variety of goods/services at competitive prices;\n   (iv) Right to seek redressal against unfair trade practices;\n   (v) Right to consumer awareness;\n\n(b) Product Liability (Chapter VI): The manufacturer, product seller, and product service provider shall be liable for any harm caused by a defective product or deficiency in service. "Harm" includes death, personal injury, mental agony, emotional distress, property damage, and economic loss;\n\n(c) Defective Product: A product is defective if it has any fault, imperfection, or shortcoming in quality, design, manufacturing, labelling, or packaging, including failure to warn;\n\n(d) Unfair Trade Practices: The Company shall not engage in unfair trade practices including false representation, misleading advertisements, bait-and-switch, or refusing to issue receipts/bills;\n\n(e) Complaint Forums:\n   - District Commission: Claims up to ₹1 crore;\n   - State Commission: ₹1 crore to ₹10 crore;\n   - National Commission: Above ₹10 crore;\n\n(f) Mediation: The Company agrees to participate in mediation under Chapter V if proposed by the Consumer Commission;\n(g) E-filing: Complaints may be filed electronically through the e-Daakhil portal.`,
+        tags: ["consumer protection", "product liability", "defective product", "unfair trade", "e-Daakhil"],
+        importance: "essential"
+      },
+      {
+        id: "ecommerce-rules",
+        title: "E-Commerce Compliance (Consumer Protection Rules)",
+        description: "Mandatory compliance for e-commerce entities under the Consumer Protection (E-Commerce) Rules, 2020.",
+        fullText: `E-Commerce Rules Compliance (Consumer Protection (E-Commerce) Rules, 2020):\n\n(a) Entity Classification: The e-commerce entity operates as a [marketplace model / inventory model]. Marketplace entities shall not directly or indirectly influence sale prices;\n(b) Mandatory Disclosures: Every product listing shall display:\n   - Total price including taxes, delivery charges, and handling fees;\n   - Country of origin;\n   - Expiry date (where applicable);\n   - Seller name, address, and customer care details;\n   - Return, refund, exchange, and warranty/guarantee policies;\n   - Grievance officer details;\n\n(c) Seller Obligations on Marketplace:\n   - No seller or group companies shall contribute more than [25]% of total sales (to prevent inventory-based model characteristics);\n   - Sellers shall honour all warranties and guarantees;\n\n(d) Return & Refund: The Platform shall implement a clear return policy with refund processed within [●] days of return receipt;\n\n(e) Grievance Redressal:\n   - Appoint a Grievance Officer (resident in India);\n   - Acknowledge complaint within [48] hours;\n   - Resolve within [1] month of receipt;\n\n(f) Flash Sales: The Platform shall not organise flash sales that limit consumer choice or create artificial scarcity;\n(g) Fall-Back Liability: If a seller fails to deliver goods/services, the marketplace e-commerce entity may have fall-back liability;\n(h) Compliance Officer: Entities with turnover exceeding the prescribed threshold shall appoint a Chief Compliance Officer and a Nodal Contact Person.`,
+        tags: ["e-commerce", "marketplace", "country of origin", "grievance officer", "flash sale", "fall-back liability"],
+        importance: "essential"
+      },
+      {
+        id: "advertising-standards",
+        title: "Advertising Standards & Misleading Ads",
+        description: "Compliance with advertising regulations and ASCI guidelines for digital and traditional media.",
+        fullText: `Advertising Standards & Misleading Advertisements:\n\n(a) The Advertiser shall ensure that all advertisements comply with:\n   - Consumer Protection Act, 2019 (Section 2(28) — misleading advertisement);\n   - ASCI (Advertising Standards Council of India) Code for Self-Regulation;\n   - Cable Television Networks (Regulation) Act, 1995 (for broadcast ads);\n   - Guidelines for Prevention of Misleading Advertisements and Endorsements for Misleading Advertisements, 2022;\n\n(b) Prohibited Content: Advertisements shall not:\n   (i) Make false or misleading claims about product efficacy, quality, or origin;\n   (ii) Disparage competitors' products;\n   (iii) Target children with manipulative content;\n   (iv) Use surrogate advertising for prohibited products (alcohol, tobacco);\n\n(c) Endorsements: Celebrity and influencer endorsements must comply with:\n   - Section 2(47) of the Consumer Protection Act (endorsement liability);\n   - ASCI Guidelines for Influencer Advertising — mandatory disclosure of paid partnerships (#ad, #sponsored);\n   - Due diligence by the endorser to verify claims;\n\n(d) Penalties (Section 89): First offence — penalty up to ₹10 lakhs. Subsequent offence — up to ₹50 lakhs. The CCPA may also prohibit the endorser from making endorsements for up to [1] year (first offence) or [3] years (subsequent);\n\n(e) Comparative Advertising: Permitted under ASCI guidelines if: (i) it is truthful; (ii) the comparison is with identifiable products; (iii) it compares material and verifiable features;\n(f) Digital Advertising: Ads on social media, search engines, and digital platforms must comply with the IT (Intermediary Guidelines) Rules, 2021.`,
+        tags: ["advertising", "ASCI", "misleading ads", "endorsement", "CCPA", "influencer", "comparative ads"],
+        importance: "recommended"
+      }
+    ]
   }
 ];
 
@@ -608,6 +831,7 @@ const ClauseFinder = () => {
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const [expandedClauses, setExpandedClauses] = useState<Record<string, boolean>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [selectedClauses, setSelectedClauses] = useState<Set<string>>(new Set());
 
   const contractTypes = useMemo(() => {
     const types = new Set<string>();
@@ -648,6 +872,68 @@ const ClauseFinder = () => {
     setCopiedId(clause.id);
     toast({ title: "Copied!", description: `"${clause.title}" clause copied to clipboard.` });
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const toggleSelectClause = (clauseId: string) => {
+    setSelectedClauses(prev => {
+      const next = new Set(prev);
+      if (next.has(clauseId)) next.delete(clauseId);
+      else next.add(clauseId);
+      return next;
+    });
+  };
+
+  const getAllClausesFlat = () => {
+    return clauseDatabase.flatMap(cat => cat.clauses.map(c => ({ ...c, categoryName: cat.name })));
+  };
+
+  const exportSelectedToPDF = () => {
+    const allClauses = getAllClausesFlat();
+    const selected = allClauses.filter(c => selectedClauses.has(c.id));
+    if (selected.length === 0) {
+      toast({ title: "No clauses selected", description: "Please select at least one clause to export.", variant: "destructive" });
+      return;
+    }
+
+    const doc = new jsPDF();
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Clause Finder — Selected Clauses", 14, 20);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Generated on ${new Date().toLocaleDateString("en-IN")}  |  ${selected.length} clause(s)`, 14, 28);
+
+    let y = 38;
+    selected.forEach((clause, idx) => {
+      if (y > 260) { doc.addPage(); y = 20; }
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text(`${idx + 1}. ${clause.title}`, 14, y);
+      y += 6;
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(9);
+      doc.text(`Category: ${(clause as any).categoryName}  |  Importance: ${clause.importance}`, 14, y);
+      y += 6;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      const lines = doc.splitTextToSize(clause.fullText, 180);
+      lines.forEach((line: string) => {
+        if (y > 280) { doc.addPage(); y = 20; }
+        doc.text(line, 14, y);
+        y += 4.5;
+      });
+      y += 8;
+    });
+
+    doc.save("Clause_Finder_Selected.pdf");
+    toast({ title: "PDF Exported!", description: `${selected.length} clause(s) exported successfully.` });
+  };
+
+  const useInContractDrafter = (clause: Clause) => {
+    // Store clause text in sessionStorage and navigate to Contract Drafter
+    sessionStorage.setItem("clauseForDrafter", JSON.stringify({ title: clause.title, text: clause.fullText }));
+    navigate("/contract-drafter");
+    toast({ title: "Clause loaded!", description: `"${clause.title}" is ready to use in Contract Drafter.` });
   };
 
   return (
@@ -692,9 +978,23 @@ const ClauseFinder = () => {
                 </Button>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Showing {totalClauses} clause{totalClauses !== 1 ? "s" : ""} across {filteredCategories.length} categor{filteredCategories.length !== 1 ? "ies" : "y"}
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">
+                Showing {totalClauses} clause{totalClauses !== 1 ? "s" : ""} across {filteredCategories.length} categor{filteredCategories.length !== 1 ? "ies" : "y"}
+              </p>
+              {selectedClauses.size > 0 && (
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-xs">{selectedClauses.size} selected</Badge>
+                  <Button variant="default" size="sm" onClick={exportSelectedToPDF} className="text-xs gap-1.5">
+                    <FileDown className="h-3 w-3" />
+                    Export PDF
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => setSelectedClauses(new Set())} className="text-xs">
+                    Clear
+                  </Button>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -746,18 +1046,27 @@ const ClauseFinder = () => {
                               className="w-full text-left p-3 hover:bg-muted/20 transition-colors"
                             >
                               <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <h3 className="font-semibold text-sm">{clause.title}</h3>
-                                    <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${imp.className}`}>
-                                      {imp.label}
-                                    </Badge>
+                                <div className="flex items-start gap-2 flex-1 min-w-0">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedClauses.has(clause.id)}
+                                    onChange={(e) => { e.stopPropagation(); toggleSelectClause(clause.id); }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="mt-1 h-3.5 w-3.5 rounded border-border accent-primary shrink-0"
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <h3 className="font-semibold text-sm">{clause.title}</h3>
+                                      <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${imp.className}`}>
+                                        {imp.label}
+                                      </Badge>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-1">{clause.description}</p>
                                   </div>
-                                  <p className="text-xs text-muted-foreground mt-1">{clause.description}</p>
                                 </div>
                                 {isClauseExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 mt-1" /> : <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />}
                               </div>
-                              <div className="flex flex-wrap gap-1 mt-2">
+                              <div className="flex flex-wrap gap-1 mt-2 ml-5">
                                 {clause.tags.map(tag => (
                                   <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
                                     {tag}
@@ -768,7 +1077,16 @@ const ClauseFinder = () => {
 
                             {isClauseExpanded && (
                               <div className="border-t border-border/50 p-3 bg-muted/10">
-                                <div className="flex justify-end mb-2">
+                                <div className="flex justify-end gap-2 mb-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => useInContractDrafter(clause)}
+                                    className="text-xs gap-1.5"
+                                  >
+                                    <Pen className="h-3 w-3" />
+                                    Use in Contract Drafter
+                                  </Button>
                                   <Button
                                     variant="outline"
                                     size="sm"
