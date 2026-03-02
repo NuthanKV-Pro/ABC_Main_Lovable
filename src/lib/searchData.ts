@@ -48,7 +48,7 @@ export const featuredTools: SearchItem[] = sortAlphabetically([
   { name: "Tax Loss Harvesting", route: "/tax-loss-harvesting", category: "⭐ Featured Tools", keywords: ["tax", "loss", "harvesting", "capital gains", "offset"] },
   { name: "Deduction Playground", route: "/deduction-playground", category: "⭐ Featured Tools", keywords: ["deduction", "playground", "80c", "80d", "tax saving", "regime", "comparison", "roi"] },
   { name: "Contract Drafter", route: "/contract-drafter", category: "⭐ Featured Tools", keywords: ["contract", "drafter", "agreement", "legal", "nda", "employment"] },
-  
+  { name: "Business Valuation", route: "/business-valuation", category: "⭐ Featured Tools", keywords: ["valuation", "dcf", "comps", "lbo", "comparable", "precedent", "monte carlo", "mckinsey"] },
   { name: "Clause Finder", route: "/clause-finder", category: "⭐ Featured Tools", keywords: ["clause", "finder", "legal", "contract", "NDA", "shareholders", "agreement"] },
   { name: "Focus", route: "external:https://abcfocus.lovable.app", category: "⭐ Featured Tools", keywords: ["focus", "disconnect", "productivity", "concentration", "mindfulness"] },
   { name: "Insurance Real Return Calc", route: "external:https://abcinsurance1.lovable.app", category: "⭐ Featured Tools", keywords: ["insurance", "real return", "policy", "ulip", "endowment"] },
