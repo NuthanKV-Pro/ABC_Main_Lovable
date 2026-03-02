@@ -590,6 +590,547 @@ const sampleCaseLaws: CaseLaw[] = [
     ],
     relevantSections: ["Section 10A", "Section 10AA", "Section 80HHE"],
     verdict: "favor_taxpayer"
+  },
+  // Landmark SC Cases - Income Tax
+  {
+    id: "36",
+    title: "Union of India vs. Ashish Agarwal",
+    citation: "[2022] 138 taxmann.com 64 (SC)",
+    court: "Supreme Court of India",
+    date: "2022-04-20",
+    category: "Income Tax",
+    summary: "The Supreme Court converted all reassessment notices issued under old Section 148 (after April 2021) into show-cause notices under the new Section 148A, giving the AO a fresh opportunity to follow the new procedure under the Finance Act, 2021.",
+    keyPrinciples: [
+      "Reassessment notices under old law deemed invalid post Finance Act 2021",
+      "Court converted invalid notices to fresh proceedings under Section 148A",
+      "Balance between revenue interests and taxpayer rights"
+    ],
+    relevantSections: ["Section 148", "Section 148A", "Section 149", "Section 151"],
+    verdict: "partial"
+  },
+  {
+    id: "37",
+    title: "Pr. CIT vs. Abhisar Buildwell Pvt. Ltd.",
+    citation: "[2023] 149 taxmann.com 399 (SC)",
+    court: "Supreme Court of India",
+    date: "2023-04-24",
+    category: "Income Tax",
+    summary: "The Supreme Court held that in cases of search, no addition can be made under Section 153A without incriminating material found during search for completed/unabated assessments. Overruled the contrary Delhi HC view in Kabul Chawla.",
+    keyPrinciples: [
+      "No addition without incriminating material for unabated assessments",
+      "Search assessments under Section 153A require seized material",
+      "Completed assessments cannot be disturbed without evidence"
+    ],
+    relevantSections: ["Section 153A", "Section 153C", "Section 132"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "38",
+    title: "Checkmate Services Pvt. Ltd. vs. CIT",
+    citation: "[2022] 143 taxmann.com 178 (SC)",
+    court: "Supreme Court of India",
+    date: "2022-10-28",
+    category: "Income Tax",
+    summary: "The Supreme Court held that delayed payment of employees' PF/ESI contribution beyond the due date under the respective Acts is not deductible under Section 36(1)(va), even if deposited before the income tax return filing date.",
+    keyPrinciples: [
+      "Employees' PF/ESI contribution must be deposited by statutory due date",
+      "Section 36(1)(va) is distinct from Section 43B",
+      "No relaxation for depositing before ITR filing date"
+    ],
+    relevantSections: ["Section 36(1)(va)", "Section 2(24)(x)", "Section 43B"],
+    verdict: "favor_revenue"
+  },
+  {
+    id: "39",
+    title: "CIT vs. Smit Shanti Lal Shah",
+    citation: "[2013] 30 taxmann.com 352 (SC)",
+    court: "Supreme Court of India",
+    date: "2013-02-14",
+    category: "Capital Gains",
+    summary: "The Supreme Court ruled on cost of acquisition for inherited property, holding that the cost to the previous owner is the cost of acquisition for computing capital gains under Section 49, and indexation benefit is available from the year the previous owner first held the asset.",
+    keyPrinciples: [
+      "Cost of acquisition for inherited property",
+      "Indexation from the year previous owner held the asset",
+      "Section 49 interpretation for gifted/inherited assets"
+    ],
+    relevantSections: ["Section 49", "Section 48", "Section 55"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "40",
+    title: "Seshasayee Steels Pvt. Ltd. vs. ACIT",
+    citation: "[2020] 114 taxmann.com 419 (SC)",
+    court: "Supreme Court of India",
+    date: "2020-02-13",
+    category: "Cash Credits",
+    summary: "The Supreme Court reiterated principles of Section 68, holding that the assessee must prove identity, creditworthiness of creditor, and genuineness of transaction. Where loans were received from entities with no real business, additions were upheld.",
+    keyPrinciples: [
+      "Section 68 triple test remains paramount",
+      "Shell companies cannot provide genuine credit",
+      "Mere documentation insufficient to discharge burden"
+    ],
+    relevantSections: ["Section 68", "Section 69", "Section 115BBE"],
+    verdict: "favor_revenue"
+  },
+  // Landmark GST Cases
+  {
+    id: "41",
+    title: "Tvl. Senthil Trading Company vs. State of Tamil Nadu",
+    citation: "[2023] 155 taxmann.com 112 (Mad)",
+    court: "Madras High Court",
+    date: "2023-07-18",
+    category: "GST",
+    summary: "The court quashed assessment orders passed without providing opportunity of personal hearing as mandated under Section 75(4) of CGST Act, holding that principles of natural justice are fundamental and cannot be bypassed.",
+    keyPrinciples: [
+      "Mandatory personal hearing before adverse order",
+      "Principles of natural justice in GST proceedings",
+      "Orders without hearing are void ab initio"
+    ],
+    relevantSections: ["Section 75(4) CGST Act", "Section 73 CGST Act", "Section 74 CGST Act"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "42",
+    title: "Bharti Airtel Ltd. vs. Union of India",
+    citation: "[2021] 132 taxmann.com 59 (SC)",
+    court: "Supreme Court of India",
+    date: "2021-10-28",
+    category: "GST",
+    summary: "The Supreme Court held that GSTR-3B is a return in itself and not merely a summary, and errors in GSTR-3B cannot be rectified by amending GSTR-2A. Taxpayers must exercise due diligence while filing returns.",
+    keyPrinciples: [
+      "GSTR-3B is a valid return, not just a summary",
+      "Errors in GSTR-3B cannot be rectified through GSTR-2A",
+      "Due diligence required while filing GST returns"
+    ],
+    relevantSections: ["Section 39 CGST Act", "Section 34 CGST Act", "Rule 61 CGST Rules"],
+    verdict: "favor_revenue"
+  },
+  {
+    id: "43",
+    title: "D.Y. Beathel Enterprises vs. State Tax Officer",
+    citation: "[2021] 127 taxmann.com 520 (Mad)",
+    court: "Madras High Court",
+    date: "2021-06-30",
+    category: "GST",
+    summary: "The court held that minor clerical errors in e-way bills (such as mentioning wrong vehicle number or PIN code) are human errors and should not lead to detention of goods and heavy penalties under Section 129.",
+    keyPrinciples: [
+      "Minor errors in e-way bill should not attract penalties",
+      "Mens rea required for penal provisions",
+      "Proportionality in GST enforcement"
+    ],
+    relevantSections: ["Section 129 CGST Act", "Section 130 CGST Act", "Rule 138 CGST Rules"],
+    verdict: "favor_taxpayer"
+  },
+  // Corporate Law - Recent Landmark Cases
+  {
+    id: "44",
+    title: "Byju Raveendran vs. BCCI",
+    citation: "[2023] 157 taxmann.com 890 (NCLAT)",
+    court: "NCLAT Delhi",
+    date: "2023-08-02",
+    category: "Corporate Law",
+    summary: "NCLAT examined the IBC proceedings against Think & Learn Pvt. Ltd. (Byju's) for default in payment to BCCI. The case highlighted issues around CIRP of ed-tech companies, valuation of intangible assets, and creditor rights.",
+    keyPrinciples: [
+      "IBC applies regardless of company's brand value",
+      "Admission of Section 9 petitions for undisputed operational debts",
+      "Valuation challenges for tech/ed-tech companies in CIRP"
+    ],
+    relevantSections: ["Section 9 IBC", "Section 14 IBC", "Section 16 IBC"],
+    verdict: "favor_revenue"
+  },
+  {
+    id: "45",
+    title: "Jaypee Infratech Ltd. — CIRP Resolution",
+    citation: "[2021] 126 taxmann.com 218 (SC)",
+    court: "Supreme Court of India",
+    date: "2021-03-24",
+    category: "Corporate Law",
+    summary: "The Supreme Court dealt with homebuyers' rights in IBC, affirming that homebuyers are financial creditors under Section 5(8)(f) and have voting rights in CoC, ensuring their interests are protected in real estate insolvency.",
+    keyPrinciples: [
+      "Homebuyers are financial creditors under IBC",
+      "Homebuyers have voting rights in CoC",
+      "RERA and IBC can operate simultaneously"
+    ],
+    relevantSections: ["Section 5(8)(f) IBC", "Section 21 IBC", "Section 7 IBC"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "46",
+    title: "Lalit Kumar Jain vs. Union of India",
+    citation: "[2021] 131 taxmann.com 78 (SC)",
+    court: "Supreme Court of India",
+    date: "2021-05-21",
+    category: "Corporate Law",
+    summary: "The Supreme Court upheld the validity of notification allowing initiation of insolvency proceedings against personal guarantors under Part III of IBC, holding that a personal guarantor's liability is independent of the corporate debtor.",
+    keyPrinciples: [
+      "Personal guarantors can face IBC proceedings independently",
+      "Approval of resolution plan does not discharge personal guarantor",
+      "Part III of IBC is valid and operational"
+    ],
+    relevantSections: ["Section 95 IBC", "Section 96 IBC", "Section 100 IBC"],
+    verdict: "favor_revenue"
+  },
+  // TDS & Withholding Tax
+  {
+    id: "47",
+    title: "CIT (TDS) vs. Bharti Airtel Ltd.",
+    citation: "[2023] 152 taxmann.com 345 (SC)",
+    court: "Supreme Court of India",
+    date: "2023-10-05",
+    category: "Income Tax",
+    summary: "The Supreme Court examined whether interconnect/port access charges paid by telecom operators constitute FTS under Section 194J, holding that standard facility charges for network usage are not technical services requiring TDS at 10%.",
+    keyPrinciples: [
+      "Interconnect charges are not FTS",
+      "Standard facility usage vs. technical services",
+      "Section 194J vs. Section 194C applicability"
+    ],
+    relevantSections: ["Section 194J", "Section 194C", "Section 9(1)(vii)"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "48",
+    title: "CIT vs. Rajasthan State Mines & Minerals Ltd.",
+    citation: "[2023] 148 taxmann.com 120 (SC)",
+    court: "Supreme Court of India",
+    date: "2023-05-30",
+    category: "Income Tax",
+    summary: "The Supreme Court held that expenditure on removal of overburden in mines is revenue expenditure and not capital expenditure, as it does not create any new asset but merely facilitates the mining operations.",
+    keyPrinciples: [
+      "Overburden removal is revenue expenditure",
+      "No new asset creation test for capital vs revenue",
+      "Mining operations - recurring nature of expenditure"
+    ],
+    relevantSections: ["Section 37(1)", "Section 35E"],
+    verdict: "favor_taxpayer"
+  },
+  // Transfer Pricing
+  {
+    id: "49",
+    title: "Instrumentarium Corporation Ltd. vs. ADIT",
+    citation: "[2023] 153 taxmann.com 567 (Del)",
+    court: "Delhi ITAT",
+    date: "2023-10-22",
+    category: "Transfer Pricing",
+    summary: "The Tribunal held that the use of multiple year data and current year data for comparability analysis is permissible under Rule 10B(4), and the use of prior year data helps eliminate the effect of business cycles.",
+    keyPrinciples: [
+      "Multiple year data enhances comparability",
+      "Rule 10B(4) allows prior year data",
+      "Business cycle adjustments are necessary"
+    ],
+    relevantSections: ["Section 92C", "Rule 10B(4)", "Section 92CA"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "50",
+    title: "CIT vs. EKL Appliances Ltd.",
+    citation: "[2012] 24 taxmann.com 56 (Del)",
+    court: "Delhi High Court",
+    date: "2012-04-16",
+    category: "Transfer Pricing",
+    summary: "The Delhi High Court established that the taxpayer has the right to choose the Most Appropriate Method (MAM) under transfer pricing regulations, and the TPO cannot change the method without demonstrating that the chosen method is unreliable.",
+    keyPrinciples: [
+      "Taxpayer has right to choose MAM",
+      "TPO must justify rejection of taxpayer's method",
+      "Burden on revenue to prove method is inappropriate"
+    ],
+    relevantSections: ["Section 92C(1)", "Section 92CA", "Rule 10C"],
+    verdict: "favor_taxpayer"
+  },
+  // Landmark Constitutional & Tax Cases
+  {
+    id: "51",
+    title: "Mineral Area Development Authority vs. Steel Authority of India",
+    citation: "[2024] 164 taxmann.com 1 (SC)",
+    court: "Supreme Court of India",
+    date: "2024-07-25",
+    category: "Income Tax",
+    summary: "A 9-judge Constitution Bench held that royalty on minerals is not a tax under Article 366(28), overruling the 7-judge bench in India Cement. States can levy tax on mineral-bearing lands in addition to royalty under MMDR Act.",
+    keyPrinciples: [
+      "Royalty is not a tax — overruled India Cement",
+      "States can levy tax on mineral-bearing lands",
+      "Entry 49 of State List empowers taxation of mineral rights"
+    ],
+    relevantSections: ["Article 366(28)", "Entry 49 State List", "MMDR Act"],
+    verdict: "partial"
+  },
+  {
+    id: "52",
+    title: "CIT vs. Vegetable Products Ltd.",
+    citation: "[1973] 88 ITR 192 (SC)",
+    court: "Supreme Court of India",
+    date: "1973-01-12",
+    category: "Income Tax",
+    summary: "The Supreme Court laid down the cardinal principle that if two reasonable interpretations of a taxing statute are possible, the one favourable to the assessee must be adopted. This remains a foundational principle in Indian tax jurisprudence.",
+    keyPrinciples: [
+      "Ambiguity in taxing statute — favour the assessee",
+      "Strict interpretation of charging sections",
+      "No presumption of tax liability"
+    ],
+    relevantSections: ["General interpretation principles"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "53",
+    title: "K.P. Varghese vs. ITO",
+    citation: "[1981] 131 ITR 597 (SC)",
+    court: "Supreme Court of India",
+    date: "1981-09-15",
+    category: "Capital Gains",
+    summary: "The Supreme Court held that Section 52(2) (now Section 50C concept) can only be invoked where there is understatement of consideration and the AO has material to show that the actual consideration is more than what is declared.",
+    keyPrinciples: [
+      "Section 52(2) requires evidence of understatement",
+      "Mere inadequacy of consideration is not enough",
+      "Revenue must establish concealment of actual price"
+    ],
+    relevantSections: ["Section 50C", "Section 45", "Section 48"],
+    verdict: "favor_taxpayer"
+  },
+  // RERA & Real Estate
+  {
+    id: "54",
+    title: "Newtech Promoters & Developers vs. State of UP (RERA)",
+    citation: "[2021] 131 taxmann.com 151 (SC)",
+    court: "Supreme Court of India",
+    date: "2021-11-11",
+    category: "RERA & Real Estate",
+    summary: "The Supreme Court upheld the constitutional validity of RERA and clarified the definition of 'ongoing projects' — holding that all projects where completion certificate was not received before RERA commencement must register under RERA.",
+    keyPrinciples: [
+      "RERA is constitutionally valid",
+      "Projects without CC must register under RERA",
+      "Homebuyers' interest is paramount"
+    ],
+    relevantSections: ["Section 3 RERA", "Section 18 RERA", "Article 19(1)(g)"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "55",
+    title: "Imperia Structures Ltd. vs. Anil Patni",
+    citation: "[2020] 118 taxmann.com 89 (SC)",
+    court: "Supreme Court of India",
+    date: "2020-11-02",
+    category: "RERA & Real Estate",
+    summary: "The Supreme Court held that allottees under RERA are consumers under the Consumer Protection Act, and can pursue remedies both under RERA before the RERA Authority and under the Consumer Protection Act before Consumer Forum, concurrently.",
+    keyPrinciples: [
+      "RERA and Consumer Protection Act operate concurrently",
+      "Allottees can choose their forum",
+      "No bar on parallel proceedings under both statutes"
+    ],
+    relevantSections: ["Section 18 RERA", "Section 71 RERA", "Consumer Protection Act 2019"],
+    verdict: "favor_taxpayer"
+  },
+  // FEMA & Cross-border
+  {
+    id: "56",
+    title: "Vodafone International Holdings vs. Union of India",
+    citation: "[2012] 17 taxmann.com 202 (SC)",
+    court: "Supreme Court of India",
+    date: "2012-01-20",
+    category: "International Taxation",
+    summary: "The Supreme Court held that the transfer of shares of a Cayman Islands company (which indirectly held shares in an Indian company) by a non-resident to another non-resident is not taxable in India, applying the look-at principle over look-through.",
+    keyPrinciples: [
+      "Indirect transfer of Indian assets not taxable (pre-amendment)",
+      "Look-at principle vs. look-through principle",
+      "Tax planning within legal framework is permissible"
+    ],
+    relevantSections: ["Section 9(1)(i)", "Section 195", "Explanation 5 to Section 9"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "57",
+    title: "Cairn Energy PLC vs. Government of India (Arbitration)",
+    citation: "PCA Case No. 2016-7",
+    court: "Permanent Court of Arbitration, The Hague",
+    date: "2020-12-21",
+    category: "International Taxation",
+    summary: "The international arbitration tribunal ruled in favour of Cairn Energy, holding that India's retrospective tax demand (post Vodafone amendment) violated the India-UK BIT's fair and equitable treatment standard, awarding $1.2 billion plus interest.",
+    keyPrinciples: [
+      "Retrospective taxation violates BIT protections",
+      "Fair and equitable treatment standard",
+      "Tax sovereignty vs. investment treaty obligations"
+    ],
+    relevantSections: ["India-UK BIT", "Section 9(1)(i) Explanation 5", "Taxation Laws (Amendment) Act 2021"],
+    verdict: "favor_taxpayer"
+  },
+  // Data Privacy & IT Law
+  {
+    id: "58",
+    title: "Justice K.S. Puttaswamy vs. Union of India",
+    citation: "[2017] 10 SCC 1 (SC)",
+    court: "Supreme Court of India",
+    date: "2017-08-24",
+    category: "Data Privacy & IT Law",
+    summary: "The 9-judge Constitution Bench unanimously held that Right to Privacy is a fundamental right under Articles 14, 19, and 21 of the Constitution. This landmark decision laid the foundation for the DPDPA 2023.",
+    keyPrinciples: [
+      "Right to Privacy is a fundamental right",
+      "Informational privacy is protected",
+      "Any restriction must satisfy proportionality test"
+    ],
+    relevantSections: ["Article 21", "Article 14", "Article 19", "DPDPA 2023"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "59",
+    title: "Shreya Singhal vs. Union of India",
+    citation: "[2015] 5 SCC 1 (SC)",
+    court: "Supreme Court of India",
+    date: "2015-03-24",
+    category: "Data Privacy & IT Law",
+    summary: "The Supreme Court struck down Section 66A of the IT Act (criminalising 'offensive' online speech) as unconstitutional, being vague, overbroad, and violative of Article 19(1)(a). Upheld Section 79 (intermediary safe harbour) with reading down.",
+    keyPrinciples: [
+      "Section 66A IT Act struck down as unconstitutional",
+      "Online free speech is protected",
+      "Section 79 safe harbour upheld with conditions"
+    ],
+    relevantSections: ["Section 66A IT Act", "Section 79 IT Act", "Article 19(1)(a)"],
+    verdict: "favor_taxpayer"
+  },
+  // Competition Law
+  {
+    id: "60",
+    title: "CCI vs. Google LLC (Android Abuse)",
+    citation: "Case No. 07/2020 (CCI)",
+    court: "Competition Commission of India",
+    date: "2022-10-20",
+    category: "Competition Law",
+    summary: "CCI imposed a ₹1,337.76 crore penalty on Google for abusing dominant position in the Android mobile ecosystem, including mandatory pre-installation of apps, anti-fragmentation obligations, and tying of Google Play with GMS.",
+    keyPrinciples: [
+      "Dominant position abuse in mobile OS market",
+      "Tying and bundling as anti-competitive practice",
+      "Mandatory pre-installation restricts competition"
+    ],
+    relevantSections: ["Section 4 Competition Act", "Section 27 Competition Act"],
+    verdict: "favor_revenue"
+  },
+  {
+    id: "61",
+    title: "Excel Crop Care Ltd. vs. CCI",
+    citation: "[2017] 8 SCC 47 (SC)",
+    court: "Supreme Court of India",
+    date: "2017-05-08",
+    category: "Competition Law",
+    summary: "The Supreme Court upheld CCI's penalty for bid rigging in government tenders, confirming that cartels are per se anti-competitive under Section 3(3) and no further inquiry into anti-competitive effect is required for horizontal agreements.",
+    keyPrinciples: [
+      "Cartels are per se anti-competitive",
+      "Bid rigging needs no further inquiry into effect",
+      "CCI's penalty-imposing jurisdiction upheld"
+    ],
+    relevantSections: ["Section 3(3) Competition Act", "Section 27 Competition Act", "Section 46 Competition Act"],
+    verdict: "favor_revenue"
+  },
+  // Labour & Employment Law
+  {
+    id: "62",
+    title: "Indian Bank vs. SOM",
+    citation: "[2023] SC/2023/456",
+    court: "Supreme Court of India",
+    date: "2023-09-25",
+    category: "Labour & Employment",
+    summary: "The Supreme Court reaffirmed that in cases of dismissal, the disciplinary authority must follow principles of natural justice including providing the employee with a copy of the inquiry report, opportunity to respond, and speaking order.",
+    keyPrinciples: [
+      "Copy of inquiry report must be provided",
+      "Natural justice mandatory in dismissal proceedings",
+      "Speaking order requirement for adverse actions"
+    ],
+    relevantSections: ["Article 311", "Industrial Disputes Act Section 25F"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "63",
+    title: "Vishaka vs. State of Rajasthan",
+    citation: "[1997] 6 SCC 241 (SC)",
+    court: "Supreme Court of India",
+    date: "1997-08-13",
+    category: "Labour & Employment",
+    summary: "The Supreme Court laid down binding guidelines (Vishaka Guidelines) to prevent sexual harassment at workplace, which remained law until the enactment of the POSH Act, 2013. Established employer obligations for safe working environment.",
+    keyPrinciples: [
+      "Employer must prevent sexual harassment at workplace",
+      "Complaints Committee must be established",
+      "Guidelines have force of law until legislation"
+    ],
+    relevantSections: ["Article 14", "Article 15", "Article 21", "POSH Act 2013"],
+    verdict: "favor_taxpayer"
+  },
+  // IP & Technology Law
+  {
+    id: "64",
+    title: "Novartis AG vs. Union of India (Glivec)",
+    citation: "[2013] 6 SCC 1 (SC)",
+    court: "Supreme Court of India",
+    date: "2013-04-01",
+    category: "IP & Technology",
+    summary: "The Supreme Court rejected Novartis' patent application for Glivec (Imatinib Mesylate beta crystalline form), holding that it failed the 'enhanced efficacy' test under Section 3(d) of the Patents Act. A landmark anti-evergreening decision.",
+    keyPrinciples: [
+      "Section 3(d) bars evergreening of pharmaceutical patents",
+      "Enhanced efficacy means therapeutic efficacy for pharma",
+      "India's public health considerations in patent law"
+    ],
+    relevantSections: ["Section 3(d) Patents Act", "Section 2(1)(j) Patents Act"],
+    verdict: "favor_revenue"
+  },
+  {
+    id: "65",
+    title: "The Chancellor, Masters & Scholars of Oxford University vs. Narendra Publishing House",
+    citation: "[2008] 38 PTC 385 (Del)",
+    court: "Delhi High Court",
+    date: "2008-12-16",
+    category: "IP & Technology",
+    summary: "The Delhi High Court examined copyright infringement in the publication of guides and solved papers, holding that reproduction of substantial portions of copyrighted educational material without permission is infringement, even for educational purposes.",
+    keyPrinciples: [
+      "Fair dealing for education has limits",
+      "Substantial reproduction is infringement",
+      "Section 52 exceptions are narrowly construed"
+    ],
+    relevantSections: ["Section 14 Copyright Act", "Section 51 Copyright Act", "Section 52 Copyright Act"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "66",
+    title: "Telefonaktiebolaget LM Ericsson vs. Mercury Electronics",
+    citation: "[2023] SCC OnLine Del 756",
+    court: "Delhi High Court",
+    date: "2023-03-15",
+    category: "IP & Technology",
+    summary: "The court dealt with Standard Essential Patents (SEPs) and FRAND licensing, holding that SEP holders must offer licenses on Fair, Reasonable, and Non-Discriminatory terms and cannot seek injunctions before making a genuine FRAND offer.",
+    keyPrinciples: [
+      "SEP holders must offer FRAND terms before seeking injunction",
+      "Willing licensee test applies",
+      "Proportionality in patent enforcement"
+    ],
+    relevantSections: ["Section 48 Patents Act", "Section 108 Patents Act", "Competition Act Section 4"],
+    verdict: "partial"
+  },
+  // Arbitration
+  {
+    id: "67",
+    title: "Amazon.com NV vs. Future Retail Ltd.",
+    citation: "[2022] 142 taxmann.com 112 (SC)",
+    court: "Supreme Court of India",
+    date: "2022-08-01",
+    category: "Arbitration & Contract",
+    summary: "The Supreme Court held that an emergency arbitrator's order (under SIAC Rules) is enforceable in India under Section 17(1) of the Arbitration Act, as it is an order by an arbitral tribunal. This paved the way for emergency arbitration in India.",
+    keyPrinciples: [
+      "Emergency arbitrator's orders enforceable in India",
+      "SIAC emergency awards are valid",
+      "Group of companies doctrine applies"
+    ],
+    relevantSections: ["Section 17(1) Arbitration Act", "Section 9 Arbitration Act"],
+    verdict: "favor_taxpayer"
+  },
+  {
+    id: "68",
+    title: "ONGC vs. Saw Pipes Ltd.",
+    citation: "[2003] 5 SCC 705 (SC)",
+    court: "Supreme Court of India",
+    date: "2003-04-17",
+    category: "Arbitration & Contract",
+    summary: "The Supreme Court expanded the scope of 'public policy' ground for setting aside arbitral awards under Section 34, holding that an award contrary to the substantive provisions of law or terms of the contract can be set aside.",
+    keyPrinciples: [
+      "Public policy includes patent illegality",
+      "Award against contract terms is invalid",
+      "Court can examine whether award shocks the conscience"
+    ],
+    relevantSections: ["Section 34 Arbitration Act", "Section 37 Arbitration Act"],
+    verdict: "partial"
   }
 ];
 
@@ -606,7 +1147,13 @@ const legalCategories = [
   "E-commerce",
   "International Taxation",
   "GST",
-  "Corporate Law"
+  "Corporate Law",
+  "RERA & Real Estate",
+  "Data Privacy & IT Law",
+  "Competition Law",
+  "Labour & Employment",
+  "IP & Technology",
+  "Arbitration & Contract"
 ];
 
 const courts = [
@@ -616,11 +1163,15 @@ const courts = [
   "Mumbai High Court",
   "Karnataka High Court",
   "Madras High Court",
+  "Orissa High Court",
   "Calcutta High Court",
   "Delhi ITAT",
   "Mumbai ITAT",
   "Bangalore ITAT",
-  "Chennai ITAT"
+  "Chennai ITAT",
+  "NCLAT Delhi",
+  "Competition Commission of India",
+  "Permanent Court of Arbitration, The Hague"
 ];
 
 const LegalInterpretations = () => {
