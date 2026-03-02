@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Scale, Search, BookOpen, FileText, Gavel, Filter, ChevronDown, ExternalLink, Clock, Tag, Building } from "lucide-react";
+import { ArrowLeft, Scale, Search, BookOpen, FileText, Gavel, Filter, ChevronDown, ExternalLink, Clock, Tag, Building, Copy, Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -1175,6 +1176,7 @@ const courts = [
 ];
 
 const LegalInterpretations = () => {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedCourt, setSelectedCourt] = useState("All Courts");
@@ -1182,6 +1184,16 @@ const LegalInterpretations = () => {
   const [analysisQuery, setAnalysisQuery] = useState("");
   const [analysisResult, setAnalysisResult] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [copiedCaseId, setCopiedCaseId] = useState<string | null>(null);
+
+  const citeCaseToClipboard = (caseItem: CaseLaw) => {
+    const dateFormatted = new Date(caseItem.date).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
+    const citation = `${caseItem.title}, ${caseItem.citation}, decided on ${dateFormatted} by the ${caseItem.court}. Relevant Sections: ${caseItem.relevantSections.join(", ")}.`;
+    navigator.clipboard.writeText(citation);
+    setCopiedCaseId(caseItem.id);
+    toast({ title: "Citation Copied!", description: `Citation for "${caseItem.title}" copied to clipboard.` });
+    setTimeout(() => setCopiedCaseId(null), 2000);
+  };
 
   const filteredCases = sampleCaseLaws.filter(caseItem => {
     const matchesSearch = searchQuery === "" || 
@@ -1471,7 +1483,18 @@ For a detailed analysis, please consider:
                         <h3 className="text-lg font-semibold text-foreground mb-1">{caseItem.title}</h3>
                         <p className="text-sm text-primary font-mono">{caseItem.citation}</p>
                       </div>
-                      {getVerdictBadge(caseItem.verdict)}
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => citeCaseToClipboard(caseItem)}
+                          className="text-xs gap-1.5 shrink-0"
+                        >
+                          {copiedCaseId === caseItem.id ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                          {copiedCaseId === caseItem.id ? "Copied" : "Cite"}
+                        </Button>
+                        {getVerdictBadge(caseItem.verdict)}
+                      </div>
                     </div>
 
                     <div className="flex flex-wrap gap-2 mb-4">
