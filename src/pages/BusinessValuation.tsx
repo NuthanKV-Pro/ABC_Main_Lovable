@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, TrendingUp, BarChart3, Calculator, DollarSign, Layers, Target, Shuffle, Download, Info } from "lucide-react";
+import { ArrowLeft, TrendingUp, BarChart3, Calculator, DollarSign, Layers, Target, Shuffle, Download, Info, Building2, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, LineChart, Line, ScatterChart, Scatter, Cell, Legend, ComposedChart, Area } from "recharts";
 import jsPDF from "jspdf";
@@ -161,6 +161,92 @@ const runMonteCarlo = (baseInputs: DCFInputs, iterations: number = 5000) => {
   return { p10, p25, p50, p75, p90, mean, histogram, count: results.length };
 };
 
+// ─── INDUSTRY BENCHMARKS ────────────────────────────────────────────────────
+const INDUSTRY_BENCHMARKS: Record<string, {
+  label: string;
+  revenueGrowth: number;
+  ebitdaMargin: number;
+  depreciationPct: number;
+  taxRate: number;
+  capexPct: number;
+  nwcPct: number;
+  beta: number;
+  comps: CompInput[];
+  precedents: PrecedentDeal[];
+}> = {
+  it_services: {
+    label: "IT Services",
+    revenueGrowth: 14, ebitdaMargin: 24, depreciationPct: 2.5, taxRate: 25.17, capexPct: 3.5, nwcPct: 12, beta: 0.95,
+    comps: [
+      { name: "TCS", evEbitda: 22.5, peRatio: 30.2, pbRatio: 13.5, evRevenue: 5.4 },
+      { name: "Infosys", evEbitda: 19.8, peRatio: 27.1, pbRatio: 9.2, evRevenue: 4.8 },
+      { name: "Wipro", evEbitda: 14.5, peRatio: 20.3, pbRatio: 3.8, evRevenue: 2.5 },
+      { name: "HCL Tech", evEbitda: 16.2, peRatio: 23.5, pbRatio: 7.1, evRevenue: 3.6 },
+    ],
+    precedents: [
+      { target: "Mphasis", acquirer: "Blackstone", evEbitda: 18.0, evRevenue: 3.8, premium: 28, year: 2023 },
+      { target: "Mindtree", acquirer: "L&T", evEbitda: 22.5, evRevenue: 4.5, premium: 35, year: 2022 },
+      { target: "NIIT Tech", acquirer: "Baring PE", evEbitda: 15.2, evRevenue: 2.8, premium: 25, year: 2023 },
+    ],
+  },
+  fmcg: {
+    label: "FMCG",
+    revenueGrowth: 10, ebitdaMargin: 22, depreciationPct: 3, taxRate: 25.17, capexPct: 4, nwcPct: 8, beta: 0.65,
+    comps: [
+      { name: "HUL", evEbitda: 45.0, peRatio: 55.2, pbRatio: 35.0, evRevenue: 10.5 },
+      { name: "Nestle India", evEbitda: 42.0, peRatio: 72.1, pbRatio: 50.0, evRevenue: 12.0 },
+      { name: "ITC", evEbitda: 13.5, peRatio: 25.8, pbRatio: 7.5, evRevenue: 4.2 },
+      { name: "Dabur", evEbitda: 32.0, peRatio: 50.0, pbRatio: 18.0, evRevenue: 7.8 },
+    ],
+    precedents: [
+      { target: "GSK Consumer", acquirer: "HUL", evEbitda: 38.0, evRevenue: 8.5, premium: 32, year: 2023 },
+      { target: "Paras Pharma", acquirer: "Reckitt", evEbitda: 25.0, evRevenue: 5.2, premium: 28, year: 2022 },
+    ],
+  },
+  pharma: {
+    label: "Pharma",
+    revenueGrowth: 12, ebitdaMargin: 26, depreciationPct: 3.5, taxRate: 25.17, capexPct: 6, nwcPct: 15, beta: 0.75,
+    comps: [
+      { name: "Sun Pharma", evEbitda: 20.0, peRatio: 32.5, pbRatio: 5.8, evRevenue: 5.2 },
+      { name: "Dr Reddy's", evEbitda: 15.8, peRatio: 25.0, pbRatio: 4.2, evRevenue: 3.5 },
+      { name: "Cipla", evEbitda: 18.5, peRatio: 28.0, pbRatio: 5.0, evRevenue: 4.0 },
+      { name: "Divi's Labs", evEbitda: 30.0, peRatio: 52.0, pbRatio: 10.5, evRevenue: 10.2 },
+    ],
+    precedents: [
+      { target: "Gland Pharma", acquirer: "Fosun", evEbitda: 28.0, evRevenue: 8.0, premium: 30, year: 2023 },
+      { target: "Piramal Pharma", acquirer: "Carlyle", evEbitda: 18.0, evRevenue: 3.5, premium: 22, year: 2022 },
+    ],
+  },
+  banking: {
+    label: "Banking / NBFC",
+    revenueGrowth: 16, ebitdaMargin: 35, depreciationPct: 1.5, taxRate: 25.17, capexPct: 2, nwcPct: 5, beta: 1.15,
+    comps: [
+      { name: "HDFC Bank", evEbitda: 18.0, peRatio: 20.5, pbRatio: 3.2, evRevenue: 6.5 },
+      { name: "ICICI Bank", evEbitda: 14.0, peRatio: 18.2, pbRatio: 2.8, evRevenue: 5.0 },
+      { name: "Kotak Bank", evEbitda: 22.0, peRatio: 28.0, pbRatio: 4.5, evRevenue: 8.0 },
+      { name: "Bajaj Finance", evEbitda: 25.0, peRatio: 35.0, pbRatio: 6.5, evRevenue: 10.0 },
+    ],
+    precedents: [
+      { target: "HDFC Ltd", acquirer: "HDFC Bank", evEbitda: 16.0, evRevenue: 5.5, premium: 18, year: 2024 },
+      { target: "Gruh Finance", acquirer: "Bandhan Bank", evEbitda: 20.0, evRevenue: 7.0, premium: 30, year: 2023 },
+    ],
+  },
+  real_estate: {
+    label: "Real Estate",
+    revenueGrowth: 18, ebitdaMargin: 28, depreciationPct: 4, taxRate: 25.17, capexPct: 8, nwcPct: 25, beta: 1.3,
+    comps: [
+      { name: "DLF", evEbitda: 22.0, peRatio: 45.0, pbRatio: 3.8, evRevenue: 6.5 },
+      { name: "Godrej Properties", evEbitda: 35.0, peRatio: 65.0, pbRatio: 5.5, evRevenue: 10.0 },
+      { name: "Oberoi Realty", evEbitda: 18.0, peRatio: 25.0, pbRatio: 3.2, evRevenue: 8.5 },
+      { name: "Prestige Estates", evEbitda: 14.0, peRatio: 30.0, pbRatio: 4.0, evRevenue: 3.8 },
+    ],
+    precedents: [
+      { target: "Embassy Office", acquirer: "Blackstone", evEbitda: 20.0, evRevenue: 12.0, premium: 15, year: 2024 },
+      { target: "Mindspace REIT", acquirer: "K Raheja", evEbitda: 18.0, evRevenue: 10.0, premium: 12, year: 2023 },
+    ],
+  },
+};
+
 // ─── COMPONENT ──────────────────────────────────────────────────────────────
 const BusinessValuation = () => {
   const navigate = useNavigate();
@@ -223,6 +309,46 @@ const BusinessValuation = () => {
 
   const [monteCarloResults, setMonteCarloResults] = useState<ReturnType<typeof runMonteCarlo> | null>(null);
   const [isRunningMC, setIsRunningMC] = useState(false);
+  const [selectedIndustry, setSelectedIndustry] = useState<string>("");
+
+  // WACC Calculator (CAPM)
+  const [waccCalc, setWaccCalc] = useState({
+    riskFreeRate: 7.1, // 10Y India Gov Bond
+    beta: 0.95,
+    equityRiskPremium: 6.5,
+    costOfDebt: 9.0,
+    taxRateDebt: 25.17,
+    debtWeight: 30,
+    equityWeight: 70,
+  });
+
+  const computedCostOfEquity = waccCalc.riskFreeRate + waccCalc.beta * waccCalc.equityRiskPremium;
+  const afterTaxCostOfDebt = waccCalc.costOfDebt * (1 - waccCalc.taxRateDebt / 100);
+  const computedWACC = (waccCalc.equityWeight / 100) * computedCostOfEquity + (waccCalc.debtWeight / 100) * afterTaxCostOfDebt;
+
+  const applyWACCToDCF = () => {
+    updateDCF("wacc", Math.round(computedWACC * 100) / 100);
+    toast({ title: "WACC Applied", description: `WACC of ${computedWACC.toFixed(2)}% applied to DCF model.` });
+  };
+
+  const applyIndustryBenchmark = (key: string) => {
+    const b = INDUSTRY_BENCHMARKS[key];
+    if (!b) return;
+    setSelectedIndustry(key);
+    setDcf(prev => ({
+      ...prev,
+      revenueGrowth: b.revenueGrowth,
+      ebitdaMargin: b.ebitdaMargin,
+      depreciationPct: b.depreciationPct,
+      taxRate: b.taxRate,
+      capexPct: b.capexPct,
+      nwcPct: b.nwcPct,
+    }));
+    setComps(b.comps);
+    setPrecedents(b.precedents);
+    setWaccCalc(prev => ({ ...prev, beta: b.beta }));
+    toast({ title: `${b.label} Benchmarks Applied`, description: "Margins, multiples, and comps pre-filled with industry data." });
+  };
 
   // ── DCF Calc
   const dcfResult = useMemo(() => calcDCF(dcf), [dcf]);
@@ -482,6 +608,19 @@ const BusinessValuation = () => {
                 <Label className="text-xs">Company / Project Name</Label>
                 <Input value={dcf.companyName} onChange={e => updateDCF("companyName", e.target.value)} className="h-9" />
               </div>
+              <div className="min-w-[180px]">
+                <Label className="text-xs flex items-center gap-1"><Building2 className="h-3 w-3" /> Industry Benchmark</Label>
+                <Select value={selectedIndustry} onValueChange={applyIndustryBenchmark}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Select industry…" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(INDUSTRY_BENCHMARKS).map(([key, b]) => (
+                      <SelectItem key={key} value={key}>{b.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="flex items-center gap-2">
                 <Label className="text-xs">DCF Mode:</Label>
                 <div className="flex items-center gap-2">
@@ -528,6 +667,38 @@ const BusinessValuation = () => {
                   <Separator />
                   {numInput("Net Debt (₹)", dcf.netDebt, v => updateDCF("netDebt", v))}
                   {numInput("Shares Outstanding", dcf.sharesOutstanding, v => updateDCF("sharesOutstanding", v))}
+                </CardContent>
+              </Card>
+
+              {/* WACC Calculator */}
+              <Card className="border-border/50 lg:col-span-3">
+                <CardHeader className="py-3 px-4">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Calculator className="h-4 w-4" /> WACC Calculator (CAPM)
+                  </CardTitle>
+                  <CardDescription className="text-xs">Cost of Equity = Rf + β × ERP | WACC = E/V × Ke + D/V × Kd × (1-t)</CardDescription>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {numInput("Risk-Free Rate (Rf)", waccCalc.riskFreeRate, v => setWaccCalc(p => ({ ...p, riskFreeRate: v })), "%", 0.1)}
+                    {numInput("Beta (β)", waccCalc.beta, v => setWaccCalc(p => ({ ...p, beta: v })), "", 0.05)}
+                    {numInput("Equity Risk Premium", waccCalc.equityRiskPremium, v => setWaccCalc(p => ({ ...p, equityRiskPremium: v })), "%", 0.1)}
+                    {numInput("Cost of Debt (Kd)", waccCalc.costOfDebt, v => setWaccCalc(p => ({ ...p, costOfDebt: v })), "%", 0.25)}
+                    {numInput("Tax Rate (Debt Shield)", waccCalc.taxRateDebt, v => setWaccCalc(p => ({ ...p, taxRateDebt: v })), "%", 0.5)}
+                    {numInput("Equity Weight (E/V)", waccCalc.equityWeight, v => setWaccCalc(p => ({ ...p, equityWeight: v, debtWeight: 100 - v })), "%", 5)}
+                    {numInput("Debt Weight (D/V)", waccCalc.debtWeight, v => setWaccCalc(p => ({ ...p, debtWeight: v, equityWeight: 100 - v })), "%", 5)}
+                  </div>
+                  <Separator className="my-3" />
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {metricCard("Cost of Equity (Ke)", `${computedCostOfEquity.toFixed(2)}%`, `${waccCalc.riskFreeRate}% + ${waccCalc.beta} × ${waccCalc.equityRiskPremium}%`)}
+                    {metricCard("After-Tax Kd", `${afterTaxCostOfDebt.toFixed(2)}%`, `${waccCalc.costOfDebt}% × (1 − ${waccCalc.taxRateDebt}%)`)}
+                    {metricCard("Computed WACC", `${computedWACC.toFixed(2)}%`, `${waccCalc.equityWeight}% Eq + ${waccCalc.debtWeight}% Debt`)}
+                    <div className="flex items-end">
+                      <Button onClick={applyWACCToDCF} className="w-full h-auto py-3 text-xs gap-1.5">
+                        <Target className="h-3.5 w-3.5" /> Apply {computedWACC.toFixed(2)}% to DCF
+                      </Button>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
