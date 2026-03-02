@@ -168,6 +168,16 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         tagColor: "bg-red-500/20 text-red-400 border-red-500/30",
         starred: true,
         waitlistUrl: "https://forms.gle/A3sMWtM4mRypWDE88"
+      },
+      {
+        id: "business-valuation",
+        title: "Business Valuation",
+        description: "DCF, Comps, LBO & Monte Carlo",
+        icon: TrendingUp,
+        route: "/business-valuation",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
       }
     ]
   },
