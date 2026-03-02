@@ -17,6 +17,7 @@ import jsPDF from "jspdf";
 // ─── TYPES ──────────────────────────────────────────────────────────────────
 interface DCFInputs {
   mode: "simple" | "full";
+  terminalMethod: "gordon" | "exitMultiple";
   companyName: string;
   revenue: number;
   revenueGrowth: number;
@@ -27,6 +28,7 @@ interface DCFInputs {
   nwcPct: number;
   wacc: number;
   terminalGrowth: number;
+  exitMultiple: number;
   projectionYears: number;
   netDebt: number;
   sharesOutstanding: number;
@@ -109,7 +111,10 @@ const calcDCF = (inputs: DCFInputs) => {
   }
 
   const lastFCF = years[years.length - 1]?.fcf || 0;
-  const terminalValue = (lastFCF * (1 + inputs.terminalGrowth / 100)) / (inputs.wacc / 100 - inputs.terminalGrowth / 100);
+  const lastEbitda = years[years.length - 1]?.ebitda || 0;
+  const terminalValue = inputs.terminalMethod === "exitMultiple"
+    ? lastEbitda * inputs.exitMultiple
+    : (lastFCF * (1 + inputs.terminalGrowth / 100)) / (inputs.wacc / 100 - inputs.terminalGrowth / 100);
   const pvTerminal = terminalValue / Math.pow(1 + inputs.wacc / 100, inputs.projectionYears);
   const enterpriseValue = totalPV + pvTerminal;
   const equityValue = enterpriseValue - inputs.netDebt;
@@ -255,7 +260,9 @@ const BusinessValuation = () => {
   // DCF State
   const [dcf, setDcf] = useState<DCFInputs>({
     mode: "simple",
+    terminalMethod: "gordon",
     companyName: "ABC Corp",
+    exitMultiple: 12,
     revenue: 50000000,
     revenueGrowth: 15,
     ebitdaMargin: 22,
@@ -662,8 +669,20 @@ const BusinessValuation = () => {
                   {numInput("NWC (% Rev)", dcf.nwcPct, v => updateDCF("nwcPct", v), "%", 0.5)}
                   <Separator />
                   {numInput("WACC", dcf.wacc, v => updateDCF("wacc", v), "%", 0.25)}
-                  {numInput("Terminal Growth", dcf.terminalGrowth, v => updateDCF("terminalGrowth", v), "%", 0.25)}
                   {numInput("Projection Years", dcf.projectionYears, v => updateDCF("projectionYears", v), "yrs", 1)}
+                  <Separator />
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Terminal Value Method</Label>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs ${dcf.terminalMethod === "gordon" ? "text-primary font-semibold" : "text-muted-foreground"}`}>Gordon Growth</span>
+                      <Switch checked={dcf.terminalMethod === "exitMultiple"} onCheckedChange={v => updateDCF("terminalMethod", v ? "exitMultiple" : "gordon")} />
+                      <span className={`text-xs ${dcf.terminalMethod === "exitMultiple" ? "text-primary font-semibold" : "text-muted-foreground"}`}>Exit Multiple</span>
+                    </div>
+                  </div>
+                  {dcf.terminalMethod === "gordon"
+                    ? numInput("Terminal Growth Rate", dcf.terminalGrowth, v => updateDCF("terminalGrowth", v), "%", 0.25)
+                    : numInput("Exit EV/EBITDA Multiple", dcf.exitMultiple, v => updateDCF("exitMultiple", v), "x", 0.5)
+                  }
                   <Separator />
                   {numInput("Net Debt (₹)", dcf.netDebt, v => updateDCF("netDebt", v))}
                   {numInput("Shares Outstanding", dcf.sharesOutstanding, v => updateDCF("sharesOutstanding", v))}
