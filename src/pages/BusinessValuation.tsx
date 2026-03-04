@@ -514,6 +514,33 @@ const BusinessValuation = () => {
     setLbo(prev => ({ ...prev, [field]: value }));
   };
 
+  const resetAll = () => {
+    setDcf({
+      mode: "simple", terminalMethod: "gordon", companyName: "", exitMultiple: 0,
+      revenue: 0, revenueGrowth: 0, ebitdaMargin: 0, depreciationPct: 0, taxRate: 0,
+      capexPct: 0, nwcPct: 0, wacc: 0, terminalGrowth: 0, projectionYears: 5,
+      netDebt: 0, sharesOutstanding: 0, cogs: 0, sga: 0, da: 0, interestExpense: 0,
+      currentAssets: 0, currentLiabilities: 0, totalDebt: 0, cash: 0,
+      directFCFs: [0],
+    });
+    setTargetEbitda(0);
+    setTargetEarnings(0);
+    setTargetBookValue(0);
+    setTargetRevenue(0);
+    setComps([{ name: "", evEbitda: 0, peRatio: 0, pbRatio: 0, evRevenue: 0 }]);
+    setPrecedents([{ target: "", acquirer: "", evEbitda: 0, evRevenue: 0, premium: 0, year: 2025 }]);
+    setLbo({ entryEbitda: 0, entryMultiple: 0, exitMultiple: 0, holdingPeriod: 5, debtPct: 0, interestRate: 0, ebitdaGrowth: 0, fcfConversion: 0 });
+    setScenarios([
+      { label: "Bear", probability: 0, revenueGrowth: 0, ebitdaMargin: 0, wacc: 0, terminalGrowth: 0 },
+      { label: "Base", probability: 0, revenueGrowth: 0, ebitdaMargin: 0, wacc: 0, terminalGrowth: 0 },
+      { label: "Bull", probability: 0, revenueGrowth: 0, ebitdaMargin: 0, wacc: 0, terminalGrowth: 0 },
+    ]);
+    setMonteCarloResults(null);
+    setSelectedIndustry("");
+    setWaccCalc({ riskFreeRate: 0, beta: 0, equityRiskPremium: 0, costOfDebt: 0, taxRateDebt: 0, debtWeight: 0, equityWeight: 0 });
+    toast({ title: "All Values Cleared", description: "Enter your own data to begin valuation." });
+  };
+
   // ── PDF Export
   const exportPDF = () => {
     const doc = new jsPDF();
@@ -627,9 +654,14 @@ const BusinessValuation = () => {
               <p className="text-muted-foreground text-sm">McKinsey-grade DCF, Comps, Precedent Transactions & LBO Analysis</p>
             </div>
           </div>
-          <Button onClick={exportPDF} variant="outline" size="sm" className="gap-1.5">
-            <Download className="h-4 w-4" /> Export PDF
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={resetAll} variant="destructive" size="sm" className="gap-1.5">
+              <Shuffle className="h-4 w-4" /> Reset / Clear
+            </Button>
+            <Button onClick={exportPDF} variant="outline" size="sm" className="gap-1.5">
+              <Download className="h-4 w-4" /> Export PDF
+            </Button>
+          </div>
         </div>
 
         {/* Company Name */}
