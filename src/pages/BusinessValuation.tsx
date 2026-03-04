@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, TrendingUp, BarChart3, Calculator, DollarSign, Layers, Target, Shuffle, Download, Info, Building2, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -16,7 +17,7 @@ import jsPDF from "jspdf";
 
 // ─── TYPES ──────────────────────────────────────────────────────────────────
 interface DCFInputs {
-  mode: "simple" | "full";
+  mode: "simple" | "full" | "directFCF";
   terminalMethod: "gordon" | "exitMultiple";
   companyName: string;
   revenue: number;
@@ -96,26 +97,37 @@ const calcDCF = (inputs: DCFInputs) => {
   let rev = inputs.revenue;
   let totalPV = 0;
 
-  for (let i = 1; i <= inputs.projectionYears; i++) {
-    rev *= 1 + inputs.revenueGrowth / 100;
-    const ebitda = rev * (inputs.ebitdaMargin / 100);
-    const depreciation = rev * (inputs.depreciationPct / 100);
-    const ebit = ebitda - depreciation;
-    const nopat = ebit * (1 - inputs.taxRate / 100);
-    const capex = rev * (inputs.capexPct / 100);
-    const nwcChange = rev * (inputs.nwcPct / 100) * (inputs.revenueGrowth / 100);
-    const fcf = nopat + depreciation - capex - nwcChange;
-    const pv = fcf / Math.pow(1 + inputs.wacc / 100, i);
-    totalPV += pv;
-    years.push({ year: i, revenue: rev, ebitda, fcf, pvFCF: pv });
+  if (inputs.mode === "directFCF") {
+    // Direct FCF mode: user provides FCFs directly
+    for (let i = 0; i < inputs.directFCFs.length; i++) {
+      const fcf = inputs.directFCFs[i];
+      const pv = fcf / Math.pow(1 + inputs.wacc / 100, i + 1);
+      totalPV += pv;
+      years.push({ year: i + 1, revenue: 0, ebitda: 0, fcf, pvFCF: pv });
+    }
+  } else {
+    for (let i = 1; i <= inputs.projectionYears; i++) {
+      rev *= 1 + inputs.revenueGrowth / 100;
+      const ebitda = rev * (inputs.ebitdaMargin / 100);
+      const depreciation = rev * (inputs.depreciationPct / 100);
+      const ebit = ebitda - depreciation;
+      const nopat = ebit * (1 - inputs.taxRate / 100);
+      const capex = rev * (inputs.capexPct / 100);
+      const nwcChange = rev * (inputs.nwcPct / 100) * (inputs.revenueGrowth / 100);
+      const fcf = nopat + depreciation - capex - nwcChange;
+      const pv = fcf / Math.pow(1 + inputs.wacc / 100, i);
+      totalPV += pv;
+      years.push({ year: i, revenue: rev, ebitda, fcf, pvFCF: pv });
+    }
   }
 
+  const projYears = inputs.mode === "directFCF" ? inputs.directFCFs.length : inputs.projectionYears;
   const lastFCF = years[years.length - 1]?.fcf || 0;
   const lastEbitda = years[years.length - 1]?.ebitda || 0;
   const terminalValue = inputs.terminalMethod === "exitMultiple"
-    ? lastEbitda * inputs.exitMultiple
+    ? (inputs.mode === "directFCF" ? lastFCF * inputs.exitMultiple : lastEbitda * inputs.exitMultiple)
     : (lastFCF * (1 + inputs.terminalGrowth / 100)) / (inputs.wacc / 100 - inputs.terminalGrowth / 100);
-  const pvTerminal = terminalValue / Math.pow(1 + inputs.wacc / 100, inputs.projectionYears);
+  const pvTerminal = terminalValue / Math.pow(1 + inputs.wacc / 100, projYears);
   const enterpriseValue = totalPV + pvTerminal;
   const equityValue = enterpriseValue - inputs.netDebt;
   const sharePrice = inputs.sharesOutstanding > 0 ? equityValue / inputs.sharesOutstanding : 0;
@@ -339,9 +351,13 @@ const BusinessValuation = () => {
   };
 
   const applyIndustryBenchmark = (key: string) => {
+    setSelectedIndustry(key);
+    if (key === "custom") {
+      toast({ title: "Custom Mode", description: "Enter your own data in all fields." });
+      return;
+    }
     const b = INDUSTRY_BENCHMARKS[key];
     if (!b) return;
-    setSelectedIndustry(key);
     setDcf(prev => ({
       ...prev,
       revenueGrowth: b.revenueGrowth,
@@ -631,19 +647,20 @@ const BusinessValuation = () => {
                     <SelectValue placeholder="Select industry…" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="custom">Custom (My Data)</SelectItem>
                     {Object.entries(INDUSTRY_BENCHMARKS).map(([key, b]) => (
                       <SelectItem key={key} value={key}>{b.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="space-y-1">
                 <Label className="text-xs">DCF Mode:</Label>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">Simple</span>
-                  <Switch checked={dcf.mode === "full"} onCheckedChange={v => updateDCF("mode", v ? "full" : "simple")} />
-                  <span className="text-xs text-muted-foreground">Full 3-Stmt</span>
-                </div>
+                <ToggleGroup type="single" value={dcf.mode} onValueChange={v => { if (v) updateDCF("mode", v); }} className="justify-start">
+                  <ToggleGroupItem value="simple" className="text-xs h-8 px-3">Simple</ToggleGroupItem>
+                  <ToggleGroupItem value="full" className="text-xs h-8 px-3">Full 3-Stmt</ToggleGroupItem>
+                  <ToggleGroupItem value="directFCF" className="text-xs h-8 px-3">Direct FCF</ToggleGroupItem>
+                </ToggleGroup>
               </div>
             </div>
           </CardContent>
@@ -669,16 +686,45 @@ const BusinessValuation = () => {
                   <CardTitle className="text-sm">DCF Assumptions</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 pt-0 space-y-3">
-                  {numInput("Base Revenue (₹)", dcf.revenue, v => updateDCF("revenue", v))}
-                  {numInput("Revenue Growth", dcf.revenueGrowth, v => updateDCF("revenueGrowth", v), "%", 0.5)}
-                  {numInput("EBITDA Margin", dcf.ebitdaMargin, v => updateDCF("ebitdaMargin", v), "%", 0.5)}
-                  {numInput("Depreciation (% Rev)", dcf.depreciationPct, v => updateDCF("depreciationPct", v), "%", 0.5)}
-                  {numInput("Tax Rate", dcf.taxRate, v => updateDCF("taxRate", v), "%", 0.5)}
-                  {numInput("Capex (% Rev)", dcf.capexPct, v => updateDCF("capexPct", v), "%", 0.5)}
-                  {numInput("NWC (% Rev)", dcf.nwcPct, v => updateDCF("nwcPct", v), "%", 0.5)}
-                  <Separator />
+                  {dcf.mode === "directFCF" ? (
+                    <>
+                      <p className="text-xs text-muted-foreground">Enter Free Cash Flows for each projection year:</p>
+                      {dcf.directFCFs.map((fcf, i) => (
+                        <div key={i} className="space-y-1">
+                          <Label className="text-xs text-muted-foreground">Year {i + 1} FCF (₹)</Label>
+                          <div className="flex items-center gap-1">
+                            <Input type="number" value={fcf} onChange={e => {
+                              const newFCFs = [...dcf.directFCFs];
+                              newFCFs[i] = parseFloat(e.target.value) || 0;
+                              setDcf(prev => ({ ...prev, directFCFs: newFCFs }));
+                            }} className="h-8 text-sm" />
+                            {dcf.directFCFs.length > 1 && (
+                              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => {
+                                setDcf(prev => ({ ...prev, directFCFs: prev.directFCFs.filter((_, j) => j !== i) }));
+                              }}>×</Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      <Button variant="outline" size="sm" className="w-full text-xs" onClick={() => {
+                        setDcf(prev => ({ ...prev, directFCFs: [...prev.directFCFs, prev.directFCFs[prev.directFCFs.length - 1] * 1.15] }));
+                      }}>+ Add Year</Button>
+                      <Separator />
+                    </>
+                  ) : (
+                    <>
+                      {numInput("Base Revenue (₹)", dcf.revenue, v => updateDCF("revenue", v))}
+                      {numInput("Revenue Growth", dcf.revenueGrowth, v => updateDCF("revenueGrowth", v), "%", 0.5)}
+                      {numInput("EBITDA Margin", dcf.ebitdaMargin, v => updateDCF("ebitdaMargin", v), "%", 0.5)}
+                      {numInput("Depreciation (% Rev)", dcf.depreciationPct, v => updateDCF("depreciationPct", v), "%", 0.5)}
+                      {numInput("Tax Rate", dcf.taxRate, v => updateDCF("taxRate", v), "%", 0.5)}
+                      {numInput("Capex (% Rev)", dcf.capexPct, v => updateDCF("capexPct", v), "%", 0.5)}
+                      {numInput("NWC (% Rev)", dcf.nwcPct, v => updateDCF("nwcPct", v), "%", 0.5)}
+                      <Separator />
+                      {numInput("Projection Years", dcf.projectionYears, v => updateDCF("projectionYears", v), "yrs", 1)}
+                    </>
+                  )}
                   {numInput("WACC", dcf.wacc, v => updateDCF("wacc", v), "%", 0.25)}
-                  {numInput("Projection Years", dcf.projectionYears, v => updateDCF("projectionYears", v), "yrs", 1)}
                   <Separator />
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">Terminal Value Method</Label>
