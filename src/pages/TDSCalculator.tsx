@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Calculator, IndianRupee, FileText, CheckCircle, AlertTriangle, Download } from "lucide-react";
+import { ArrowLeft, Calculator, IndianRupee, FileText, CheckCircle, AlertTriangle, Download, Link2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { useTaxData } from "@/hooks/useTaxData";
+import { useToast } from "@/hooks/use-toast";
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#0088FE', '#00C49F'];
 
@@ -49,9 +51,12 @@ const tdsRates: Record<string, { rate: number; threshold: number; description: s
 const TDSCalculator = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
+  const { toast } = useToast();
+  const taxData = useTaxData();
   const [selectedSection, setSelectedSection] = useState("194A");
   const [paymentAmount, setPaymentAmount] = useState<number>(500000);
   const [panAvailable, setPanAvailable] = useState("yes");
+  const [importedFromSalary, setImportedFromSalary] = useState(false);
 
   const [form26ASEntries, setForm26ASEntries] = useState<TDSEntry[]>([
     { id: "1", section: "192", description: "Salary", payer: "ABC Pvt Ltd", amount: 1200000, tdsRate: 10, tdsDeducted: 120000, quarter: "Q1-Q4", status: "Matched" },
@@ -60,6 +65,36 @@ const TDSCalculator = () => {
     { id: "4", section: "194J", description: "Consulting Fees", payer: "XYZ Corp", amount: 200000, tdsRate: 10, tdsDeducted: 20000, quarter: "Q2", status: "Matched" },
     { id: "5", section: "194H", description: "Commission", payer: "Insurance Co", amount: 45000, tdsRate: 5, tdsDeducted: 2250, quarter: "Q1", status: "Pending" },
   ]);
+
+  const importSalaryData = () => {
+    if (!taxData.salary.hasData || !taxData.salary.data) return;
+    const salaryAmount = taxData.salary.grossIncome;
+    const employerName = taxData.salary.data.employerName || "Employer";
+    // Estimate TDS on salary at ~10% as placeholder
+    const estimatedTDS = Math.round(salaryAmount * 0.1);
+    
+    // Check if salary entry already exists
+    const existingIdx = form26ASEntries.findIndex(e => e.section === "192" && e.payer === employerName);
+    if (existingIdx >= 0) {
+      setForm26ASEntries(prev => prev.map((e, i) => 
+        i === existingIdx ? { ...e, amount: salaryAmount, tdsDeducted: estimatedTDS, payer: employerName } : e
+      ));
+    } else {
+      setForm26ASEntries(prev => [...prev, {
+        id: Date.now().toString(),
+        section: "192",
+        description: "Salary",
+        payer: employerName,
+        amount: salaryAmount,
+        tdsRate: 10,
+        tdsDeducted: estimatedTDS,
+        quarter: "Q1-Q4",
+        status: "Pending" as const,
+      }]);
+    }
+    setImportedFromSalary(true);
+    toast({ title: "Salary data imported", description: `₹${salaryAmount.toLocaleString('en-IN')} salary from ${employerName} added to TDS tracker.` });
+  };
 
   const [newEntry, setNewEntry] = useState({ section: "194A", payer: "", amount: 0, tdsDeducted: 0, quarter: "Q1" });
 
@@ -113,14 +148,25 @@ const TDSCalculator = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
-        <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => goBack()}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">TDS Calculator & Tracker</h1>
-            <p className="text-muted-foreground text-sm">Calculate TDS rates by section & reconcile Form 26AS</p>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => goBack()}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">TDS Calculator & Tracker</h1>
+              <p className="text-muted-foreground text-sm">Calculate TDS rates by section & reconcile Form 26AS</p>
+            </div>
           </div>
+          {taxData.salary.hasData && !importedFromSalary && (
+            <Button variant="outline" className="gap-2 border-primary/50" onClick={importSalaryData}>
+              <Link2 className="h-4 w-4" />
+              Import Salary Data
+            </Button>
+          )}
+          {importedFromSalary && (
+            <Badge variant="secondary" className="gap-1"><CheckCircle className="h-3 w-3" /> Salary Imported</Badge>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

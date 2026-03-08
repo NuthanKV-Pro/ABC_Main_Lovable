@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,20 +6,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Wallet, IndianRupee, TrendingUp, Info, CheckCircle, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Wallet, IndianRupee, TrendingUp, Info, CheckCircle, AlertTriangle, Link2 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useTaxData } from "@/hooks/useTaxData";
+import { useToast } from "@/hooks/use-toast";
 
 const SalaryRestructuring = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
+  const { toast } = useToast();
+  const taxData = useTaxData();
   const [ctc, setCTC] = useState(2000000);
   const [regime, setRegime] = useState("old");
   const [metro, setMetro] = useState(true);
   const [monthlyRent, setMonthlyRent] = useState(25000);
+  const [salaryImported, setSalaryImported] = useState(false);
+
+  const importFromSalary = () => {
+    if (!taxData.salary.hasData) return;
+    const grossSalary = taxData.salary.grossIncome;
+    if (grossSalary > 0) {
+      setCTC(Math.round(grossSalary * 1.3)); // estimate CTC as ~1.3x gross
+      toast({ title: "Salary data imported", description: `CTC estimated from gross salary ₹${grossSalary.toLocaleString('en-IN')}` });
+      setSalaryImported(true);
+    }
+  };
 
   // Component percentages
   const [basicPct, setBasicPct] = useState(40);
@@ -112,12 +127,23 @@ const SalaryRestructuring = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
-        <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => goBack()}><ArrowLeft className="h-5 w-5" /></Button>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Salary Restructuring Tool</h1>
-            <p className="text-muted-foreground text-sm">Optimize CTC components for maximum take-home pay</p>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => goBack()}><ArrowLeft className="h-5 w-5" /></Button>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">Salary Restructuring Tool</h1>
+              <p className="text-muted-foreground text-sm">Optimize CTC components for maximum take-home pay</p>
+            </div>
           </div>
+          {taxData.salary.hasData && !salaryImported && (
+            <Button variant="outline" className="gap-2 border-primary/50" onClick={importFromSalary}>
+              <Link2 className="h-4 w-4" />
+              Import from Salary
+            </Button>
+          )}
+          {salaryImported && (
+            <Badge variant="secondary" className="gap-1"><CheckCircle className="h-3 w-3" /> Salary Imported</Badge>
+          )}
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
