@@ -149,6 +149,14 @@ const Salary = () => {
     });
   }, [toast]);
 
+  // Auto-save all salary data
+  useEffect(() => {
+    const salaryData = { employerName, officeAddress, employmentNature, employerTAN, employerPAN, incomeData };
+    localStorage.setItem('salary_data', JSON.stringify(salaryData));
+    const totals = incomeData.reduce((acc, row) => acc + (parseFloat(row.taxableIncome) || 0), 0);
+    localStorage.setItem('salary_total', totals.toString());
+  }, [employerName, officeAddress, employmentNature, employerTAN, employerPAN, incomeData]);
+
   // Load Form 16 data on mount if available
   useEffect(() => {
     const storedData = localStorage.getItem('form16_data');
