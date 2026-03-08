@@ -20,7 +20,7 @@ export const routeMap: Record<string, RouteInfo> = {
   "/year-comparison": { label: "Year Comparison", parent: "/dashboard" },
   "/tax-payments": { label: "Tax Payments", parent: "/dashboard" },
   "/total-income-tax": { label: "Total Income Tax", parent: "/dashboard" },
-  "/profile": { label: "Profile Settings", parent: "/dashboard" },
+  "/profile": { label: "Profile Settings", parent: "/prototypes" },
 
   // Financial Calculators
   "/emi-calculator": { label: "EMI Calculator", parent: "/prototypes" },
