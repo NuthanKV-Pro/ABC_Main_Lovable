@@ -32,6 +32,14 @@ const BusinessProfession = () => {
     return { grossReceipts: 0, expenses: 0, netIncome: 0 };
   });
 
+  // Auto-save all business data
+  useEffect(() => {
+    const bpData = { presumptiveIncome, regularIncome };
+    localStorage.setItem('bp_data', JSON.stringify(bpData));
+    const total = Math.max(presumptiveIncome.presumptiveIncome, regularIncome.netIncome);
+    localStorage.setItem('pgbp_total', total.toString());
+  }, [presumptiveIncome, regularIncome]);
+
   const calculatePresumptive = (receipts: number, rate: number) => {
     const income = receipts * (rate / 100);
     setPresumptiveIncome({

@@ -57,6 +57,16 @@ const CapitalGains = () => {
     return saved ? JSON.parse(saved).crypto || [{ ...defaultAsset }] : [{ ...defaultAsset }];
   });
 
+  // Auto-save all capital gains data
+  useEffect(() => {
+    const cgData = { shares, mutualFunds, property, crypto };
+    localStorage.setItem('cg_data', JSON.stringify(cgData));
+    const total = [...shares, ...mutualFunds, ...property, ...crypto].reduce(
+      (sum, asset) => sum + asset.capitalGain, 0
+    );
+    localStorage.setItem('cg_total', total.toString());
+  }, [shares, mutualFunds, property, crypto]);
+
   const calculateGain = (salePrice: number, purchasePrice: number, expenses: number) => {
     return salePrice - purchasePrice - expenses;
   };
