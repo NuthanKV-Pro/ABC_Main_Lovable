@@ -602,38 +602,41 @@ const ComplianceCalendar = () => {
           ))}
         </div>
 
-        {/* Events by Category Tabs */}
-        <Tabs defaultValue="all">
-          <TabsList className="mb-4 flex-wrap h-auto gap-1">
-            <TabsTrigger value="all" className="text-xs">All ({filteredEvents.length})</TabsTrigger>
-            {Object.entries(categoryCounts).map(([cat, counts]) => (
-              <TabsTrigger key={cat} value={cat} className="text-xs">
-                {categoryLabels[cat]} ({counts.total})
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        {/* View: List or Calendar */}
+        {viewMode === "list" ? (
+          <Tabs defaultValue="all">
+            <TabsList className="mb-4 flex-wrap h-auto gap-1">
+              <TabsTrigger value="all" className="text-xs">All ({filteredEvents.length})</TabsTrigger>
+              {Object.entries(categoryCounts).map(([cat, counts]) => (
+                <TabsTrigger key={cat} value={cat} className="text-xs">
+                  {categoryLabels[cat]} ({counts.total})
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
-          {["all", ...Object.keys(categoryCounts)].map((tab) => (
-            <TabsContent key={tab} value={tab} className="space-y-2">
-              {filteredEvents
-                .filter((e) => tab === "all" || e.category === tab)
-                .sort((a, b) => {
-                  // Sort: overdue first, then by date
-                  const aComp = completedIds.has(a.id) ? 1 : 0;
-                  const bComp = completedIds.has(b.id) ? 1 : 0;
-                  if (aComp !== bComp) return aComp - bComp;
-                  return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-                })
-                .map(renderEventCard)}
-              {filteredEvents.filter((e) => tab === "all" || e.category === tab).length === 0 && (
-                <div className="text-center py-12 text-muted-foreground">
-                  <Calendar className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                  <p>No deadlines found for this filter combination.</p>
-                </div>
-              )}
-            </TabsContent>
-          ))}
-        </Tabs>
+            {["all", ...Object.keys(categoryCounts)].map((tab) => (
+              <TabsContent key={tab} value={tab} className="space-y-2">
+                {filteredEvents
+                  .filter((e) => tab === "all" || e.category === tab)
+                  .sort((a, b) => {
+                    const aComp = completedIds.has(a.id) ? 1 : 0;
+                    const bComp = completedIds.has(b.id) ? 1 : 0;
+                    if (aComp !== bComp) return aComp - bComp;
+                    return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+                  })
+                  .map(renderEventCard)}
+                {filteredEvents.filter((e) => tab === "all" || e.category === tab).length === 0 && (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Calendar className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                    <p>No deadlines found for this filter combination.</p>
+                  </div>
+                )}
+              </TabsContent>
+            ))}
+          </Tabs>
+        ) : (
+          renderCalendarView()
+        )}
 
         {/* Legend */}
         <Card className="mt-6">
