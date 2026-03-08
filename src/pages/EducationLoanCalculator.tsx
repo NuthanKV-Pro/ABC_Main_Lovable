@@ -67,7 +67,7 @@ const EducationLoanCalculator = () => {
       <div className="max-w-5xl mx-auto">
         <Button 
           variant="ghost" 
-          onClick={() => navigate("/")}
+          onClick={() => navigate(-1)}
           className="mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
