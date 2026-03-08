@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { ArrowLeft, Flame, Target, TrendingUp, Calendar } from "lucide-react";
+import { ArrowLeft, Flame, Target, TrendingUp, Calendar, RotateCcw } from "lucide-react";
 import { useGoBack } from "@/hooks/useGoBack";
 import ExportButton from "@/components/ExportButton";
 import { ExportConfig } from "@/utils/unifiedExport";
@@ -83,7 +83,17 @@ const FIRECalculator = () => {
               <p className="text-sm text-muted-foreground">Financial Independence, Retire Early — India Edition</p>
             </div>
           </div>
-          <ExportButton getConfig={getExportConfig} />
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => {
+              if (!window.confirm("Reset all data in this tool?")) return;
+              ['fire_target', 'fire_corpus', 'fire_age', 'fire_years', 'fire_savings_rate'].forEach(k => localStorage.removeItem(k));
+              setAge(30); setMonthlyExp(50000); setCurrentSavings(500000); setMonthlySavings(30000);
+              setExpectedReturn(12); setInflation(6); setSwr(3.5);
+            }}>
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+            <ExportButton getConfig={getExportConfig} />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

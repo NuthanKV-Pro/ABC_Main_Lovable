@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { ArrowLeft, Calculator, TrendingUp, Wallet, PiggyBank } from "lucide-react";
+import { ArrowLeft, Calculator, TrendingUp, Wallet, PiggyBank, RotateCcw } from "lucide-react";
 import Footer from "@/components/Footer";
 
 const RetirementCalculator = () => {
@@ -89,18 +89,28 @@ const RetirementCalculator = () => {
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => goBack()}
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-primary">Retirement Corpus Calculator</h1>
-              <p className="text-sm text-muted-foreground">Plan your retirement savings</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => goBack()}
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-primary">Retirement Corpus Calculator</h1>
+                <p className="text-sm text-muted-foreground">Plan your retirement savings</p>
+              </div>
             </div>
+            <Button variant="ghost" size="icon" onClick={() => {
+              if (!window.confirm("Reset all data in this tool?")) return;
+              ['retirement_corpus_needed', 'retirement_monthly_savings', 'retirement_data'].forEach(k => localStorage.removeItem(k));
+              setCurrentAge(30); setRetirementAge(60); setMonthlyExpenses(50000);
+              setInflationRate(6); setExpectedReturn(8); setLifeExpectancy(85);
+            }}>
+              <RotateCcw className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </header>

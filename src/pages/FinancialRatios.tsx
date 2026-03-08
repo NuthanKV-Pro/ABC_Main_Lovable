@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { ArrowLeft, Upload, FileSpreadsheet, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Lightbulb, BarChart3, Info, Download, Plus, Trash2, LineChart, Save, FolderOpen, Building2 } from "lucide-react";
+import { ArrowLeft, Upload, FileSpreadsheet, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, Lightbulb, BarChart3, Info, Download, Plus, Trash2, LineChart, Save, FolderOpen, Building2, RotateCcw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -1251,6 +1251,15 @@ const FinancialRatios = () => {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => {
+              if (!window.confirm("Reset all data in this tool?")) return;
+              ['financialRatiosData', 'financialRatiosMultiYear', 'financialRatiosIndustry', 'financialRatiosCompanyName', 'financialRatiosSavedReports'].forEach(k => localStorage.removeItem(k));
+              setFinancialData(defaultFinancialData); setMultiYearData([]); setRatiosCalculated(false);
+              setSelectedIndustry('manufacturing'); setCompanyName(''); setSavedReports([]);
+              toast({ title: "Data Reset", description: "All financial ratios data has been cleared." });
+            }}>
+              <RotateCcw className="w-4 h-4" />
+            </Button>
             {/* Save Report Button */}
             <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
               <DialogTrigger asChild>

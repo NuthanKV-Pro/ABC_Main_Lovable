@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Heart, Plus, Trash2, Users, Gift } from "lucide-react";
+import { ArrowLeft, Heart, Plus, Trash2, Users, Gift, RotateCcw } from "lucide-react";
 import { useGoBack } from "@/hooks/useGoBack";
 import ExportButton from "@/components/ExportButton";
 import { ExportConfig } from "@/utils/unifiedExport";
@@ -74,7 +74,16 @@ const WeddingBudgetPlanner = () => {
               <p className="text-sm text-muted-foreground">Plan your perfect Indian wedding</p>
             </div>
           </div>
-          <ExportButton getConfig={getExportConfig} />
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => {
+              if (!window.confirm("Reset all data in this tool?")) return;
+              localStorage.removeItem('wedding_budget_data');
+              setCategories(DEFAULT_CATEGORIES); setGuestCount(300); setGifts([]);
+            }}>
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+            <ExportButton getConfig={getExportConfig} />
+          </div>
         </div>
 
         {/* Summary Cards */}

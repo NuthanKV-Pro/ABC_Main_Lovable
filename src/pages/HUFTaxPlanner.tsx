@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Users, Plus, Trash2, ArrowLeft, IndianRupee, TrendingUp, PiggyBank } from "lucide-react";
+import { Users, Plus, Trash2, ArrowLeft, IndianRupee, TrendingUp, PiggyBank, RotateCcw } from "lucide-react";
 import { useGoBack } from "@/hooks/useGoBack";
 import ExportButton from "@/components/ExportButton";
 import { ExportConfig } from "@/utils/unifiedExport";
@@ -83,7 +83,17 @@ const HUFTaxPlanner = () => {
               <p className="text-sm text-muted-foreground">Plan tax savings through Hindu Undivided Family structure</p>
             </div>
           </div>
-          <ExportButton getConfig={getExportConfig} />
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => {
+              if (!window.confirm("Reset all data in this tool?")) return;
+              localStorage.removeItem('huf_planner_data');
+              setHufName(""); setKartaName(""); setMembers([]); setIncomes([]);
+              setDed80C(0); setDed80D(0); setIndIncome(0); setIndDed(0);
+            }}>
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+            <ExportButton getConfig={getExportConfig} />
+          </div>
         </div>
 
         <Tabs defaultValue="setup" className="space-y-4">

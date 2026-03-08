@@ -4,7 +4,7 @@ import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Calendar, CheckCircle, Clock, AlertTriangle, Building, FileText, Receipt, Bell, BellOff, Filter, List, CalendarDays, ChevronLeft, ChevronRight, Download, CalendarPlus } from "lucide-react";
+import { ArrowLeft, Calendar, CheckCircle, Clock, AlertTriangle, Building, FileText, Receipt, Bell, BellOff, Filter, List, CalendarDays, ChevronLeft, ChevronRight, Download, CalendarPlus, RotateCcw } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -683,6 +683,14 @@ const ComplianceCalendar = () => {
             >
               {notificationsEnabled ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
               {notificationsEnabled ? "Notifications On" : "Enable Alerts"}
+            </Button>
+            <Button variant="ghost" size="icon" onClick={() => {
+              if (!window.confirm("Reset all completed status?")) return;
+              localStorage.removeItem('compliance_completed_2026');
+              setCompletedIds(new Set());
+              toast({ title: "Data Reset", description: "All completion status has been cleared." });
+            }}>
+              <RotateCcw className="h-4 w-4" />
             </Button>
           </div>
         </div>

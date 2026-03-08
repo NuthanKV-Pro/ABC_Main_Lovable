@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Plus, Trash2, TrendingUp, TrendingDown, Wallet, Building, Car, Coins, CreditCard, Home, Briefcase, Landmark, PiggyBank, AlertTriangle, Info, CheckCircle, Lightbulb } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, TrendingUp, TrendingDown, Wallet, Building, Car, Coins, CreditCard, Home, Briefcase, Landmark, PiggyBank, AlertTriangle, Info, CheckCircle, Lightbulb, RotateCcw } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface Asset {
@@ -164,14 +164,25 @@ const NetWorthCalculator = () => {
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => goBack()}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-primary">Net Worth Calculator</h1>
-              <p className="text-sm text-muted-foreground">Track assets vs liabilities</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => goBack()}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-primary">Net Worth Calculator</h1>
+                <p className="text-sm text-muted-foreground">Track assets vs liabilities</p>
+              </div>
             </div>
+            <Button variant="ghost" size="icon" onClick={() => {
+              if (!window.confirm("Reset all data in this tool?")) return;
+              ['net_worth_total', 'net_worth_assets', 'net_worth_liabilities', 'net_worth_data'].forEach(k => localStorage.removeItem(k));
+              setAssets(defaultAssets.map(a => ({ ...a, value: 0 })));
+              setLiabilities(defaultLiabilities.map(l => ({ ...l, value: 0 })));
+              toast({ title: "Data Reset", description: "All net worth data has been cleared." });
+            }}>
+              <RotateCcw className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </header>

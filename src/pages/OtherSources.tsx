@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, RotateCcw } from "lucide-react";
 import Chatbot from "@/components/Chatbot";
 import { useToast } from "@/hooks/use-toast";
 
@@ -68,13 +68,28 @@ const OtherSources = () => {
                 <p className="text-sm text-muted-foreground">Interest, dividends, and other income</p>
               </div>
             </div>
-            <Button 
-              onClick={handleSave}
-              className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
-            >
-              <Save className="w-4 h-4" />
-              Auto Saved
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" onClick={() => {
+                if (!window.confirm("Reset all data in this tool?")) return;
+                localStorage.removeItem('os_total');
+                setIncomeData([
+                  { particulars: "Bank SB Interest", amount: "" },
+                  { particulars: "Bank FD Interest", amount: "" },
+                  { particulars: "Dividend", amount: "" },
+                  { particulars: "Other Income", amount: "" },
+                ]);
+                toast({ title: "Data Reset", description: "All other sources data has been cleared." });
+              }}>
+                <RotateCcw className="w-4 h-4" />
+              </Button>
+              <Button 
+                onClick={handleSave}
+                className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
+              >
+                <Save className="w-4 h-4" />
+                Auto Saved
+              </Button>
+            </div>
           </div>
         </div>
       </header>
