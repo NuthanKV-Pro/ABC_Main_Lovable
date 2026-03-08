@@ -494,15 +494,35 @@ const ComplianceCalendar = () => {
               <p className="text-muted-foreground text-sm">FY 2026-27 (1 Apr 2026 – 31 Mar 2027) • All statutory deadlines</p>
             </div>
           </div>
-          <Button
-            variant={notificationsEnabled ? "secondary" : "default"}
-            size="sm"
-            onClick={enableNotifications}
-            className="gap-2"
-          >
-            {notificationsEnabled ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
-            {notificationsEnabled ? "Notifications On" : "Enable Alerts"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center border rounded-lg overflow-hidden">
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                className="rounded-none gap-1.5"
+                onClick={() => setViewMode("list")}
+              >
+                <List className="h-4 w-4" /> List
+              </Button>
+              <Button
+                variant={viewMode === "calendar" ? "default" : "ghost"}
+                size="sm"
+                className="rounded-none gap-1.5"
+                onClick={() => setViewMode("calendar")}
+              >
+                <CalendarDays className="h-4 w-4" /> Calendar
+              </Button>
+            </div>
+            <Button
+              variant={notificationsEnabled ? "secondary" : "default"}
+              size="sm"
+              onClick={enableNotifications}
+              className="gap-2"
+            >
+              {notificationsEnabled ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+              {notificationsEnabled ? "Notifications On" : "Enable Alerts"}
+            </Button>
+          </div>
         </div>
 
         {/* Alert Banner */}
