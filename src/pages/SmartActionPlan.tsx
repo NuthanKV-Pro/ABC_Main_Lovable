@@ -188,8 +188,8 @@ function generateActions(taxData: ReturnType<typeof useTaxData>): ActionItem[] {
   }
 
   // ========== RETIREMENT ==========
-  if (age > 25 && salary.total > 0) {
-    const targetCorpus = salary.total * 25;
+  if (age > 25 && annualIncome > 0) {
+    const targetCorpus = annualIncome * 25;
     if (retirementCorpus < targetCorpus * 0.1) {
       actions.push({
         id: "retirement-gap",
