@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 
 const NPSCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [monthlyContribution, setMonthlyContribution] = useState<number>(5000);
   const [currentAge, setCurrentAge] = useState<number>(30);
   const [retirementAge, setRetirementAge] = useState<number>(60);
@@ -39,7 +40,7 @@ const NPSCalculator = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button variant="ghost" size="icon" onClick={() => goBack()}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>

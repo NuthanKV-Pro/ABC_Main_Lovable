@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 
 const SSYCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [yearlyDeposit, setYearlyDeposit] = useState<number>(150000);
   const [girlAge, setGirlAge] = useState<number>(5);
   const [interestRate, setInterestRate] = useState<number>(8.2);

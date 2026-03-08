@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 
 const FDCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [principal, setPrincipal] = useState<number>(100000);
   const [interestRate, setInterestRate] = useState<number>(7);
   const [tenure, setTenure] = useState<number>(5);
@@ -36,7 +37,7 @@ const FDCalculator = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => navigate(-1)}>
+            <Button variant="ghost" onClick={() => goBack()}>
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div>

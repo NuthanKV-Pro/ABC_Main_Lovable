@@ -14,6 +14,7 @@ import { toast } from "sonner";
 
 const EMICalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [loanAmount, setLoanAmount] = useState(1000000);
   const [downPayment, setDownPayment] = useState(0);
   const [rate, setRate] = useState(8.5);
@@ -103,7 +104,7 @@ const EMICalculator = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <Button variant="ghost" size="icon" onClick={() => goBack()}>
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>

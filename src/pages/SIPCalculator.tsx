@@ -13,6 +13,7 @@ import { toast } from "sonner";
 
 const SIPCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [monthlyInvestment, setMonthlyInvestment] = useState<string>("10000");
   const [duration, setDuration] = useState<string>("10");
   const [expectedReturn, setExpectedReturn] = useState<string>("12");
@@ -134,7 +135,7 @@ const SIPCalculator = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <Button variant="ghost" size="icon" onClick={() => goBack()}>
                 <ArrowLeft className="w-5 h-5" />
               </Button>
               <div>
