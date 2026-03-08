@@ -23,6 +23,16 @@ interface LedgerEntry {
   type: 'debit' | 'credit';
 }
 
+interface JournalEntry {
+  id: string;
+  date: string;
+  debitAccountId: string;
+  creditAccountId: string;
+  amount: number;
+  narration: string;
+  posted: boolean;
+}
+
 interface AccountGroup {
   id: string;
   name: string;
@@ -138,6 +148,14 @@ const FinancialStatements = () => {
   const [showLoadDialog, setShowLoadDialog] = useState(false);
   const [activeTab, setActiveTab] = useState('entry');
   const [selectedCategory, setSelectedCategory] = useState<string>('asset');
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+  const [newJournal, setNewJournal] = useState<Omit<JournalEntry, 'id' | 'posted'>>({
+    date: new Date().toISOString().split('T')[0],
+    debitAccountId: '',
+    creditAccountId: '',
+    amount: 0,
+    narration: '',
+  });
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -158,12 +176,20 @@ const FinancialStatements = () => {
     if (savedList) {
       setSavedStatements(JSON.parse(savedList));
     }
+    const savedJournals = localStorage.getItem('financialStatementsJournals');
+    if (savedJournals) {
+      setJournalEntries(JSON.parse(savedJournals));
+    }
   }, []);
 
   // Auto-save data
   useEffect(() => {
     localStorage.setItem('financialStatementsData', JSON.stringify(data));
   }, [data]);
+
+  useEffect(() => {
+    localStorage.setItem('financialStatementsJournals', JSON.stringify(journalEntries));
+  }, [journalEntries]);
 
   // Calculate group total
   const getGroupTotal = (groupId: string) => {
