@@ -411,6 +411,14 @@ const GSTInvoiceGenerator = () => {
     setEWayBill({ transporterName: "", transporterId: "", transportMode: "road", vehicleNumber: "", distanceKm: "", transDocNo: "", transDocDate: "" });
     setSellerBillingAddress({ ...emptyAddress }); setBuyerBillingAddress({ ...emptyAddress });
     setBuyerShippingAddress({ ...emptyAddress }); setShippingSameAsBilling(true);
+    setIsExportInvoice(false); setSelectedCurrency("INR"); setExchangeRate(1);
+  };
+
+  const handleCurrencyChange = (code: string) => {
+    setSelectedCurrency(code);
+    const info = currencyData.find(c => c.code === code);
+    if (info) setExchangeRate(info.defaultRate);
+    if (code !== "INR") setIsExportInvoice(true);
   };
 
   const totals = useMemo(() => {
