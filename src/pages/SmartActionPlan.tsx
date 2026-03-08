@@ -146,8 +146,7 @@ function generateActions(taxData: ReturnType<typeof useTaxData>): ActionItem[] {
   }
 
   // ========== INSURANCE COVERAGE ==========
-  if (monthlyIncome > 0 && salary.total > 0) {
-    const annualIncome = salary.total;
+  if (monthlyIncome > 0 && annualIncome > 0) {
     const coverageMultiple = insuranceCoverage / annualIncome;
     if (coverageMultiple < 5 && insuranceCoverage > 0) {
       actions.push({
@@ -160,7 +159,7 @@ function generateActions(taxData: ReturnType<typeof useTaxData>): ActionItem[] {
         category: "Insurance",
         icon: Shield,
       });
-    } else if (insuranceCoverage === 0 && salary.total > 500000) {
+    } else if (insuranceCoverage === 0 && annualIncome > 500000) {
       actions.push({
         id: "no-insurance",
         priority: "high",
