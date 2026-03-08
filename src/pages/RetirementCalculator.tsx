@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useAutoPopulate } from "@/hooks/useAutoPopulate";
@@ -56,6 +56,20 @@ const RetirementCalculator = () => {
     // Future value of annuity formula solved for payment
     monthlySavingsNeeded = corpusNeeded / ((Math.pow(1 + monthlyReturnRate, monthsToRetirement) - 1) / monthlyReturnRate);
   }
+
+  // Persist computed values to localStorage
+  useEffect(() => {
+    if (corpusNeeded > 0) localStorage.setItem("retirement_corpus_needed", String(Math.round(corpusNeeded)));
+    if (monthlySavingsNeeded > 0) localStorage.setItem("retirement_monthly_savings", String(Math.round(monthlySavingsNeeded)));
+    if (corpusNeeded > 0) {
+      localStorage.setItem("retirement_data", JSON.stringify({
+        corpusNeeded: Math.round(corpusNeeded),
+        monthlySavingsNeeded: Math.round(monthlySavingsNeeded),
+        currentAge, retirementAge, yearsToRetirement, yearsInRetirement,
+        futureMonthlyExpenses: Math.round(futureMonthlyExpenses),
+      }));
+    }
+  }, [corpusNeeded, monthlySavingsNeeded, currentAge, retirementAge]);
 
   const formatCurrency = (amount: number) => {
     if (amount >= 10000000) {

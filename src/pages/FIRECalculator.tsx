@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAutoPopulate } from "@/hooks/useAutoPopulate";
 import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -54,6 +54,15 @@ const FIRECalculator = () => {
   if (yearsToFIRE === -1 && corpus >= fireNumber) yearsToFIRE = projections.length - 1;
   const fireAge = yearsToFIRE >= 0 ? age + yearsToFIRE : null;
   const savingsRate = monthlySavings > 0 && monthlyExp > 0 ? Math.round((monthlySavings / (monthlySavings + monthlyExp)) * 100) : 0;
+
+  // Persist computed values to localStorage
+  useEffect(() => {
+    if (fireNumber > 0) localStorage.setItem("fire_target", String(Math.round(fireNumber)));
+    if (currentSavings > 0) localStorage.setItem("fire_corpus", String(currentSavings));
+    if (fireAge !== null) localStorage.setItem("fire_age", String(fireAge));
+    if (yearsToFIRE >= 0) localStorage.setItem("fire_years", String(yearsToFIRE));
+    if (savingsRate > 0) localStorage.setItem("fire_savings_rate", String(savingsRate));
+  }, [fireNumber, currentSavings, fireAge, yearsToFIRE, savingsRate]);
 
   const getExportConfig = (): ExportConfig => ({
     title: "FIRE Calculator Report", fileNamePrefix: "fire-calculator",

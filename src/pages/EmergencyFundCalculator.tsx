@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAutoPopulate } from "@/hooks/useAutoPopulate";
 import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -77,6 +77,14 @@ const EmergencyFundCalculator = () => {
   const minimumFund = totalMonthlyExpenses * 3;
   const comfortFund = totalMonthlyExpenses * 6;
   const robustFund = totalMonthlyExpenses * 12;
+
+  // Persist computed values to localStorage
+  useEffect(() => {
+    if (recommendedFund > 0) localStorage.setItem("emergency_fund_target", String(recommendedFund));
+    if (currentSavings > 0) localStorage.setItem("emergency_fund_current", String(currentSavings));
+    if (currentSavings > 0) localStorage.setItem("emergency_fund_saved", String(currentSavings));
+    if (recommendedMonths > 0) localStorage.setItem("emergency_fund_months", String(recommendedMonths));
+  }, [recommendedFund, currentSavings, recommendedMonths]);
   
   const fundingGap = Math.max(0, recommendedFund - currentSavings);
   const monthsToGoal = fundingGap > 0 && monthlySavingCapacity > 0 
