@@ -69,7 +69,40 @@ interface InvoiceDraft {
   buyerBillingAddress: AddressDetails;
   buyerShippingAddress: AddressDetails;
   shippingSameAsBilling: boolean;
+  isExportInvoice?: boolean;
+  selectedCurrency?: string;
+  exchangeRate?: number;
 }
+
+interface CurrencyInfo {
+  code: string;
+  symbol: string;
+  name: string;
+  defaultRate: number; // approximate rate to INR
+}
+
+const currencyData: CurrencyInfo[] = [
+  { code: "INR", symbol: "₹", name: "Indian Rupee", defaultRate: 1 },
+  { code: "USD", symbol: "$", name: "US Dollar", defaultRate: 83.50 },
+  { code: "EUR", symbol: "€", name: "Euro", defaultRate: 91.20 },
+  { code: "GBP", symbol: "£", name: "British Pound", defaultRate: 106.50 },
+  { code: "AED", symbol: "د.إ", name: "UAE Dirham", defaultRate: 22.73 },
+  { code: "SAR", symbol: "﷼", name: "Saudi Riyal", defaultRate: 22.27 },
+  { code: "SGD", symbol: "S$", name: "Singapore Dollar", defaultRate: 62.80 },
+  { code: "AUD", symbol: "A$", name: "Australian Dollar", defaultRate: 55.10 },
+  { code: "CAD", symbol: "C$", name: "Canadian Dollar", defaultRate: 61.50 },
+  { code: "JPY", symbol: "¥", name: "Japanese Yen", defaultRate: 0.56 },
+  { code: "CHF", symbol: "CHF", name: "Swiss Franc", defaultRate: 95.40 },
+  { code: "CNY", symbol: "¥", name: "Chinese Yuan", defaultRate: 11.50 },
+  { code: "HKD", symbol: "HK$", name: "Hong Kong Dollar", defaultRate: 10.70 },
+  { code: "MYR", symbol: "RM", name: "Malaysian Ringgit", defaultRate: 18.80 },
+  { code: "THB", symbol: "฿", name: "Thai Baht", defaultRate: 2.38 },
+  { code: "KRW", symbol: "₩", name: "South Korean Won", defaultRate: 0.063 },
+  { code: "ZAR", symbol: "R", name: "South African Rand", defaultRate: 4.60 },
+  { code: "BDT", symbol: "৳", name: "Bangladeshi Taka", defaultRate: 0.71 },
+  { code: "LKR", symbol: "Rs", name: "Sri Lankan Rupee", defaultRate: 0.27 },
+  { code: "NPR", symbol: "रू", name: "Nepalese Rupee", defaultRate: 0.52 },
+];
 
 const gstRates = [0, 0.25, 3, 5, 12, 18, 28];
 
