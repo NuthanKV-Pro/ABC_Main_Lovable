@@ -26,6 +26,14 @@ interface ComplianceEvent {
 }
 
 const allEvents: ComplianceEvent[] = [
+  // ============ CARRY-OVER from FY 2025-26 (Due in April 2026) ============
+  { id: "tds-mar26", title: "TDS/TCS Payment – March 2026", dueDate: "2026-04-07", category: "tds-tcs", applicable: "All Deductors/Collectors", description: "Deposit TDS/TCS deducted/collected in March 2026 (carry-over from FY 2025-26)", penalty: "Interest @ 1.5% per month u/s 201(1A)", section: "Section 200(1)", completed: false },
+  { id: "gstr1-mar26", title: "GSTR-1 – March 2026", dueDate: "2026-04-11", category: "gst", applicable: "Regular GST (Monthly)", description: "Outward supply details for March 2026 (FY 2025-26)", penalty: "₹50/day (₹20 NIL return), max ₹10,000", formNo: "GSTR-1", section: "Section 37", completed: false },
+  { id: "cmp08-q4-2526", title: "CMP-08 – Q4 (Jan–Mar 2026)", dueDate: "2026-04-18", category: "gst", applicable: "Composition Scheme", description: "Quarterly statement-cum-challan for Q4 FY 2025-26", penalty: "₹50/day (₹20 NIL), max ₹10,000", formNo: "CMP-08", section: "Section 10", completed: false },
+  { id: "gstr3b-mar26", title: "GSTR-3B – March 2026", dueDate: "2026-04-20", category: "gst", applicable: "Regular GST (Monthly)", description: "Summary return with tax payment for March 2026 (FY 2025-26)", penalty: "₹50/day (₹20 NIL return), max ₹10,000 + 18% interest", formNo: "GSTR-3B", section: "Section 39", completed: false },
+  { id: "gstr4-2526", title: "GSTR-4 Annual – FY 2025-26", dueDate: "2026-04-30", category: "gst", applicable: "Composition Scheme", description: "Annual return for composition dealers for FY 2025-26", penalty: "₹50/day (₹20 NIL), max ₹10,000", formNo: "GSTR-4", section: "Section 10", completed: false },
+  { id: "updated-itr-ay2425", title: "Updated ITR – AY 2024-25 (u/s 139(8A))", dueDate: "2026-04-01", category: "income-tax", applicable: "All", description: "Last date to file updated return for AY 2024-25 within 24 months with 50% additional tax", penalty: "50% additional tax on tax + interest", section: "Section 139(8A)", completed: false },
+
   // ============ INCOME TAX - Advance Tax ============
   { id: "at1", title: "Advance Tax – 1st Installment (15%)", dueDate: "2026-06-15", category: "income-tax", applicable: "All assessees", description: "Pay 15% of estimated tax liability for FY 2026-27", penalty: "Interest u/s 234C @ 1% per month", section: "Section 208-211", completed: false },
   { id: "at2", title: "Advance Tax – 2nd Installment (45%)", dueDate: "2026-09-15", category: "income-tax", applicable: "All assessees", description: "Pay 45% cumulative of estimated tax for FY 2026-27", penalty: "Interest u/s 234C @ 1% per month", section: "Section 208-211", completed: false },
