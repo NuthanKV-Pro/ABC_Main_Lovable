@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Plus, Trash2, Download, FileText, AlertTriangle, RotateCcw, ExternalLink, Search, ChevronDown, ChevronUp, Info, Save, FolderOpen, Truck, BookOpen, MapPin, Copy, Eye, Sparkles } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Download, FileText, AlertTriangle, RotateCcw, ExternalLink, Search, ChevronDown, ChevronUp, Info, Save, FolderOpen, Truck, BookOpen, MapPin, Copy, Eye, Sparkles, Globe, RefreshCw } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -69,7 +69,40 @@ interface InvoiceDraft {
   buyerBillingAddress: AddressDetails;
   buyerShippingAddress: AddressDetails;
   shippingSameAsBilling: boolean;
+  isExportInvoice?: boolean;
+  selectedCurrency?: string;
+  exchangeRate?: number;
 }
+
+interface CurrencyInfo {
+  code: string;
+  symbol: string;
+  name: string;
+  defaultRate: number; // approximate rate to INR
+}
+
+const currencyData: CurrencyInfo[] = [
+  { code: "INR", symbol: "₹", name: "Indian Rupee", defaultRate: 1 },
+  { code: "USD", symbol: "$", name: "US Dollar", defaultRate: 83.50 },
+  { code: "EUR", symbol: "€", name: "Euro", defaultRate: 91.20 },
+  { code: "GBP", symbol: "£", name: "British Pound", defaultRate: 106.50 },
+  { code: "AED", symbol: "د.إ", name: "UAE Dirham", defaultRate: 22.73 },
+  { code: "SAR", symbol: "﷼", name: "Saudi Riyal", defaultRate: 22.27 },
+  { code: "SGD", symbol: "S$", name: "Singapore Dollar", defaultRate: 62.80 },
+  { code: "AUD", symbol: "A$", name: "Australian Dollar", defaultRate: 55.10 },
+  { code: "CAD", symbol: "C$", name: "Canadian Dollar", defaultRate: 61.50 },
+  { code: "JPY", symbol: "¥", name: "Japanese Yen", defaultRate: 0.56 },
+  { code: "CHF", symbol: "CHF", name: "Swiss Franc", defaultRate: 95.40 },
+  { code: "CNY", symbol: "¥", name: "Chinese Yuan", defaultRate: 11.50 },
+  { code: "HKD", symbol: "HK$", name: "Hong Kong Dollar", defaultRate: 10.70 },
+  { code: "MYR", symbol: "RM", name: "Malaysian Ringgit", defaultRate: 18.80 },
+  { code: "THB", symbol: "฿", name: "Thai Baht", defaultRate: 2.38 },
+  { code: "KRW", symbol: "₩", name: "South Korean Won", defaultRate: 0.063 },
+  { code: "ZAR", symbol: "R", name: "South African Rand", defaultRate: 4.60 },
+  { code: "BDT", symbol: "৳", name: "Bangladeshi Taka", defaultRate: 0.71 },
+  { code: "LKR", symbol: "Rs", name: "Sri Lankan Rupee", defaultRate: 0.27 },
+  { code: "NPR", symbol: "रू", name: "Nepalese Rupee", defaultRate: 0.52 },
+];
 
 const gstRates = [0, 0.25, 3, 5, 12, 18, 28];
 
@@ -332,6 +365,11 @@ const GSTInvoiceGenerator = () => {
   const [draftName, setDraftName] = useState("");
   const [savedDrafts, setSavedDrafts] = useState<InvoiceDraft[]>(getStoredDrafts);
 
+  // Multi-currency states
+  const [isExportInvoice, setIsExportInvoice] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState("INR");
+  const [exchangeRate, setExchangeRate] = useState(1);
+
   // Address states
   const [sellerBillingAddress, setSellerBillingAddress] = useState<AddressDetails>({ ...emptyAddress });
   const [buyerBillingAddress, setBuyerBillingAddress] = useState<AddressDetails>({ ...emptyAddress });
@@ -373,6 +411,14 @@ const GSTInvoiceGenerator = () => {
     setEWayBill({ transporterName: "", transporterId: "", transportMode: "road", vehicleNumber: "", distanceKm: "", transDocNo: "", transDocDate: "" });
     setSellerBillingAddress({ ...emptyAddress }); setBuyerBillingAddress({ ...emptyAddress });
     setBuyerShippingAddress({ ...emptyAddress }); setShippingSameAsBilling(true);
+    setIsExportInvoice(false); setSelectedCurrency("INR"); setExchangeRate(1);
+  };
+
+  const handleCurrencyChange = (code: string) => {
+    setSelectedCurrency(code);
+    const info = currencyData.find(c => c.code === code);
+    if (info) setExchangeRate(info.defaultRate);
+    if (code !== "INR") setIsExportInvoice(true);
   };
 
   const totals = useMemo(() => {
@@ -389,7 +435,17 @@ const GSTInvoiceGenerator = () => {
   }, [items, isInterState]);
 
   const showEWayBill = totals.grandTotal > 50000;
+  const currencyInfo = currencyData.find(c => c.code === selectedCurrency) || currencyData[0];
+  const isForeignCurrency = selectedCurrency !== "INR";
   const formatCurrency = (n: number) => "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formatForeignCurrency = (n: number) => {
+    const fcAmount = exchangeRate > 0 ? n / exchangeRate : 0;
+    return `${currencyInfo.symbol}${fcAmount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+  const formatDualCurrency = (n: number) => {
+    if (!isForeignCurrency) return formatCurrency(n);
+    return `${formatForeignCurrency(n)} (${formatCurrency(n)})`;
+  };
   const isSellerGSTINValid = validateGSTIN(sellerGSTIN);
   const isBuyerGSTINValid = !buyerGSTIN || validateGSTIN(buyerGSTIN);
 
@@ -418,6 +474,7 @@ const GSTInvoiceGenerator = () => {
       sellerGSTIN, buyerGSTIN, sellerName, buyerName, sellerState, buyerState,
       invoiceNo, invoiceDate, isInterState, reverseCharge, items, eWayBill,
       sellerBillingAddress, buyerBillingAddress, buyerShippingAddress, shippingSameAsBilling,
+      isExportInvoice, selectedCurrency, exchangeRate,
     };
     const updated = [draft, ...savedDrafts].slice(0, 20);
     setSavedDrafts(updated); saveDraftsToStorage(updated); setDraftName("");
@@ -436,6 +493,9 @@ const GSTInvoiceGenerator = () => {
     if (draft.buyerBillingAddress) setBuyerBillingAddress(draft.buyerBillingAddress);
     if (draft.buyerShippingAddress) setBuyerShippingAddress(draft.buyerShippingAddress);
     setShippingSameAsBilling(draft.shippingSameAsBilling ?? true);
+    setIsExportInvoice(draft.isExportInvoice ?? false);
+    setSelectedCurrency(draft.selectedCurrency ?? "INR");
+    setExchangeRate(draft.exchangeRate ?? 1);
     setDraftsDialogOpen(false);
     toast.success(`Loaded "${draft.name}"`);
   };
@@ -456,14 +516,15 @@ const GSTInvoiceGenerator = () => {
     doc.rect(0, 0, pageWidth, 28, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(20); doc.setFont('helvetica', 'bold');
-    doc.text("TAX INVOICE", pageWidth / 2, 16, { align: "center" });
+    doc.text(isExportInvoice ? "EXPORT TAX INVOICE" : "TAX INVOICE", pageWidth / 2, 16, { align: "center" });
     doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-    doc.text(`Invoice No: ${invoiceNo}  |  Date: ${invoiceDate}`, pageWidth / 2, 24, { align: "center" });
+    doc.text(`Invoice No: ${invoiceNo}  |  Date: ${invoiceDate}${isForeignCurrency ? `  |  Currency: ${selectedCurrency}` : ''}`, pageWidth / 2, 24, { align: "center" });
 
     doc.setTextColor(0, 0, 0);
     let y = 36;
     doc.setFontSize(8); doc.setTextColor(100, 100, 100);
-    doc.text(`Supply Type: ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}${reverseCharge ? "  |  Reverse Charge: Yes" : ""}`, 14, y);
+    const supplyLine = `Supply Type: ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}${reverseCharge ? "  |  Reverse Charge: Yes" : ""}${isForeignCurrency ? `  |  Exchange Rate: 1 ${selectedCurrency} = INR ${exchangeRate}` : ""}`;
+    doc.text(supplyLine, 14, y);
     doc.setTextColor(0, 0, 0);
     y += 8;
 
@@ -525,7 +586,11 @@ const GSTInvoiceGenerator = () => {
     if (totals.totalDiscount > 0) summaryRows.push(['Discount', `-${formatCurrency(totals.totalDiscount)}`]);
     if (isInterState) { summaryRows.push(['IGST', formatCurrency(totals.totalIGST)]); }
     else { summaryRows.push(['CGST', formatCurrency(totals.totalCGST)]); summaryRows.push(['SGST', formatCurrency(totals.totalSGST)]); }
-    summaryRows.push(['Grand Total', formatCurrency(totals.grandTotal)]);
+    summaryRows.push(['Grand Total (INR)', formatCurrency(totals.grandTotal)]);
+    if (isForeignCurrency) {
+      summaryRows.push([`Grand Total (${selectedCurrency})`, formatForeignCurrency(totals.grandTotal)]);
+      summaryRows.push(['Exchange Rate', `1 ${selectedCurrency} = ${formatCurrency(exchangeRate)}`]);
+    }
 
     autoTable(doc, {
       startY: y, body: summaryRows, theme: 'plain',
@@ -599,8 +664,8 @@ const GSTInvoiceGenerator = () => {
       <head><meta charset="utf-8"><title>GST Invoice</title>
       <style>body{font-family:Calibri,sans-serif;padding:20px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:6px 8px;font-size:11px}th{background:#2980b9;color:#fff}h1{text-align:center;color:#2c3e50}.summary{text-align:right;margin-top:16px}</style>
       </head><body>
-      <h1>TAX INVOICE</h1>
-      <p>Invoice No: ${invoiceNo} | Date: ${invoiceDate} | ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}${reverseCharge ? " | Reverse Charge: Yes" : ""}</p>
+      <h1>${isExportInvoice ? "EXPORT TAX INVOICE" : "TAX INVOICE"}</h1>
+      <p>Invoice No: ${invoiceNo} | Date: ${invoiceDate} | ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}${reverseCharge ? " | Reverse Charge: Yes" : ""}${isForeignCurrency ? ` | Currency: ${selectedCurrency} | Rate: 1 ${selectedCurrency} = INR ${exchangeRate}` : ""}</p>
       <table style="width:100%;border:none;margin-bottom:16px"><tr>
         <td style="border:none;width:50%;vertical-align:top"><strong>Seller</strong><br>${sellerName}<br>GSTIN: ${sellerGSTIN}<br>State: ${states[sellerState] || "-"}${sellerAddr ? `<br>Address: ${sellerAddr}` : ""}</td>
         <td style="border:none;width:50%;vertical-align:top"><strong>Buyer</strong><br>${buyerName || "-"}<br>GSTIN: ${buyerGSTIN || "B2C (Unregistered)"}<br>State: ${states[buyerState] || "-"}${buyerAddr ? `<br>Billing: ${buyerAddr}` : ""}${shipAddr && shipAddr !== buyerAddr ? `<br>Shipping: ${shipAddr}` : ""}</td>
@@ -609,7 +674,8 @@ const GSTInvoiceGenerator = () => {
       <div class="summary">
         <p>Subtotal: ${formatCurrency(totals.subtotal)}</p>
         ${taxSummary}
-        <p><strong>Grand Total: ${formatCurrency(totals.grandTotal)}</strong></p>
+        <p><strong>Grand Total (INR): ${formatCurrency(totals.grandTotal)}</strong></p>
+        ${isForeignCurrency ? `<p><strong>Grand Total (${selectedCurrency}): ${formatForeignCurrency(totals.grandTotal)}</strong></p><p style="font-size:9px">Exchange Rate: 1 ${selectedCurrency} = INR ${exchangeRate}</p>` : ''}
       </div>
       ${eWaySection}
       <p style="font-size:9px;color:#999;margin-top:30px">This is a computer-generated invoice.</p>
@@ -743,7 +809,81 @@ const GSTInvoiceGenerator = () => {
           </CardContent>
         </Card>
 
-        {/* Line Items */}
+        {/* Multi-Currency / Export Invoice */}
+        <Card className="mt-6 border-primary/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Globe className="h-5 w-5 text-primary" />
+              Multi-Currency / Export Invoice
+            </CardTitle>
+            <CardDescription>Enable for export invoices — amounts will show in foreign currency with INR equivalent</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+              <div className="flex items-center gap-2 pt-2">
+                <Switch checked={isExportInvoice} onCheckedChange={(c) => {
+                  setIsExportInvoice(c);
+                  if (!c) { setSelectedCurrency("INR"); setExchangeRate(1); }
+                  if (c && selectedCurrency === "INR") { handleCurrencyChange("USD"); }
+                }} />
+                <Label className="text-sm">Export Invoice</Label>
+              </div>
+              <div>
+                <Label>Invoice Currency</Label>
+                <Select value={selectedCurrency} onValueChange={handleCurrencyChange} disabled={!isExportInvoice}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {currencyData.map(c => (
+                      <SelectItem key={c.code} value={c.code}>{c.symbol} {c.code} — {c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Exchange Rate (1 {selectedCurrency} = ₹)</Label>
+                <div className="flex gap-1.5">
+                  <Input
+                    type="number"
+                    value={exchangeRate}
+                    onChange={e => setExchangeRate(Number(e.target.value))}
+                    disabled={!isExportInvoice || selectedCurrency === "INR"}
+                    step="0.01"
+                    min="0"
+                  />
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="icon" disabled={!isExportInvoice} onClick={() => {
+                        const info = currencyData.find(c => c.code === selectedCurrency);
+                        if (info) setExchangeRate(info.defaultRate);
+                        toast.info("Reset to approximate default rate. For actual rates, check RBI reference rates.");
+                      }}>
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p className="text-xs">Reset to default approximate rate</p></TooltipContent>
+                  </Tooltip>
+                </div>
+              </div>
+              {isForeignCurrency && (
+                <div className="text-sm p-2 rounded-lg bg-muted/50 border">
+                  <p className="text-muted-foreground text-xs">Grand Total in {selectedCurrency}:</p>
+                  <p className="font-bold text-primary text-lg">{formatForeignCurrency(totals.grandTotal)}</p>
+                  <p className="text-xs text-muted-foreground">INR Equivalent: {formatCurrency(totals.grandTotal)}</p>
+                </div>
+              )}
+            </div>
+            {isExportInvoice && (
+              <div className="mt-3 p-2.5 rounded-lg bg-muted/30 border flex items-start gap-2">
+                <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground">
+                  <strong>Export Invoice Note:</strong> For exports, GST is either charged at 0% (under LUT/Bond) or at applicable rate with refund claim.
+                  Use RBI reference rate on the date of invoice for conversion. Items are entered in INR; the foreign currency equivalent is auto-calculated.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
@@ -823,6 +963,13 @@ const GSTInvoiceGenerator = () => {
               {reverseCharge && <div className="flex items-center gap-2 text-sm text-amber-500"><AlertTriangle className="h-4 w-4" /> Tax payable under Reverse Charge</div>}
               <Separator />
               <div className="flex justify-between text-lg font-bold"><span>Grand Total</span><span className="text-primary">{formatCurrency(totals.grandTotal)}</span></div>
+              {isForeignCurrency && (
+                <>
+                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Grand Total in {selectedCurrency}</span><span className="font-semibold">{formatForeignCurrency(totals.grandTotal)}</span></div>
+                  <div className="flex justify-between text-xs text-muted-foreground"><span>Exchange Rate</span><span>1 {selectedCurrency} = {formatCurrency(exchangeRate)}</span></div>
+                </>
+              )}
+              {isExportInvoice && <Badge variant="outline" className="mt-2"><Globe className="h-3 w-3 mr-1" /> Export Invoice</Badge>}
             </div>
           </CardContent>
         </Card>
@@ -847,14 +994,15 @@ const GSTInvoiceGenerator = () => {
                 <div className="border rounded-lg bg-card p-6 space-y-6 shadow-inner max-w-3xl mx-auto">
                   {/* Preview Header */}
                   <div className="text-center border-b pb-4">
-                    <h2 className="text-2xl font-bold text-primary tracking-tight">TAX INVOICE</h2>
+                    <h2 className="text-2xl font-bold text-primary tracking-tight">{isExportInvoice ? "EXPORT TAX INVOICE" : "TAX INVOICE"}</h2>
                     <div className="flex justify-center gap-4 text-sm text-muted-foreground mt-1">
                       <span>Invoice No: <strong className="text-foreground">{invoiceNo || "—"}</strong></span>
                       <span>Date: <strong className="text-foreground">{invoiceDate || "—"}</strong></span>
                     </div>
-                    <div className="flex justify-center gap-3 mt-2">
+                    <div className="flex justify-center gap-3 mt-2 flex-wrap">
                       <Badge variant={isInterState ? "default" : "secondary"}>{isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}</Badge>
                       {reverseCharge && <Badge variant="outline" className="text-amber-600 border-amber-400">Reverse Charge</Badge>}
+                      {isExportInvoice && <Badge variant="outline" className="border-primary/50"><Globe className="h-3 w-3 mr-1" /> {selectedCurrency} @ ₹{exchangeRate}</Badge>}
                     </div>
                   </div>
 
@@ -929,7 +1077,7 @@ const GSTInvoiceGenerator = () => {
 
                   {/* Preview Summary */}
                   <div className="flex justify-end">
-                    <div className="w-64 space-y-1.5 text-sm">
+                    <div className="w-72 space-y-1.5 text-sm">
                       <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatCurrency(totals.subtotal)}</span></div>
                       {totals.totalDiscount > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Discount</span><span className="text-destructive">-{formatCurrency(totals.totalDiscount)}</span></div>}
                       {isInterState ? (
@@ -940,6 +1088,12 @@ const GSTInvoiceGenerator = () => {
                       </>)}
                       <Separator />
                       <div className="flex justify-between font-bold text-base"><span>Grand Total</span><span className="text-primary">{formatCurrency(totals.grandTotal)}</span></div>
+                      {isForeignCurrency && (
+                        <>
+                          <div className="flex justify-between text-xs"><span className="text-muted-foreground">In {selectedCurrency}</span><span className="font-semibold">{formatForeignCurrency(totals.grandTotal)}</span></div>
+                          <div className="flex justify-between text-[10px] text-muted-foreground"><span>Rate: 1 {selectedCurrency} = ₹{exchangeRate}</span></div>
+                        </>
+                      )}
                     </div>
                   </div>
 
