@@ -198,6 +198,81 @@ const hsnCodesData: { code: string; description: string; tooltip: string }[] = [
   { code: "9997", description: "Other Services", tooltip: "Washing, dry-cleaning, hairdressing, funeral, other services" },
 ];
 
+// HSN/SAC to typical GST rate mapping
+const hsnGstRateMap: Record<string, { rate: number; label: string }> = {
+  "0402": { rate: 5, label: "Milk Products – 5%" }, "0713": { rate: 5, label: "Pulses – 5%" }, "0804": { rate: 0, label: "Fresh Fruits – 0% (unbranded)" },
+  "1001": { rate: 5, label: "Wheat – 5%" }, "1006": { rate: 5, label: "Rice – 5%" }, "1201": { rate: 5, label: "Soya Beans – 5%" },
+  "1905": { rate: 18, label: "Bread & Bakery – 18% (branded)" }, "2101": { rate: 18, label: "Coffee/Tea Extracts – 18%" },
+  "2106": { rate: 18, label: "Food Preparations – 18%" }, "2202": { rate: 28, label: "Aerated Beverages – 28%" },
+  "2710": { rate: 18, label: "Petroleum Products – 18% (where applicable)" }, "2711": { rate: 5, label: "LPG – 5%" },
+  "3004": { rate: 12, label: "Medicines – 12%" }, "3304": { rate: 28, label: "Beauty Products – 28%" },
+  "3305": { rate: 18, label: "Hair Care – 18%" }, "3306": { rate: 18, label: "Oral Care – 18%" },
+  "3307": { rate: 28, label: "Perfumes – 28%" }, "3401": { rate: 18, label: "Soap – 18%" },
+  "3923": { rate: 18, label: "Plastic Packaging – 18%" }, "4011": { rate: 28, label: "Tyres – 28%" },
+  "4819": { rate: 18, label: "Paper Packaging – 18%" }, "4820": { rate: 18, label: "Stationery – 18%" },
+  "4901": { rate: 0, label: "Books – 0% (printed)" }, "4911": { rate: 12, label: "Printed Materials – 12%" },
+  "6101": { rate: 12, label: "Men's Overcoats – 12% (>₹1000)" }, "6104": { rate: 12, label: "Women's Suits – 12% (>₹1000)" },
+  "6109": { rate: 5, label: "T-shirts – 5% (≤₹1000)" }, "6110": { rate: 12, label: "Sweaters – 12% (>₹1000)" },
+  "6203": { rate: 12, label: "Men's Trousers – 12% (>₹1000)" }, "6204": { rate: 12, label: "Women's Dresses – 12% (>₹1000)" },
+  "7108": { rate: 3, label: "Gold – 3%" }, "7113": { rate: 3, label: "Gold Jewellery – 3%" }, "7117": { rate: 18, label: "Imitation Jewellery – 18%" },
+  "8443": { rate: 18, label: "Printers – 18%" }, "8471": { rate: 18, label: "Computers – 18%" },
+  "8504": { rate: 18, label: "Transformers/Chargers – 18%" }, "8507": { rate: 28, label: "Batteries – 28%" },
+  "8517": { rate: 18, label: "Mobile Phones – 18%" }, "8523": { rate: 18, label: "Storage Media – 18%" },
+  "8528": { rate: 28, label: "TV & Monitors – 28%" }, "8541": { rate: 5, label: "Solar Panels – 5%" },
+  "8544": { rate: 18, label: "Cables – 18%" }, "8703": { rate: 28, label: "Motor Cars – 28%" },
+  "8708": { rate: 28, label: "Auto Parts – 28%" }, "8711": { rate: 28, label: "Motorcycles – 28%" },
+  "9401": { rate: 18, label: "Chairs – 18%" }, "9403": { rate: 18, label: "Furniture – 18%" },
+  "9404": { rate: 18, label: "Mattresses – 18%" }, "9405": { rate: 18, label: "Lighting – 18%" },
+  "9504": { rate: 28, label: "Gaming Equipment – 28%" }, "9506": { rate: 18, label: "Sports Equipment – 18%" },
+  // Services (SAC codes)
+  "9954": { rate: 18, label: "Construction – 18% (commercial)" }, "9961": { rate: 18, label: "Maintenance – 18%" },
+  "9962": { rate: 18, label: "Cleaning – 18%" }, "9963": { rate: 18, label: "Restaurant – 5% (non-AC) / 18%" },
+  "9964": { rate: 18, label: "Passenger Transport – 18% (AC)" }, "9965": { rate: 18, label: "Goods Transport – 18%" },
+  "9967": { rate: 18, label: "Event Management – 18%" }, "9968": { rate: 18, label: "Courier – 18%" },
+  "9969": { rate: 18, label: "Waste Management – 18%" }, "9971": { rate: 18, label: "Financial Services – 18%" },
+  "9972": { rate: 18, label: "Real Estate – 18%" }, "9973": { rate: 18, label: "Rental – 18%" },
+  "9974": { rate: 18, label: "Architecture – 18%" }, "9981": { rate: 18, label: "R&D Services – 18%" },
+  "9982": { rate: 18, label: "Legal Services – 18%" }, "9983": { rate: 18, label: "Professional Services – 18%" },
+  "9984": { rate: 18, label: "Telecom – 18%" }, "9985": { rate: 18, label: "IT & Software – 18%" },
+  "9986": { rate: 18, label: "Support Services – 18%" }, "9992": { rate: 18, label: "Education – 18% (commercial)" },
+  "9993": { rate: 18, label: "Healthcare – 18% (non-exempt)" }, "9995": { rate: 18, label: "Tour Operator – 18%" },
+  "9996": { rate: 18, label: "Recreation – 18%" }, "9997": { rate: 18, label: "Other Services – 18%" },
+  // Sub-codes map to parent
+  "995411": { rate: 12, label: "Residential Construction – 12%" }, "995412": { rate: 18, label: "Commercial Construction – 18%" },
+  "995421": { rate: 12, label: "Road Construction – 12%" }, "995422": { rate: 18, label: "Utility Construction – 18%" },
+  "996311": { rate: 18, label: "5-Star Hotel – 18%" }, "996312": { rate: 12, label: "Hotel (<₹7500) – 12%" },
+  "996321": { rate: 12, label: "Homestay – 12%" }, "996331": { rate: 18, label: "Catering – 18%" },
+  "996511": { rate: 18, label: "Road Freight – 18% (or 5% GTA)" }, "996512": { rate: 5, label: "Rail Freight – 5%" },
+  "996521": { rate: 18, label: "Coastal Shipping – 18%" }, "996531": { rate: 18, label: "Air Freight – 18%" },
+  "997131": { rate: 18, label: "Life Insurance – 18%" }, "997132": { rate: 18, label: "Non-life Insurance – 18%" },
+  "997133": { rate: 18, label: "Reinsurance – 18%" }, "997134": { rate: 18, label: "Insurance Auxiliary – 18%" },
+  "997311": { rate: 18, label: "Machinery Rental – 18%" }, "997312": { rate: 18, label: "Vehicle Rental – 18%" },
+  "997313": { rate: 18, label: "Office Equipment Rental – 18%" }, "997314": { rate: 18, label: "Property Rental – 18%" },
+  "997319": { rate: 18, label: "Other Rental – 18%" },
+  "998311": { rate: 18, label: "Management Consultancy – 18%" }, "998312": { rate: 18, label: "Business Consultancy – 18%" },
+  "998313": { rate: 18, label: "IT Consultancy – 18%" }, "998314": { rate: 18, label: "Tax Consultancy – 18%" },
+  "998315": { rate: 18, label: "Accounting Services – 18%" },
+  "998341": { rate: 18, label: "Architectural Advisory – 18%" }, "998342": { rate: 18, label: "Architectural Design – 18%" },
+  "998343": { rate: 18, label: "Urban Planning – 18%" }, "998344": { rate: 18, label: "Engineering Design – 18%" },
+  "998345": { rate: 18, label: "Engineering Advisory – 18%" }, "998346": { rate: 18, label: "Surveying – 18%" },
+  "998361": { rate: 18, label: "Print Advertising – 18%" }, "998362": { rate: 18, label: "TV/Radio Advertising – 18%" },
+  "998363": { rate: 18, label: "Digital Advertising – 18%" }, "998364": { rate: 18, label: "Outdoor Advertising – 18%" },
+  "999210": { rate: 0, label: "Primary Education – Exempt" }, "999220": { rate: 0, label: "Secondary Education – Exempt" },
+  "999230": { rate: 18, label: "Higher Education – 18% (private)" }, "999240": { rate: 18, label: "Vocational Training – 18%" },
+  "999250": { rate: 18, label: "Coaching – 18%" },
+  "999311": { rate: 0, label: "Hospital Services – Exempt" }, "999312": { rate: 0, label: "Medical Services – Exempt" },
+  "999313": { rate: 18, label: "Dental Services – 18% (cosmetic)" }, "999314": { rate: 0, label: "Paramedical – Exempt (clinical)" },
+};
+
+const getGstSuggestion = (hsnCode: string): { rate: number; label: string } | null => {
+  if (!hsnCode) return null;
+  // Exact match first
+  if (hsnGstRateMap[hsnCode]) return hsnGstRateMap[hsnCode];
+  // Try parent codes (6-digit → 4-digit)
+  if (hsnCode.length > 4 && hsnGstRateMap[hsnCode.slice(0, 4)]) return hsnGstRateMap[hsnCode.slice(0, 4)];
+  return null;
+};
+
 const validateGSTIN = (gstin: string): boolean => {
   const regex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
   return regex.test(gstin.toUpperCase());
