@@ -929,7 +929,7 @@ const Index = () => {
                 size="icon"
                 className="shrink-0"
                 aria-label="Back to Landing"
-                onClick={() => navigate(-1)}
+                onClick={() => navigate("/")}
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
