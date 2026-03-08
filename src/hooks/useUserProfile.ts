@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 export interface LegalEntity {
   id: string;
@@ -43,6 +43,10 @@ export const useUserProfile = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [activeEntityId, setActiveEntityIdState] = useState<string | null>(() => {
+    return localStorage.getItem('active_entity_id');
+  });
+
   useEffect(() => {
     localStorage.setItem('user_profile', JSON.stringify(profile));
   }, [profile]);
@@ -50,6 +54,23 @@ export const useUserProfile = () => {
   useEffect(() => {
     localStorage.setItem('legal_entities', JSON.stringify(legalEntities));
   }, [legalEntities]);
+
+  useEffect(() => {
+    if (activeEntityId) {
+      localStorage.setItem('active_entity_id', activeEntityId);
+    } else {
+      localStorage.removeItem('active_entity_id');
+    }
+  }, [activeEntityId]);
+
+  const activeEntity = useMemo(() => {
+    if (!activeEntityId) return null;
+    return legalEntities.find(e => e.id === activeEntityId) || null;
+  }, [activeEntityId, legalEntities]);
+
+  const setActiveEntityId = (id: string | null) => {
+    setActiveEntityIdState(id);
+  };
 
   const updateProfile = (updates: Partial<UserProfile>) => {
     setProfile(prev => ({ ...prev, ...updates }));
@@ -73,7 +94,12 @@ export const useUserProfile = () => {
 
   const deleteEntity = (id: string) => {
     setLegalEntities(prev => prev.filter(e => e.id !== id));
+    if (activeEntityId === id) setActiveEntityIdState(null);
   };
 
-  return { profile, updateProfile, resetProfile, legalEntities, addEntity, updateEntity, deleteEntity };
+  return {
+    profile, updateProfile, resetProfile,
+    legalEntities, addEntity, updateEntity, deleteEntity,
+    activeEntityId, setActiveEntityId, activeEntity,
+  };
 };
