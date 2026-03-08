@@ -117,6 +117,14 @@ const NetWorthCalculator = () => {
   const totalLiabilities = liabilities.reduce((sum, l) => sum + l.value, 0);
   const netWorth = totalAssets - totalLiabilities;
 
+  // Persist computed values to localStorage
+  useEffect(() => {
+    localStorage.setItem("net_worth_total", String(netWorth));
+    localStorage.setItem("net_worth_assets", String(totalAssets));
+    localStorage.setItem("net_worth_liabilities", String(totalLiabilities));
+    localStorage.setItem("net_worth_data", JSON.stringify({ assets, liabilities }));
+  }, [netWorth, totalAssets, totalLiabilities, assets, liabilities]);
+
   const assetsByCategory = {
     cash: assets.filter(a => a.category === 'cash').reduce((sum, a) => sum + a.value, 0),
     investment: assets.filter(a => a.category === 'investment').reduce((sum, a) => sum + a.value, 0),

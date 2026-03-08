@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,6 +43,16 @@ const EMICalculator = () => {
 
   const interestPercentage = totalAmount > 0 ? (totalInterest / totalAmount) * 100 : 0;
   const principalPercentage = totalAmount > 0 ? (principal / totalAmount) * 100 : 0;
+
+  // Persist computed values to localStorage
+  useEffect(() => {
+    if (emi > 0) localStorage.setItem("emi_monthly_total", String(Math.round(emi)));
+    if (emi > 0) {
+      localStorage.setItem("emi_data", JSON.stringify({
+        principal, rate, tenure: totalTenureMonths, totalInterest: Math.round(totalInterest),
+      }));
+    }
+  }, [emi, principal, rate, totalTenureMonths, totalInterest]);
 
   const exportToPDF = () => {
     const doc = new jsPDF();

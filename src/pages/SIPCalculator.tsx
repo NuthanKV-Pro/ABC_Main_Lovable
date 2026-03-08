@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -41,6 +41,20 @@ const SIPCalculator = () => {
   const formatCurrency = (amount: number) => formatINRCompact(amount);
 
   const result = calculateSIP();
+
+  // Persist computed values to localStorage
+  useEffect(() => {
+    const monthly = parseFloat(monthlyInvestment) || 0;
+    if (monthly > 0) localStorage.setItem("sip_monthly", String(monthly));
+    if (result.maturityAmount > 0) {
+      localStorage.setItem("sip_data", JSON.stringify({
+        maturity: result.maturityAmount,
+        invested: result.totalInvested,
+        returns: result.totalReturns,
+        duration: duration,
+      }));
+    }
+  }, [monthlyInvestment, duration, expectedReturn, result.maturityAmount]);
 
   const formatCurrencyFull = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
