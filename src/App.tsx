@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import BreadcrumbNav from "@/components/BreadcrumbNav";
 import Index from "./pages/Index";
 import Landing from "./pages/Landing";
 
@@ -75,6 +76,13 @@ import BusinessValuation from "./pages/BusinessValuation";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
+const BreadcrumbLayout = () => (
+  <>
+    <BreadcrumbNav />
+    <Outlet />
+  </>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -83,74 +91,77 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/prototypes" element={<Index />} />
           
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/financial-ratios" element={<FinancialRatios />} />
-          <Route path="/salary" element={<Salary />} />
-          <Route path="/hp" element={<HouseProperty />} />
-          <Route path="/pgbp" element={<BusinessProfession />} />
-          <Route path="/cg" element={<CapitalGains />} />
-          <Route path="/os" element={<OtherSources />} />
-          <Route path="/deductions" element={<Deductions />} />
-          <Route path="/exempt-income" element={<ExemptIncome />} />
-          <Route path="/regime-comparison" element={<RegimeComparison />} />
-          <Route path="/year-comparison" element={<YearComparison />} />
-          <Route path="/tax-payments" element={<TaxPayments />} />
-          <Route path="/total-income-tax" element={<TotalIncomeTax />} />
-          <Route path="/profile" element={<ProfileSettings />} />
-          <Route path="/emi-calculator" element={<EMICalculator />} />
-          <Route path="/gratuity-calculator" element={<GratuityCalculator />} />
-          <Route path="/retirement-calculator" element={<RetirementCalculator />} />
-          <Route path="/sip-calculator" element={<SIPCalculator />} />
-          <Route path="/ppf-calculator" element={<PPFCalculator />} />
-          <Route path="/fd-calculator" element={<FDCalculator />} />
-          <Route path="/lumpsum-calculator" element={<LumpsumCalculator />} />
-          <Route path="/nps-calculator" element={<NPSCalculator />} />
-          <Route path="/nsc-calculator" element={<NSCCalculator />} />
-          <Route path="/pf-calculator" element={<PFCalculator />} />
-          <Route path="/tax-saving-comparison" element={<TaxSavingComparison />} />
-          <Route path="/ssy-calculator" element={<SSYCalculator />} />
-          <Route path="/cagr-calculator" element={<CAGRCalculator />} />
-          <Route path="/rd-calculator" element={<RDCalculator />} />
-          <Route path="/scss-calculator" element={<SCSSCalculator />} />
-          <Route path="/home-loan-eligibility" element={<HomeLoanEligibility />} />
-          <Route path="/elss-calculator" element={<ELSSCalculator />} />
-          <Route path="/credit-score-calculator" element={<CreditScoreCalculator />} />
-          <Route path="/stamp-duty-calculator" element={<StampDutyCalculator />} />
-          <Route path="/car-loan-calculator" element={<CarLoanCalculator />} />
-          <Route path="/gold-loan-calculator" element={<GoldLoanCalculator />} />
-          <Route path="/education-loan-calculator" element={<EducationLoanCalculator />} />
-          <Route path="/swp-calculator" element={<SWPCalculator />} />
-          <Route path="/loan-advisor" element={<LoanAdvisor />} />
-          <Route path="/loan-comparison" element={<LoanComparison />} />
-          <Route path="/rent-vs-buy" element={<RentVsBuyCalculator />} />
-          <Route path="/home-affordability" element={<HomeAffordabilityCalculator />} />
-          <Route path="/debt-to-income" element={<DebtToIncomeCalculator />} />
-          <Route path="/emergency-fund" element={<EmergencyFundCalculator />} />
-          <Route path="/financial-goal-tracker" element={<FinancialGoalTracker />} />
-          <Route path="/budget-planner" element={<BudgetPlanner />} />
-          <Route path="/net-worth-calculator" element={<NetWorthCalculator />} />
-          <Route path="/capital-budgeting" element={<CapitalBudgeting />} />
-          <Route path="/tax-loss-harvesting" element={<TaxLossHarvestingCalculator />} />
-          <Route path="/personal-loan-calculator" element={<PersonalLoanCalculator />} />
-          <Route path="/insurance-premium-calculator" element={<InsurancePremiumCalculator />} />
-          <Route path="/mf-overlap-analyzer" element={<MutualFundOverlapAnalyzer />} />
-          <Route path="/cash-flow-budgeting" element={<CashFlowBudgetingTool />} />
-          <Route path="/factoring-tool" element={<FactoringTool />} />
-          <Route path="/dividend-decision" element={<DividendDecisionTool />} />
-          <Route path="/stock-portfolio" element={<StockPortfolioTracker />} />
-          <Route path="/goal-sip-calculator" element={<GoalBasedSIPCalculator />} />
-          <Route path="/compound-interest" element={<CompoundInterestCalculator />} />
-          <Route path="/inflation-calculator" element={<InflationImpactCalculator />} />
-          <Route path="/80c-optimizer" element={<TaxSaver80COptimizer />} />
-          <Route path="/financial-statements" element={<FinancialStatements />} />
-          <Route path="/contract-drafter" element={<ContractDrafter />} />
-          <Route path="/legal-interpretations" element={<LegalInterpretations />} />
-          <Route path="/deduction-playground" element={<DeductionPlayground />} />
-          <Route path="/escrow" element={<Escrow />} />
-          <Route path="/clause-finder" element={<ClauseFinder />} />
-          <Route path="/business-valuation" element={<BusinessValuation />} />
+          <Route element={<BreadcrumbLayout />}>
+            <Route path="/prototypes" element={<Index />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/financial-ratios" element={<FinancialRatios />} />
+            <Route path="/salary" element={<Salary />} />
+            <Route path="/hp" element={<HouseProperty />} />
+            <Route path="/pgbp" element={<BusinessProfession />} />
+            <Route path="/cg" element={<CapitalGains />} />
+            <Route path="/os" element={<OtherSources />} />
+            <Route path="/deductions" element={<Deductions />} />
+            <Route path="/exempt-income" element={<ExemptIncome />} />
+            <Route path="/regime-comparison" element={<RegimeComparison />} />
+            <Route path="/year-comparison" element={<YearComparison />} />
+            <Route path="/tax-payments" element={<TaxPayments />} />
+            <Route path="/total-income-tax" element={<TotalIncomeTax />} />
+            <Route path="/profile" element={<ProfileSettings />} />
+            <Route path="/emi-calculator" element={<EMICalculator />} />
+            <Route path="/gratuity-calculator" element={<GratuityCalculator />} />
+            <Route path="/retirement-calculator" element={<RetirementCalculator />} />
+            <Route path="/sip-calculator" element={<SIPCalculator />} />
+            <Route path="/ppf-calculator" element={<PPFCalculator />} />
+            <Route path="/fd-calculator" element={<FDCalculator />} />
+            <Route path="/lumpsum-calculator" element={<LumpsumCalculator />} />
+            <Route path="/nps-calculator" element={<NPSCalculator />} />
+            <Route path="/nsc-calculator" element={<NSCCalculator />} />
+            <Route path="/pf-calculator" element={<PFCalculator />} />
+            <Route path="/tax-saving-comparison" element={<TaxSavingComparison />} />
+            <Route path="/ssy-calculator" element={<SSYCalculator />} />
+            <Route path="/cagr-calculator" element={<CAGRCalculator />} />
+            <Route path="/rd-calculator" element={<RDCalculator />} />
+            <Route path="/scss-calculator" element={<SCSSCalculator />} />
+            <Route path="/home-loan-eligibility" element={<HomeLoanEligibility />} />
+            <Route path="/elss-calculator" element={<ELSSCalculator />} />
+            <Route path="/credit-score-calculator" element={<CreditScoreCalculator />} />
+            <Route path="/stamp-duty-calculator" element={<StampDutyCalculator />} />
+            <Route path="/car-loan-calculator" element={<CarLoanCalculator />} />
+            <Route path="/gold-loan-calculator" element={<GoldLoanCalculator />} />
+            <Route path="/education-loan-calculator" element={<EducationLoanCalculator />} />
+            <Route path="/swp-calculator" element={<SWPCalculator />} />
+            <Route path="/loan-advisor" element={<LoanAdvisor />} />
+            <Route path="/loan-comparison" element={<LoanComparison />} />
+            <Route path="/rent-vs-buy" element={<RentVsBuyCalculator />} />
+            <Route path="/home-affordability" element={<HomeAffordabilityCalculator />} />
+            <Route path="/debt-to-income" element={<DebtToIncomeCalculator />} />
+            <Route path="/emergency-fund" element={<EmergencyFundCalculator />} />
+            <Route path="/financial-goal-tracker" element={<FinancialGoalTracker />} />
+            <Route path="/budget-planner" element={<BudgetPlanner />} />
+            <Route path="/net-worth-calculator" element={<NetWorthCalculator />} />
+            <Route path="/capital-budgeting" element={<CapitalBudgeting />} />
+            <Route path="/tax-loss-harvesting" element={<TaxLossHarvestingCalculator />} />
+            <Route path="/personal-loan-calculator" element={<PersonalLoanCalculator />} />
+            <Route path="/insurance-premium-calculator" element={<InsurancePremiumCalculator />} />
+            <Route path="/mf-overlap-analyzer" element={<MutualFundOverlapAnalyzer />} />
+            <Route path="/cash-flow-budgeting" element={<CashFlowBudgetingTool />} />
+            <Route path="/factoring-tool" element={<FactoringTool />} />
+            <Route path="/dividend-decision" element={<DividendDecisionTool />} />
+            <Route path="/stock-portfolio" element={<StockPortfolioTracker />} />
+            <Route path="/goal-sip-calculator" element={<GoalBasedSIPCalculator />} />
+            <Route path="/compound-interest" element={<CompoundInterestCalculator />} />
+            <Route path="/inflation-calculator" element={<InflationImpactCalculator />} />
+            <Route path="/80c-optimizer" element={<TaxSaver80COptimizer />} />
+            <Route path="/financial-statements" element={<FinancialStatements />} />
+            <Route path="/contract-drafter" element={<ContractDrafter />} />
+            <Route path="/legal-interpretations" element={<LegalInterpretations />} />
+            <Route path="/deduction-playground" element={<DeductionPlayground />} />
+            <Route path="/escrow" element={<Escrow />} />
+            <Route path="/clause-finder" element={<ClauseFinder />} />
+            <Route path="/business-valuation" element={<BusinessValuation />} />
+          </Route>
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
