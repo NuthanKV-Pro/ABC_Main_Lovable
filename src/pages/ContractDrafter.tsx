@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, FileText, Download, RotateCcw, Shield, Plus, Trash2, Lock, Sparkles, Cookie, Palette } from "lucide-react";
+import { ArrowLeft, FileText, Download, RotateCcw, Shield, Plus, Trash2, Lock, Sparkles, Cookie, Palette, BookOpen, X } from "lucide-react";
+import ClauseLibraryPanel from "@/components/ClauseLibraryPanel";
+import type { Clause } from "@/lib/clauseDatabase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
