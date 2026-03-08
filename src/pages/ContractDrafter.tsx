@@ -3146,7 +3146,15 @@ const ContractDrafter = () => {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     
-    const lines = doc.splitTextToSize(generatedContract, 180);
+    let fullText = generatedContract;
+    if (importedClauses.length > 0) {
+      fullText += "\n\n" + "─".repeat(60) + "\n\nIMPORTED CLAUSES\n\n";
+      importedClauses.forEach((clause, idx) => {
+        fullText += `${idx + 1}. ${clause.title.toUpperCase()}\n\n${clause.fullText}\n\n`;
+      });
+    }
+
+    const lines = doc.splitTextToSize(fullText, 180);
     let y = 35;
     const pageHeight = 280;
     
