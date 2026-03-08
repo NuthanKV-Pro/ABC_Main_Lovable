@@ -988,14 +988,15 @@ const GSTInvoiceGenerator = () => {
                 <div className="border rounded-lg bg-card p-6 space-y-6 shadow-inner max-w-3xl mx-auto">
                   {/* Preview Header */}
                   <div className="text-center border-b pb-4">
-                    <h2 className="text-2xl font-bold text-primary tracking-tight">TAX INVOICE</h2>
+                    <h2 className="text-2xl font-bold text-primary tracking-tight">{isExportInvoice ? "EXPORT TAX INVOICE" : "TAX INVOICE"}</h2>
                     <div className="flex justify-center gap-4 text-sm text-muted-foreground mt-1">
                       <span>Invoice No: <strong className="text-foreground">{invoiceNo || "—"}</strong></span>
                       <span>Date: <strong className="text-foreground">{invoiceDate || "—"}</strong></span>
                     </div>
-                    <div className="flex justify-center gap-3 mt-2">
+                    <div className="flex justify-center gap-3 mt-2 flex-wrap">
                       <Badge variant={isInterState ? "default" : "secondary"}>{isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}</Badge>
                       {reverseCharge && <Badge variant="outline" className="text-amber-600 border-amber-400">Reverse Charge</Badge>}
+                      {isExportInvoice && <Badge variant="outline" className="border-primary/50"><Globe className="h-3 w-3 mr-1" /> {selectedCurrency} @ ₹{exchangeRate}</Badge>}
                     </div>
                   </div>
 
