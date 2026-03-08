@@ -11,7 +11,7 @@ import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import { useToast } from "@/hooks/use-toast";
 import Chatbot from "@/components/Chatbot";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import AutoPopulateBadge from "@/components/AutoPopulateBadge";
+import { Badge } from "@/components/ui/badge";
 
 const BusinessProfession = () => {
   const navigate = useNavigate();
