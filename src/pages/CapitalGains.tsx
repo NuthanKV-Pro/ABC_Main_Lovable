@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -21,62 +21,51 @@ interface AssetData {
   capitalGain: number;
 }
 
+const defaultAsset: AssetData = {
+  id: "1",
+  assetName: "",
+  dateOfPurchase: "",
+  dateOfSale: "",
+  purchasePrice: 0,
+  salePrice: 0,
+  expenses: 0,
+  capitalGain: 0,
+};
+
 const CapitalGains = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const { toast } = useToast();
-  
-  const [shares, setShares] = useState<AssetData[]>([
-    {
-      id: "1",
-      assetName: "",
-      dateOfPurchase: "",
-      dateOfSale: "",
-      purchasePrice: 0,
-      salePrice: 0,
-      expenses: 0,
-      capitalGain: 0,
-    },
-  ]);
 
-  const [mutualFunds, setMutualFunds] = useState<AssetData[]>([
-    {
-      id: "1",
-      assetName: "",
-      dateOfPurchase: "",
-      dateOfSale: "",
-      purchasePrice: 0,
-      salePrice: 0,
-      expenses: 0,
-      capitalGain: 0,
-    },
-  ]);
+  const [shares, setShares] = useState<AssetData[]>(() => {
+    const saved = localStorage.getItem('cg_data');
+    return saved ? JSON.parse(saved).shares || [{ ...defaultAsset }] : [{ ...defaultAsset }];
+  });
 
-  const [property, setProperty] = useState<AssetData[]>([
-    {
-      id: "1",
-      assetName: "",
-      dateOfPurchase: "",
-      dateOfSale: "",
-      purchasePrice: 0,
-      salePrice: 0,
-      expenses: 0,
-      capitalGain: 0,
-    },
-  ]);
+  const [mutualFunds, setMutualFunds] = useState<AssetData[]>(() => {
+    const saved = localStorage.getItem('cg_data');
+    return saved ? JSON.parse(saved).mutualFunds || [{ ...defaultAsset }] : [{ ...defaultAsset }];
+  });
 
-  const [crypto, setCrypto] = useState<AssetData[]>([
-    {
-      id: "1",
-      assetName: "",
-      dateOfPurchase: "",
-      dateOfSale: "",
-      purchasePrice: 0,
-      salePrice: 0,
-      expenses: 0,
-      capitalGain: 0,
-    },
-  ]);
+  const [property, setProperty] = useState<AssetData[]>(() => {
+    const saved = localStorage.getItem('cg_data');
+    return saved ? JSON.parse(saved).property || [{ ...defaultAsset }] : [{ ...defaultAsset }];
+  });
+
+  const [crypto, setCrypto] = useState<AssetData[]>(() => {
+    const saved = localStorage.getItem('cg_data');
+    return saved ? JSON.parse(saved).crypto || [{ ...defaultAsset }] : [{ ...defaultAsset }];
+  });
+
+  // Auto-save all capital gains data
+  useEffect(() => {
+    const cgData = { shares, mutualFunds, property, crypto };
+    localStorage.setItem('cg_data', JSON.stringify(cgData));
+    const total = [...shares, ...mutualFunds, ...property, ...crypto].reduce(
+      (sum, asset) => sum + asset.capitalGain, 0
+    );
+    localStorage.setItem('cg_total', total.toString());
+  }, [shares, mutualFunds, property, crypto]);
 
   const calculateGain = (salePrice: number, purchasePrice: number, expenses: number) => {
     return salePrice - purchasePrice - expenses;

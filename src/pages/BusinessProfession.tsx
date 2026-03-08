@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -14,17 +14,31 @@ const BusinessProfession = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const { toast } = useToast();
-  const [presumptiveIncome, setPresumptiveIncome] = useState({
-    grossReceipts: 0,
-    presumptiveRate: 8,
-    presumptiveIncome: 0,
+  const [presumptiveIncome, setPresumptiveIncome] = useState(() => {
+    const saved = localStorage.getItem('bp_data');
+    if (saved) {
+      const data = JSON.parse(saved);
+      return data.presumptiveIncome || { grossReceipts: 0, presumptiveRate: 8, presumptiveIncome: 0 };
+    }
+    return { grossReceipts: 0, presumptiveRate: 8, presumptiveIncome: 0 };
   });
 
-  const [regularIncome, setRegularIncome] = useState({
-    grossReceipts: 0,
-    expenses: 0,
-    netIncome: 0,
+  const [regularIncome, setRegularIncome] = useState(() => {
+    const saved = localStorage.getItem('bp_data');
+    if (saved) {
+      const data = JSON.parse(saved);
+      return data.regularIncome || { grossReceipts: 0, expenses: 0, netIncome: 0 };
+    }
+    return { grossReceipts: 0, expenses: 0, netIncome: 0 };
   });
+
+  // Auto-save all business data
+  useEffect(() => {
+    const bpData = { presumptiveIncome, regularIncome };
+    localStorage.setItem('bp_data', JSON.stringify(bpData));
+    const total = Math.max(presumptiveIncome.presumptiveIncome, regularIncome.netIncome);
+    localStorage.setItem('pgbp_total', total.toString());
+  }, [presumptiveIncome, regularIncome]);
 
   const calculatePresumptive = (receipts: number, rate: number) => {
     const income = receipts * (rate / 100);

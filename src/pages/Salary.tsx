@@ -30,13 +30,7 @@ const Salary = () => {
   const goBack = useGoBack();
   const { toast } = useToast();
   
-  const [employerName, setEmployerName] = useState("");
-  const [officeAddress, setOfficeAddress] = useState("");
-  const [employmentNature, setEmploymentNature] = useState("");
-  const [employerTAN, setEmployerTAN] = useState("");
-  const [employerPAN, setEmployerPAN] = useState("");
-
-  const [incomeData, setIncomeData] = useState<IncomeRow[]>([
+  const defaultIncomeData: IncomeRow[] = [
     { particulars: "Basic Salary", income: "", exemption: "", taxableIncome: "" },
     { particulars: "HRA", income: "", exemption: "", taxableIncome: "" },
     { particulars: "Commission", income: "", exemption: "", taxableIncome: "" },
@@ -46,7 +40,33 @@ const Salary = () => {
     { particulars: "Gift", income: "", exemption: "", taxableIncome: "" },
     { particulars: "Bonus", income: "", exemption: "", taxableIncome: "" },
     { particulars: "Free Food", income: "", exemption: "", taxableIncome: "" },
-  ]);
+  ];
+
+  const [employerName, setEmployerName] = useState(() => {
+    const saved = localStorage.getItem('salary_data');
+    return saved ? JSON.parse(saved).employerName || "" : "";
+  });
+  const [officeAddress, setOfficeAddress] = useState(() => {
+    const saved = localStorage.getItem('salary_data');
+    return saved ? JSON.parse(saved).officeAddress || "" : "";
+  });
+  const [employmentNature, setEmploymentNature] = useState(() => {
+    const saved = localStorage.getItem('salary_data');
+    return saved ? JSON.parse(saved).employmentNature || "" : "";
+  });
+  const [employerTAN, setEmployerTAN] = useState(() => {
+    const saved = localStorage.getItem('salary_data');
+    return saved ? JSON.parse(saved).employerTAN || "" : "";
+  });
+  const [employerPAN, setEmployerPAN] = useState(() => {
+    const saved = localStorage.getItem('salary_data');
+    return saved ? JSON.parse(saved).employerPAN || "" : "";
+  });
+
+  const [incomeData, setIncomeData] = useState<IncomeRow[]>(() => {
+    const saved = localStorage.getItem('salary_data');
+    return saved ? JSON.parse(saved).incomeData || defaultIncomeData : defaultIncomeData;
+  });
 
   const calculateTaxable = (income: string, exemption: string) => {
     const incomeNum = parseFloat(income) || 0;
@@ -128,6 +148,14 @@ const Salary = () => {
       description: "Form 16 data has been auto-populated in all fields.",
     });
   }, [toast]);
+
+  // Auto-save all salary data
+  useEffect(() => {
+    const salaryData = { employerName, officeAddress, employmentNature, employerTAN, employerPAN, incomeData };
+    localStorage.setItem('salary_data', JSON.stringify(salaryData));
+    const totals = incomeData.reduce((acc, row) => acc + (parseFloat(row.taxableIncome) || 0), 0);
+    localStorage.setItem('salary_total', totals.toString());
+  }, [employerName, officeAddress, employmentNature, employerTAN, employerPAN, incomeData]);
 
   // Load Form 16 data on mount if available
   useEffect(() => {
