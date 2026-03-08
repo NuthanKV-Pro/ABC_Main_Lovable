@@ -138,7 +138,8 @@ const EMICalculator = () => {
               <Button onClick={exportToPDF} className="gap-2">
                 <Download className="h-4 w-4" />
                 <span className="hidden sm:inline">Export PDF</span>
-            </Button>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
