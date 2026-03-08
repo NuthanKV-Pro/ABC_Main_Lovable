@@ -34,8 +34,11 @@ const itrForms = [
 const ITRFilingAssistant = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
+  const { toast } = useToast();
+  const taxData = useTaxData();
   const [assessmentYear, setAssessmentYear] = useState("2026-27");
   const [step, setStep] = useState(1);
+  const [autoDetected, setAutoDetected] = useState(false);
 
   // Wizard answers
   const [residencyStatus, setResidencyStatus] = useState("resident");
@@ -48,6 +51,26 @@ const ITRFilingAssistant = () => {
   const [isPartnershipFirm, setIsPartnershipFirm] = useState(false);
   const [incomeAbove50L, setIncomeAbove50L] = useState(false);
   const [presumptiveIncome, setPresumptiveIncome] = useState(false);
+
+  const autoDetectFromData = () => {
+    setHasSalary(taxData.salary.hasData);
+    setHasBusinessIncome(taxData.business.hasData);
+    setHasCapitalGains(taxData.capitalGains.hasData);
+    setPresumptiveIncome(taxData.business.isPresumptive);
+    setIncomeAbove50L(taxData.grossTotal > 5000000);
+    setAutoDetected(true);
+    toast({ 
+      title: "Income data auto-detected", 
+      description: `Found ${[
+        taxData.salary.hasData && 'Salary',
+        taxData.capitalGains.hasData && 'Capital Gains',
+        taxData.business.hasData && 'Business',
+        taxData.houseProperty.hasData && 'House Property',
+      ].filter(Boolean).join(', ') || 'no'} income sources.`
+    });
+  };
+
+  const formatCurrency = (n: number) => "₹" + n.toLocaleString("en-IN");
 
   const getRecommendedITR = (): string => {
     if (isCompany) return "ITR-6";
