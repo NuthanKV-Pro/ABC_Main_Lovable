@@ -59,8 +59,15 @@ export const featuredTools: SearchItem[] = sortAlphabetically([
 export const taxPlanningTools: SearchItem[] = sortAlphabetically([
   { name: "Tax Saver 80C Optimizer", route: "/80c-optimizer", category: "Tax Planning", keywords: ["80c", "tax saver", "elss", "ppf", "nps", "deduction", "optimizer"] },
   { name: "Tax Saving Comparison", route: "/tax-saving-comparison", category: "Tax Planning", keywords: ["tax", "saving", "80c", "comparison"] },
+  { name: "TDS Calculator & Tracker", route: "/tds-calculator", category: "Tax Planning", keywords: ["tds", "tax deducted", "source", "form 26as", "reconciliation", "192", "194"] },
+  { name: "ITR Filing Assistant", route: "/itr-filing-assistant", category: "Tax Planning", keywords: ["itr", "filing", "return", "form", "sahaj", "checklist"] },
+  { name: "Section 54 CG Planner", route: "/section-54-planner", category: "Tax Planning", keywords: ["section 54", "capital gains", "exemption", "54ec", "54f", "bonds"] },
+  { name: "Salary Restructuring Tool", route: "/salary-restructuring", category: "Tax Planning", keywords: ["salary", "restructuring", "ctc", "hra", "nps", "take home"] },
+  { name: "Tax Audit Checker", route: "/tax-audit-checker", category: "Tax Planning", keywords: ["tax audit", "44ab", "44ad", "44ada", "presumptive", "turnover"] },
+  { name: "Foreign Income & DTAA", route: "/foreign-income-dtaa", category: "Tax Planning", keywords: ["foreign", "income", "dtaa", "nri", "rnor", "ftc", "form 67", "double taxation"] },
+  { name: "Tax Notice Assistant", route: "/tax-notice-assistant", category: "Tax Planning", keywords: ["tax notice", "139", "143", "148", "scrutiny", "demand", "response"] },
+  { name: "Compliance Calendar", route: "/compliance-calendar", category: "Tax Planning", keywords: ["compliance", "calendar", "deadline", "roc", "gst", "tds", "itr", "filing"] },
   { name: "Advance Tax Calculator", route: "external:https://abcadv1.lovable.app", category: "Tax Planning", keywords: ["advance", "tax", "quarterly", "payment"] },
-  
   { name: "HRA Calc", route: "external:https://abcsalop.lovable.app/hra-calc", category: "Tax Planning", keywords: ["hra", "house rent", "allowance"] },
 ]);
 
@@ -132,8 +139,14 @@ export const businessTools: SearchItem[] = sortAlphabetically([
   { name: "Cash Flow Budgeting Tool", route: "/cash-flow-budgeting", category: "Business Finance", keywords: ["cash flow", "budgeting", "inflow", "outflow", "projection"] },
   { name: "Factoring Tool", route: "/factoring-tool", category: "Business Finance", keywords: ["factoring", "receivables", "invoice", "discount", "financing"] },
   { name: "Dividend Decision Tool", route: "/dividend-decision", category: "Business Finance", keywords: ["dividend", "gordon", "lintner", "payout", "retention", "policy"] },
+  { name: "GST Invoice Generator", route: "/gst-invoice-generator", category: "Business Finance", keywords: ["gst", "invoice", "hsn", "sac", "gstin", "tax invoice", "billing"] },
   { name: "Escrow", route: "/escrow", category: "Business Finance", keywords: ["escrow", "secure", "transaction"] },
   { name: "Product Builder", route: "external:https://abcprodev1.lovable.app", category: "Business Finance", keywords: ["product", "builder", "idea", "blueprint"] },
+]);
+
+// Legal & Estate Planning
+export const legalEstateTools: SearchItem[] = sortAlphabetically([
+  { name: "Will & Estate Planner", route: "/will-estate-planner", category: "Legal & Estate", keywords: ["will", "estate", "succession", "inheritance", "beneficiary", "testament"] },
 ]);
 
 // Pages & Settings
@@ -163,6 +176,7 @@ export const getAllSearchItems = (): SearchItem[] => {
     ...realEstateTools,
     ...personalFinanceTools,
     ...businessTools,
+    ...legalEstateTools,
     ...pages,
     ...comingSoonTools,
   ];

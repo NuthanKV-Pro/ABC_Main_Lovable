@@ -86,6 +86,16 @@ export const routeMap: Record<string, RouteInfo> = {
   "/legal-interpretations": { label: "Legal Interpretations", parent: "/prototypes" },
   "/clause-finder": { label: "Clause Finder", parent: "/prototypes" },
   "/escrow": { label: "Escrow Simulator", parent: "/prototypes" },
+  "/tds-calculator": { label: "TDS Calculator", parent: "/prototypes" },
+  "/itr-filing-assistant": { label: "ITR Filing Assistant", parent: "/prototypes" },
+  "/gst-invoice-generator": { label: "GST Invoice Generator", parent: "/prototypes" },
+  "/section-54-planner": { label: "Section 54 Planner", parent: "/prototypes" },
+  "/salary-restructuring": { label: "Salary Restructuring", parent: "/prototypes" },
+  "/tax-audit-checker": { label: "Tax Audit Checker", parent: "/prototypes" },
+  "/will-estate-planner": { label: "Will & Estate Planner", parent: "/prototypes" },
+  "/foreign-income-dtaa": { label: "Foreign Income & DTAA", parent: "/prototypes" },
+  "/compliance-calendar": { label: "Compliance Calendar", parent: "/prototypes" },
+  "/tax-notice-assistant": { label: "Tax Notice Assistant", parent: "/prototypes" },
 };
 
 export function getBreadcrumbs(pathname: string): { label: string; path: string }[] {

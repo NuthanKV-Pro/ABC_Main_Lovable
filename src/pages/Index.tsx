@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard, Star, BookOpen, Crown, Rocket, Globe, ArrowLeft } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard, Star, BookOpen, Crown, Rocket, Globe, ArrowLeft, FileSearch, FilePlus, ReceiptText, CalendarCheck, Mail, Gavel } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useRef, useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
@@ -201,6 +201,69 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         description: "Compare 80C investments side by side",
         icon: Scale,
         route: "/tax-saving-comparison",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "tds-calculator",
+        title: "TDS Calculator & Tracker",
+        description: "Calculate TDS by section & reconcile 26AS",
+        icon: Calculator,
+        route: "/tds-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "itr-filing-assistant",
+        title: "ITR Filing Assistant",
+        description: "Choose right ITR form & filing checklist",
+        icon: FileSearch,
+        route: "/itr-filing-assistant",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "section-54-planner",
+        title: "Section 54 CG Planner",
+        description: "Capital gains exemption & deadline tracker",
+        icon: Home,
+        route: "/section-54-planner",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "salary-restructuring",
+        title: "Salary Restructuring Tool",
+        description: "Optimize CTC for max take-home",
+        icon: Wallet,
+        route: "/salary-restructuring",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "tax-audit-checker",
+        title: "Tax Audit Checker",
+        description: "44AB audit & presumptive tax eligibility",
+        icon: ShieldCheck,
+        route: "/tax-audit-checker",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "foreign-income-dtaa",
+        title: "Foreign Income & DTAA",
+        description: "NRI status, FTC & DTAA relief",
+        icon: Globe,
+        route: "/foreign-income-dtaa",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "tax-notice-assistant",
+        title: "Tax Notice Assistant",
+        description: "Understand notices & get response templates",
+        icon: Mail,
+        route: "/tax-notice-assistant",
         tag: "Live",
         tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
       },
@@ -650,6 +713,24 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
       },
       {
+        id: "gst-invoice-generator",
+        title: "GST Invoice Generator",
+        description: "GST-compliant invoices with HSN/SAC & GSTIN",
+        icon: ReceiptText,
+        route: "/gst-invoice-generator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "compliance-calendar",
+        title: "Compliance Calendar",
+        description: "ITR, TDS, GST, ROC deadlines & penalties",
+        icon: CalendarCheck,
+        route: "/compliance-calendar",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
         id: "product-builder",
         title: "Product Builder",
         description: "Framework for idea-to-blueprint development",
@@ -666,6 +747,22 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         route: "/escrow",
         tag: "WIP",
         tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+      }
+    ]
+  },
+  {
+    name: "Legal & Estate Planning",
+    icon: Gavel,
+    description: "Wills, estate planning & legal tools",
+    tools: [
+      {
+        id: "will-estate-planner",
+        title: "Will & Estate Planner",
+        description: "Draft wills & understand succession laws",
+        icon: FileText,
+        route: "/will-estate-planner",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
       }
     ]
   },
