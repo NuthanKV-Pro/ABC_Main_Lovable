@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Zap, AlertTriangle, CheckCircle2, ArrowRight, Info, Lightbulb, TrendingUp, Shield, Wallet, PiggyBank, Target } from "lucide-react";
+import { ArrowLeft, Zap, AlertTriangle, CheckCircle2, ArrowRight, Info, Lightbulb, TrendingUp, Shield, Wallet, PiggyBank, Target, BarChart3, Percent } from "lucide-react";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useTaxData } from "@/hooks/useTaxData";
 import { motion } from "framer-motion";
