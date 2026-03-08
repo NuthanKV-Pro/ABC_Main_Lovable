@@ -50,6 +50,7 @@ const validateGSTIN = (gstin: string): boolean => {
 
 const GSTInvoiceGenerator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [sellerGSTIN, setSellerGSTIN] = useState("29ABCDE1234F1Z5");
   const [buyerGSTIN, setBuyerGSTIN] = useState("");
   const [sellerName, setSellerName] = useState("ABC Enterprises");
@@ -112,7 +113,7 @@ const GSTInvoiceGenerator = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => goBack()}><ArrowLeft className="h-5 w-5" /></Button>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">GST Invoice Generator</h1>
             <p className="text-muted-foreground text-sm">Generate GST-compliant invoices with HSN/SAC codes & GSTIN validation</p>

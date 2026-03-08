@@ -97,7 +97,7 @@ const ITRFilingAssistant = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+          <Button variant="ghost" size="icon" onClick={() => goBack()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
