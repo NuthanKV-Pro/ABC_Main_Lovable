@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const deductionSections = [
@@ -75,13 +75,23 @@ const Deductions = () => {
                 <p className="text-sm text-muted-foreground">Chapter VI-A Deductions</p>
               </div>
             </div>
-            <Button 
-              onClick={handleSave}
-              className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
-            >
-              <Save className="w-4 h-4" />
-              Save
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" onClick={() => {
+                if (!window.confirm("Reset all data in this tool?")) return;
+                ['deductions_data', 'deductions_total'].forEach(k => localStorage.removeItem(k));
+                setAmounts(deductionSections.reduce((acc, item) => ({ ...acc, [item.section]: 0 }), {}));
+                toast({ title: "Data Reset", description: "All deduction data has been cleared." });
+              }}>
+                <RotateCcw className="w-4 h-4" />
+              </Button>
+              <Button 
+                onClick={handleSave}
+                className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
+              >
+                <Save className="w-4 h-4" />
+                Save
+              </Button>
+            </div>
           </div>
         </div>
       </header>

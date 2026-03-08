@@ -233,6 +233,7 @@ const Salary = () => {
   };
 
   const handleClearForm = () => {
+    if (!window.confirm("Reset all data in this tool?")) return;
     setEmployerName("");
     setOfficeAddress("");
     setEmploymentNature("");
@@ -249,7 +250,7 @@ const Salary = () => {
       { particulars: "Bonus", income: "", exemption: "", taxableIncome: "" },
       { particulars: "Free Food", income: "", exemption: "", taxableIncome: "" },
     ]);
-    localStorage.removeItem('form16_data');
+    ['form16_data', 'salary_data', 'salary_total'].forEach(k => localStorage.removeItem(k));
     toast({
       title: "Form Cleared",
       description: "All salary details have been reset.",

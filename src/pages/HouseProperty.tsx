@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Chatbot from "@/components/Chatbot";
 
@@ -118,13 +118,23 @@ const HouseProperty = () => {
                 <p className="text-sm text-muted-foreground">Rental income from property</p>
               </div>
             </div>
-            <Button 
-              onClick={handleSave}
-              className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
-            >
-              <Save className="w-4 h-4" />
-              Auto Saved
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" onClick={() => {
+                if (!window.confirm("Reset all data in this tool?")) return;
+                localStorage.removeItem('hp_total');
+                setProperties([{ id: "1", name: "", address: "", rentalIncome: 0, municipalTax: 0, standardDeduction: 0, interestPaid: 0, taxableRent: 0 }]);
+                toast({ title: "Data Reset", description: "All house property data has been cleared." });
+              }}>
+                <RotateCcw className="w-4 h-4" />
+              </Button>
+              <Button 
+                onClick={handleSave}
+                className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
+              >
+                <Save className="w-4 h-4" />
+                Auto Saved
+              </Button>
+            </div>
           </div>
         </div>
       </header>
