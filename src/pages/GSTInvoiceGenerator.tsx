@@ -1,12 +1,13 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Plus, Trash2, Download, FileText, CheckCircle, AlertTriangle, RotateCcw, ExternalLink, Search, ChevronDown, ChevronUp, Info, Save, FolderOpen, Truck } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Download, FileText, AlertTriangle, RotateCcw, ExternalLink, Search, ChevronDown, ChevronUp, Info, Save, FolderOpen, Truck, BookOpen, MapPin, Copy } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -15,6 +16,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -27,6 +30,13 @@ interface InvoiceItem {
   rate: number;
   gstRate: number;
   discount: number;
+}
+
+interface AddressDetails {
+  line1: string;
+  line2: string;
+  city: string;
+  pincode: string;
 }
 
 interface EWayBillDetails {
@@ -55,6 +65,10 @@ interface InvoiceDraft {
   reverseCharge: boolean;
   items: InvoiceItem[];
   eWayBill: EWayBillDetails;
+  sellerBillingAddress: AddressDetails;
+  buyerBillingAddress: AddressDetails;
+  buyerShippingAddress: AddressDetails;
+  shippingSameAsBilling: boolean;
 }
 
 const gstRates = [0, 0.25, 3, 5, 12, 18, 28];
@@ -190,6 +204,7 @@ const validateGSTIN = (gstin: string): boolean => {
 };
 
 const DRAFTS_KEY = "gst_invoice_drafts";
+const emptyAddress: AddressDetails = { line1: "", line2: "", city: "", pincode: "" };
 
 const getStoredDrafts = (): InvoiceDraft[] => {
   try {
@@ -201,6 +216,25 @@ const getStoredDrafts = (): InvoiceDraft[] => {
 const saveDraftsToStorage = (drafts: InvoiceDraft[]) => {
   localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
 };
+
+const formatAddr = (a: AddressDetails): string => {
+  return [a.line1, a.line2, a.city, a.pincode].filter(Boolean).join(", ");
+};
+
+const AddressFields = ({ address, onChange, label }: { address: AddressDetails; onChange: (a: AddressDetails) => void; label: string }) => (
+  <div className="space-y-2 p-3 rounded-lg border bg-muted/30">
+    <div className="flex items-center gap-1.5 mb-1">
+      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+    </div>
+    <Input placeholder="Address Line 1" value={address.line1} onChange={e => onChange({ ...address, line1: e.target.value })} className="text-sm" />
+    <Input placeholder="Address Line 2 (optional)" value={address.line2} onChange={e => onChange({ ...address, line2: e.target.value })} className="text-sm" />
+    <div className="grid grid-cols-2 gap-2">
+      <Input placeholder="City" value={address.city} onChange={e => onChange({ ...address, city: e.target.value })} className="text-sm" />
+      <Input placeholder="PIN Code" value={address.pincode} onChange={e => onChange({ ...address, pincode: e.target.value })} maxLength={6} className="text-sm" />
+    </div>
+  </div>
+);
 
 const GSTInvoiceGenerator = () => {
   const navigate = useNavigate();
@@ -217,18 +251,20 @@ const GSTInvoiceGenerator = () => {
   const [reverseCharge, setReverseCharge] = useState(false);
   const [hsnSearchQuery, setHsnSearchQuery] = useState("");
   const [isHsnOpen, setIsHsnOpen] = useState(false);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [draftsDialogOpen, setDraftsDialogOpen] = useState(false);
   const [draftName, setDraftName] = useState("");
   const [savedDrafts, setSavedDrafts] = useState<InvoiceDraft[]>(getStoredDrafts);
 
+  // Address states
+  const [sellerBillingAddress, setSellerBillingAddress] = useState<AddressDetails>({ ...emptyAddress });
+  const [buyerBillingAddress, setBuyerBillingAddress] = useState<AddressDetails>({ ...emptyAddress });
+  const [buyerShippingAddress, setBuyerShippingAddress] = useState<AddressDetails>({ ...emptyAddress });
+  const [shippingSameAsBilling, setShippingSameAsBilling] = useState(true);
+
   const [eWayBill, setEWayBill] = useState<EWayBillDetails>({
-    transporterName: "",
-    transporterId: "",
-    transportMode: "road",
-    vehicleNumber: "",
-    distanceKm: "",
-    transDocNo: "",
-    transDocDate: "",
+    transporterName: "", transporterId: "", transportMode: "road",
+    vehicleNumber: "", distanceKm: "", transDocNo: "", transDocDate: "",
   });
 
   const [items, setItems] = useState<InvoiceItem[]>([
@@ -238,26 +274,20 @@ const GSTInvoiceGenerator = () => {
   const addItem = () => {
     setItems(prev => [...prev, { id: Date.now().toString(), description: "", hsnCode: "", qty: 1, rate: 0, gstRate: 18, discount: 0 }]);
   };
-
   const removeItem = (id: string) => setItems(prev => prev.filter(i => i.id !== id));
-
   const updateItem = (id: string, field: keyof InvoiceItem, value: any) => {
     setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
   };
 
   const handleReset = () => {
-    setSellerGSTIN("");
-    setBuyerGSTIN("");
-    setSellerName("");
-    setBuyerName("");
-    setSellerState("29");
-    setBuyerState("29");
-    setInvoiceNo("INV-2026-001");
-    setInvoiceDate(new Date().toISOString().split('T')[0]);
-    setIsInterState(false);
-    setReverseCharge(false);
+    setSellerGSTIN(""); setBuyerGSTIN(""); setSellerName(""); setBuyerName("");
+    setSellerState("29"); setBuyerState("29");
+    setInvoiceNo("INV-2026-001"); setInvoiceDate(new Date().toISOString().split('T')[0]);
+    setIsInterState(false); setReverseCharge(false);
     setItems([{ id: "1", description: "", hsnCode: "", qty: 1, rate: 0, gstRate: 18, discount: 0 }]);
     setEWayBill({ transporterName: "", transporterId: "", transportMode: "road", vehicleNumber: "", distanceKm: "", transDocNo: "", transDocDate: "" });
+    setSellerBillingAddress({ ...emptyAddress }); setBuyerBillingAddress({ ...emptyAddress });
+    setBuyerShippingAddress({ ...emptyAddress }); setShippingSameAsBilling(true);
   };
 
   const totals = useMemo(() => {
@@ -267,31 +297,23 @@ const GSTInvoiceGenerator = () => {
       const discountAmt = (lineTotal * item.discount) / 100;
       const taxableValue = lineTotal - discountAmt;
       const gstAmt = (taxableValue * item.gstRate) / 100;
-      subtotal += taxableValue;
-      totalDiscount += discountAmt;
-      if (isInterState) {
-        totalIGST += gstAmt;
-      } else {
-        totalCGST += gstAmt / 2;
-        totalSGST += gstAmt / 2;
-      }
+      subtotal += taxableValue; totalDiscount += discountAmt;
+      if (isInterState) { totalIGST += gstAmt; } else { totalCGST += gstAmt / 2; totalSGST += gstAmt / 2; }
     });
     return { subtotal, totalCGST, totalSGST, totalIGST, totalDiscount, grandTotal: subtotal + totalCGST + totalSGST + totalIGST };
   }, [items, isInterState]);
 
   const showEWayBill = totals.grandTotal > 50000;
-
   const formatCurrency = (n: number) => "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
   const isSellerGSTINValid = validateGSTIN(sellerGSTIN);
   const isBuyerGSTINValid = !buyerGSTIN || validateGSTIN(buyerGSTIN);
+
+  const effectiveShipping = shippingSameAsBilling ? buyerBillingAddress : buyerShippingAddress;
 
   const filteredHsnCodes = useMemo(() => {
     if (!hsnSearchQuery.trim()) return hsnCodesData;
     const q = hsnSearchQuery.toLowerCase();
-    return hsnCodesData.filter(
-      h => h.code.toLowerCase().includes(q) || h.description.toLowerCase().includes(q) || h.tooltip.toLowerCase().includes(q)
-    );
+    return hsnCodesData.filter(h => h.code.toLowerCase().includes(q) || h.description.toLowerCase().includes(q) || h.tooltip.toLowerCase().includes(q));
   }, [hsnSearchQuery]);
 
   const states: Record<string, string> = {
@@ -307,44 +329,39 @@ const GSTInvoiceGenerator = () => {
   const handleSaveDraft = () => {
     const name = draftName.trim() || `Draft - ${invoiceNo}`;
     const draft: InvoiceDraft = {
-      id: Date.now().toString(),
-      name,
-      savedAt: new Date().toISOString(),
+      id: Date.now().toString(), name, savedAt: new Date().toISOString(),
       sellerGSTIN, buyerGSTIN, sellerName, buyerName, sellerState, buyerState,
       invoiceNo, invoiceDate, isInterState, reverseCharge, items, eWayBill,
+      sellerBillingAddress, buyerBillingAddress, buyerShippingAddress, shippingSameAsBilling,
     };
     const updated = [draft, ...savedDrafts].slice(0, 20);
-    setSavedDrafts(updated);
-    saveDraftsToStorage(updated);
-    setDraftName("");
+    setSavedDrafts(updated); saveDraftsToStorage(updated); setDraftName("");
     toast.success(`Draft "${name}" saved`);
   };
 
   const handleLoadDraft = (draft: InvoiceDraft) => {
-    setSellerGSTIN(draft.sellerGSTIN);
-    setBuyerGSTIN(draft.buyerGSTIN);
-    setSellerName(draft.sellerName);
-    setBuyerName(draft.buyerName);
-    setSellerState(draft.sellerState);
-    setBuyerState(draft.buyerState);
-    setInvoiceNo(draft.invoiceNo);
-    setInvoiceDate(draft.invoiceDate);
-    setIsInterState(draft.isInterState);
-    setReverseCharge(draft.reverseCharge);
+    setSellerGSTIN(draft.sellerGSTIN); setBuyerGSTIN(draft.buyerGSTIN);
+    setSellerName(draft.sellerName); setBuyerName(draft.buyerName);
+    setSellerState(draft.sellerState); setBuyerState(draft.buyerState);
+    setInvoiceNo(draft.invoiceNo); setInvoiceDate(draft.invoiceDate);
+    setIsInterState(draft.isInterState); setReverseCharge(draft.reverseCharge);
     setItems(draft.items);
     if (draft.eWayBill) setEWayBill(draft.eWayBill);
+    if (draft.sellerBillingAddress) setSellerBillingAddress(draft.sellerBillingAddress);
+    if (draft.buyerBillingAddress) setBuyerBillingAddress(draft.buyerBillingAddress);
+    if (draft.buyerShippingAddress) setBuyerShippingAddress(draft.buyerShippingAddress);
+    setShippingSameAsBilling(draft.shippingSameAsBilling ?? true);
     setDraftsDialogOpen(false);
     toast.success(`Loaded "${draft.name}"`);
   };
 
   const handleDeleteDraft = (id: string) => {
     const updated = savedDrafts.filter(d => d.id !== id);
-    setSavedDrafts(updated);
-    saveDraftsToStorage(updated);
+    setSavedDrafts(updated); saveDraftsToStorage(updated);
     toast.success("Draft deleted");
   };
 
-  // === PDF Generation (fixed alignment) ===
+  // === PDF Generation ===
   const generatePDF = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -353,25 +370,23 @@ const GSTInvoiceGenerator = () => {
     doc.setFillColor(41, 128, 185);
     doc.rect(0, 0, pageWidth, 28, 'F');
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20); doc.setFont('helvetica', 'bold');
     doc.text("TAX INVOICE", pageWidth / 2, 16, { align: "center" });
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9); doc.setFont('helvetica', 'normal');
     doc.text(`Invoice No: ${invoiceNo}  |  Date: ${invoiceDate}`, pageWidth / 2, 24, { align: "center" });
 
-    // Reset color
     doc.setTextColor(0, 0, 0);
-
-    // Invoice meta row
     let y = 36;
-    doc.setFontSize(8);
-    doc.setTextColor(100, 100, 100);
+    doc.setFontSize(8); doc.setTextColor(100, 100, 100);
     doc.text(`Supply Type: ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}${reverseCharge ? "  |  Reverse Charge: Yes" : ""}`, 14, y);
     doc.setTextColor(0, 0, 0);
     y += 8;
 
-    // Seller / Buyer details table
+    const sellerAddr = formatAddr(sellerBillingAddress);
+    const buyerAddr = formatAddr(buyerBillingAddress);
+    const shipAddr = formatAddr(effectiveShipping);
+
+    // Seller / Buyer details
     autoTable(doc, {
       startY: y,
       body: [
@@ -380,8 +395,8 @@ const GSTInvoiceGenerator = () => {
           { content: 'BUYER DETAILS', styles: { fontStyle: 'bold', fontSize: 9, fillColor: [240, 240, 240] } }
         ],
         [
-          `${sellerName || "-"}\nGSTIN: ${sellerGSTIN || "-"}\nState: ${states[sellerState] || "-"}`,
-          `${buyerName || "-"}\nGSTIN: ${buyerGSTIN || "B2C (Unregistered)"}\nState: ${states[buyerState] || "-"}`
+          `${sellerName || "-"}\nGSTIN: ${sellerGSTIN || "-"}\nState: ${states[sellerState] || "-"}${sellerAddr ? `\nAddress: ${sellerAddr}` : ""}`,
+          `${buyerName || "-"}\nGSTIN: ${buyerGSTIN || "B2C (Unregistered)"}\nState: ${states[buyerState] || "-"}${buyerAddr ? `\nBilling: ${buyerAddr}` : ""}${shipAddr && shipAddr !== buyerAddr ? `\nShipping: ${shipAddr}` : ""}`
         ],
       ],
       theme: 'grid',
@@ -409,9 +424,7 @@ const GSTInvoiceGenerator = () => {
     });
 
     autoTable(doc, {
-      head: tableHead,
-      body: tableBody,
-      startY: y,
+      head: tableHead, body: tableBody, startY: y,
       styles: { fontSize: 8, cellPadding: 3 },
       headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255], fontStyle: 'bold' },
       columnStyles: isInterState
@@ -422,33 +435,21 @@ const GSTInvoiceGenerator = () => {
 
     y = (doc as any).lastAutoTable?.finalY + 6 || y + 40;
 
-    // Summary table
-    const summaryRows: string[][] = [
-      ['Subtotal', formatCurrency(totals.subtotal)],
-    ];
+    // Summary
+    const summaryRows: string[][] = [['Subtotal', formatCurrency(totals.subtotal)]];
     if (totals.totalDiscount > 0) summaryRows.push(['Discount', `-${formatCurrency(totals.totalDiscount)}`]);
-    if (isInterState) {
-      summaryRows.push(['IGST', formatCurrency(totals.totalIGST)]);
-    } else {
-      summaryRows.push(['CGST', formatCurrency(totals.totalCGST)]);
-      summaryRows.push(['SGST', formatCurrency(totals.totalSGST)]);
-    }
+    if (isInterState) { summaryRows.push(['IGST', formatCurrency(totals.totalIGST)]); }
+    else { summaryRows.push(['CGST', formatCurrency(totals.totalCGST)]); summaryRows.push(['SGST', formatCurrency(totals.totalSGST)]); }
     summaryRows.push(['Grand Total', formatCurrency(totals.grandTotal)]);
 
     autoTable(doc, {
-      startY: y,
-      body: summaryRows,
-      theme: 'plain',
+      startY: y, body: summaryRows, theme: 'plain',
       styles: { fontSize: 10, cellPadding: 3 },
-      columnStyles: {
-        0: { fontStyle: 'bold', halign: 'right', cellWidth: pageWidth - 28 - 60 },
-        1: { halign: 'right', cellWidth: 60 },
-      },
+      columnStyles: { 0: { fontStyle: 'bold', halign: 'right', cellWidth: pageWidth - 28 - 60 }, 1: { halign: 'right', cellWidth: 60 } },
       margin: { left: 14, right: 14 },
       didParseCell: (data) => {
         if (data.row.index === summaryRows.length - 1) {
-          data.cell.styles.fontStyle = 'bold';
-          data.cell.styles.fontSize = 12;
+          data.cell.styles.fontStyle = 'bold'; data.cell.styles.fontSize = 12;
           data.cell.styles.fillColor = [240, 248, 255];
         }
       }
@@ -456,16 +457,11 @@ const GSTInvoiceGenerator = () => {
 
     y = (doc as any).lastAutoTable?.finalY + 6 || y + 40;
 
-    // e-Way Bill section if applicable
+    // e-Way Bill
     if (showEWayBill && (eWayBill.transporterName || eWayBill.vehicleNumber)) {
-      // Check if we need a new page
       if (y > 240) { doc.addPage(); y = 20; }
-
-      doc.setFontSize(11);
-      doc.setFont('helvetica', 'bold');
-      doc.text("e-Way Bill / Transport Details", 14, y);
-      y += 4;
-
+      doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+      doc.text("e-Way Bill / Transport Details", 14, y); y += 4;
       const ewayRows = [
         ['Transporter Name', eWayBill.transporterName || '-'],
         ['Transporter ID', eWayBill.transporterId || '-'],
@@ -475,26 +471,14 @@ const GSTInvoiceGenerator = () => {
         ['Transport Doc No', eWayBill.transDocNo || '-'],
         ['Transport Doc Date', eWayBill.transDocDate || '-'],
       ];
-
-      autoTable(doc, {
-        startY: y,
-        body: ewayRows,
-        theme: 'grid',
-        styles: { fontSize: 9, cellPadding: 3 },
-        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } },
-        margin: { left: 14, right: 14 },
-      });
-
+      autoTable(doc, { startY: y, body: ewayRows, theme: 'grid', styles: { fontSize: 9, cellPadding: 3 }, columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } }, margin: { left: 14, right: 14 } });
       y = (doc as any).lastAutoTable?.finalY + 6 || y + 40;
     }
 
-    // Footer
     const footerY = doc.internal.pageSize.getHeight() - 15;
-    doc.setFontSize(7);
-    doc.setTextColor(128, 128, 128);
+    doc.setFontSize(7); doc.setTextColor(128, 128, 128);
     doc.text("This is a computer-generated invoice. No signature required.", pageWidth / 2, footerY, { align: "center" });
     doc.text("Generated by ABC - AI Legal & Tax Co-pilot", pageWidth / 2, footerY + 4, { align: "center" });
-
     doc.save(`GST_Invoice_${invoiceNo}.pdf`);
   };
 
@@ -515,6 +499,10 @@ const GSTInvoiceGenerator = () => {
       ? `<p>IGST: ${formatCurrency(totals.totalIGST)}</p>`
       : `<p>CGST: ${formatCurrency(totals.totalCGST)}</p><p>SGST: ${formatCurrency(totals.totalSGST)}</p>`;
 
+    const sellerAddr = formatAddr(sellerBillingAddress);
+    const buyerAddr = formatAddr(buyerBillingAddress);
+    const shipAddr = formatAddr(effectiveShipping);
+
     const eWaySection = showEWayBill && (eWayBill.transporterName || eWayBill.vehicleNumber)
       ? `<h3>e-Way Bill / Transport Details</h3>
          <table><tr><td><strong>Transporter</strong></td><td>${eWayBill.transporterName || '-'}</td><td><strong>Vehicle No</strong></td><td>${eWayBill.vehicleNumber || '-'}</td></tr>
@@ -529,8 +517,8 @@ const GSTInvoiceGenerator = () => {
       <h1>TAX INVOICE</h1>
       <p>Invoice No: ${invoiceNo} | Date: ${invoiceDate} | ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}${reverseCharge ? " | Reverse Charge: Yes" : ""}</p>
       <table style="width:100%;border:none;margin-bottom:16px"><tr>
-        <td style="border:none;width:50%;vertical-align:top"><strong>Seller</strong><br>${sellerName}<br>GSTIN: ${sellerGSTIN}<br>State: ${states[sellerState] || "-"}</td>
-        <td style="border:none;width:50%;vertical-align:top"><strong>Buyer</strong><br>${buyerName || "-"}<br>GSTIN: ${buyerGSTIN || "B2C (Unregistered)"}<br>State: ${states[buyerState] || "-"}</td>
+        <td style="border:none;width:50%;vertical-align:top"><strong>Seller</strong><br>${sellerName}<br>GSTIN: ${sellerGSTIN}<br>State: ${states[sellerState] || "-"}${sellerAddr ? `<br>Address: ${sellerAddr}` : ""}</td>
+        <td style="border:none;width:50%;vertical-align:top"><strong>Buyer</strong><br>${buyerName || "-"}<br>GSTIN: ${buyerGSTIN || "B2C (Unregistered)"}<br>State: ${states[buyerState] || "-"}${buyerAddr ? `<br>Billing: ${buyerAddr}` : ""}${shipAddr && shipAddr !== buyerAddr ? `<br>Shipping: ${shipAddr}` : ""}</td>
       </tr></table>
       <table><thead><tr><th>#</th><th>Description</th><th>HSN/SAC</th><th>Qty</th><th>Rate</th><th>Disc%</th><th>Taxable</th>${taxHeader}<th>Total</th></tr></thead><tbody>${taxRows}</tbody></table>
       <div class="summary">
@@ -553,6 +541,7 @@ const GSTInvoiceGenerator = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
+        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={() => goBack()}><ArrowLeft className="h-5 w-5" /></Button>
@@ -562,30 +551,19 @@ const GSTInvoiceGenerator = () => {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button variant="outline" size="sm" onClick={handleReset} className="gap-1.5">
-              <RotateCcw className="h-4 w-4" /> Reset
-            </Button>
-            {/* Save Draft */}
+            <Button variant="outline" size="sm" onClick={handleReset} className="gap-1.5"><RotateCcw className="h-4 w-4" /> Reset</Button>
             <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-1.5"><Save className="h-4 w-4" /> Save Draft</Button>
-              </DialogTrigger>
+              <DialogTrigger asChild><Button variant="outline" size="sm" className="gap-1.5"><Save className="h-4 w-4" /> Save Draft</Button></DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader><DialogTitle>Save Invoice Draft</DialogTitle></DialogHeader>
                 <div className="space-y-3 pt-2">
-                  <div>
-                    <Label>Draft Name</Label>
-                    <Input placeholder={`Draft - ${invoiceNo}`} value={draftName} onChange={e => setDraftName(e.target.value)} />
-                  </div>
+                  <div><Label>Draft Name</Label><Input placeholder={`Draft - ${invoiceNo}`} value={draftName} onChange={e => setDraftName(e.target.value)} /></div>
                   <Button onClick={handleSaveDraft} className="w-full gap-1.5"><Save className="h-4 w-4" /> Save</Button>
                 </div>
               </DialogContent>
             </Dialog>
-            {/* Load Draft */}
             <Dialog open={draftsDialogOpen} onOpenChange={setDraftsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-1.5"><FolderOpen className="h-4 w-4" /> Load Draft</Button>
-              </DialogTrigger>
+              <DialogTrigger asChild><Button variant="outline" size="sm" className="gap-1.5"><FolderOpen className="h-4 w-4" /> Load Draft</Button></DialogTrigger>
               <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
                 <DialogHeader><DialogTitle>Saved Drafts</DialogTitle></DialogHeader>
                 {savedDrafts.length === 0 ? (
@@ -609,38 +587,25 @@ const GSTInvoiceGenerator = () => {
               </DialogContent>
             </Dialog>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" className="gap-1.5">
-                  <Download className="h-4 w-4" /> Download
-                </Button>
-              </DropdownMenuTrigger>
+              <DropdownMenuTrigger asChild><Button size="sm" className="gap-1.5"><Download className="h-4 w-4" /> Download</Button></DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={generatePDF}>
-                  <FileText className="h-4 w-4 mr-2" /> Download as PDF
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={generateWord}>
-                  <FileText className="h-4 w-4 mr-2" /> Download as Word (.doc)
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={generatePDF}><FileText className="h-4 w-4 mr-2" /> Download as PDF</DropdownMenuItem>
+                <DropdownMenuItem onClick={generateWord}><FileText className="h-4 w-4 mr-2" /> Download as Word (.doc)</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
 
+        {/* Seller & Buyer Details */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Seller Details */}
           <Card>
             <CardHeader><CardTitle className="text-lg">Seller Details</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              <div>
-                <Label>Business Name</Label>
-                <Input value={sellerName} onChange={e => setSellerName(e.target.value)} />
-              </div>
+              <div><Label>Business Name</Label><Input value={sellerName} onChange={e => setSellerName(e.target.value)} /></div>
               <div>
                 <Label>GSTIN</Label>
                 <Input value={sellerGSTIN} onChange={e => setSellerGSTIN(e.target.value.toUpperCase())} maxLength={15} />
-                {sellerGSTIN && <p className={`text-xs mt-1 ${isSellerGSTINValid ? 'text-green-500' : 'text-destructive'}`}>
-                  {isSellerGSTINValid ? "✓ Valid GSTIN format" : "✗ Invalid GSTIN format"}
-                </p>}
+                {sellerGSTIN && <p className={`text-xs mt-1 ${isSellerGSTINValid ? 'text-green-500' : 'text-destructive'}`}>{isSellerGSTINValid ? "✓ Valid GSTIN format" : "✗ Invalid GSTIN format"}</p>}
               </div>
               <div>
                 <Label>State</Label>
@@ -649,23 +614,18 @@ const GSTInvoiceGenerator = () => {
                   <SelectContent>{Object.entries(states).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
+              <AddressFields address={sellerBillingAddress} onChange={setSellerBillingAddress} label="Billing Address" />
             </CardContent>
           </Card>
 
-          {/* Buyer Details */}
           <Card>
             <CardHeader><CardTitle className="text-lg">Buyer Details</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              <div>
-                <Label>Buyer Name</Label>
-                <Input value={buyerName} onChange={e => setBuyerName(e.target.value)} placeholder="Buyer business name" />
-              </div>
+              <div><Label>Buyer Name</Label><Input value={buyerName} onChange={e => setBuyerName(e.target.value)} placeholder="Buyer business name" /></div>
               <div>
                 <Label>GSTIN (optional for B2C)</Label>
                 <Input value={buyerGSTIN} onChange={e => setBuyerGSTIN(e.target.value.toUpperCase())} maxLength={15} placeholder="Leave blank for B2C" />
-                {buyerGSTIN && <p className={`text-xs mt-1 ${isBuyerGSTINValid ? 'text-green-500' : 'text-destructive'}`}>
-                  {isBuyerGSTINValid ? "✓ Valid GSTIN format" : "✗ Invalid GSTIN format"}
-                </p>}
+                {buyerGSTIN && <p className={`text-xs mt-1 ${isBuyerGSTINValid ? 'text-green-500' : 'text-destructive'}`}>{isBuyerGSTINValid ? "✓ Valid GSTIN format" : "✗ Invalid GSTIN format"}</p>}
               </div>
               <div>
                 <Label>State</Label>
@@ -674,6 +634,14 @@ const GSTInvoiceGenerator = () => {
                   <SelectContent>{Object.entries(states).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
+              <AddressFields address={buyerBillingAddress} onChange={setBuyerBillingAddress} label="Billing Address" />
+              <div className="flex items-center gap-2">
+                <Checkbox id="same-addr" checked={shippingSameAsBilling} onCheckedChange={(c) => setShippingSameAsBilling(!!c)} />
+                <Label htmlFor="same-addr" className="text-sm cursor-pointer">Shipping address same as billing</Label>
+              </div>
+              {!shippingSameAsBilling && (
+                <AddressFields address={buyerShippingAddress} onChange={setBuyerShippingAddress} label="Shipping Address" />
+              )}
             </CardContent>
           </Card>
         </div>
@@ -684,13 +652,8 @@ const GSTInvoiceGenerator = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div><Label>Invoice No.</Label><Input value={invoiceNo} onChange={e => setInvoiceNo(e.target.value)} /></div>
               <div><Label>Invoice Date</Label><Input type="date" value={invoiceDate} onChange={e => setInvoiceDate(e.target.value)} /></div>
-              <div className="flex items-center gap-2 pt-6">
-                <Badge variant={isInterState ? "default" : "secondary"}>{isInterState ? "IGST (Inter-State)" : "CGST + SGST (Intra-State)"}</Badge>
-              </div>
-              <div className="flex items-center gap-2 pt-6">
-                <Switch checked={reverseCharge} onCheckedChange={setReverseCharge} />
-                <Label className="text-sm">Reverse Charge</Label>
-              </div>
+              <div className="flex items-center gap-2 pt-6"><Badge variant={isInterState ? "default" : "secondary"}>{isInterState ? "IGST (Inter-State)" : "CGST + SGST (Intra-State)"}</Badge></div>
+              <div className="flex items-center gap-2 pt-6"><Switch checked={reverseCharge} onCheckedChange={setReverseCharge} /><Label className="text-sm">Reverse Charge</Label></div>
             </div>
           </CardContent>
         </Card>
@@ -708,14 +671,10 @@ const GSTInvoiceGenerator = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Description</TableHead>
-                    <TableHead>HSN/SAC</TableHead>
-                    <TableHead className="text-right">Qty</TableHead>
-                    <TableHead className="text-right">Rate (₹)</TableHead>
-                    <TableHead className="text-right">GST %</TableHead>
-                    <TableHead className="text-right">Disc %</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead></TableHead>
+                    <TableHead>Description</TableHead><TableHead>HSN/SAC</TableHead>
+                    <TableHead className="text-right">Qty</TableHead><TableHead className="text-right">Rate (₹)</TableHead>
+                    <TableHead className="text-right">GST %</TableHead><TableHead className="text-right">Disc %</TableHead>
+                    <TableHead className="text-right">Amount</TableHead><TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -768,59 +727,312 @@ const GSTInvoiceGenerator = () => {
           </CardContent>
         </Card>
 
-        {/* e-Way Bill Section - shown when total > ₹50,000 */}
+        {/* e-Way Bill Section */}
         {showEWayBill && (
           <Card className="mt-6 border-amber-500/30">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <Truck className="h-5 w-5 text-amber-500" />
-                e-Way Bill Details
+                <Truck className="h-5 w-5 text-amber-500" /> e-Way Bill Details
                 <Badge variant="outline" className="text-amber-500 border-amber-500/50 text-xs ml-auto">Required for invoices &gt; ₹50,000</Badge>
               </CardTitle>
               <CardDescription>As per GST rules, e-Way Bill is mandatory for movement of goods worth more than ₹50,000</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div>
-                  <Label>Transporter Name</Label>
-                  <Input value={eWayBill.transporterName} onChange={e => setEWayBill(p => ({ ...p, transporterName: e.target.value }))} placeholder="Name of transporter" />
-                </div>
-                <div>
-                  <Label>Transporter ID (GSTIN)</Label>
-                  <Input value={eWayBill.transporterId} onChange={e => setEWayBill(p => ({ ...p, transporterId: e.target.value.toUpperCase() }))} placeholder="GSTIN of transporter" maxLength={15} />
-                </div>
+                <div><Label>Transporter Name</Label><Input value={eWayBill.transporterName} onChange={e => setEWayBill(p => ({ ...p, transporterName: e.target.value }))} placeholder="Name of transporter" /></div>
+                <div><Label>Transporter ID (GSTIN)</Label><Input value={eWayBill.transporterId} onChange={e => setEWayBill(p => ({ ...p, transporterId: e.target.value.toUpperCase() }))} placeholder="GSTIN of transporter" maxLength={15} /></div>
                 <div>
                   <Label>Mode of Transport</Label>
                   <Select value={eWayBill.transportMode} onValueChange={v => setEWayBill(p => ({ ...p, transportMode: v }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="road">Road</SelectItem>
-                      <SelectItem value="rail">Rail</SelectItem>
-                      <SelectItem value="air">Air</SelectItem>
-                      <SelectItem value="ship">Ship</SelectItem>
+                      <SelectItem value="road">Road</SelectItem><SelectItem value="rail">Rail</SelectItem>
+                      <SelectItem value="air">Air</SelectItem><SelectItem value="ship">Ship</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label>Vehicle Number</Label>
-                  <Input value={eWayBill.vehicleNumber} onChange={e => setEWayBill(p => ({ ...p, vehicleNumber: e.target.value.toUpperCase() }))} placeholder="e.g. KA01AB1234" />
-                </div>
-                <div>
-                  <Label>Approx Distance (km)</Label>
-                  <Input type="number" value={eWayBill.distanceKm} onChange={e => setEWayBill(p => ({ ...p, distanceKm: e.target.value }))} placeholder="Distance in km" />
-                </div>
-                <div>
-                  <Label>Transport Doc No.</Label>
-                  <Input value={eWayBill.transDocNo} onChange={e => setEWayBill(p => ({ ...p, transDocNo: e.target.value }))} placeholder="GR/RR/CN number" />
-                </div>
-                <div>
-                  <Label>Transport Doc Date</Label>
-                  <Input type="date" value={eWayBill.transDocDate} onChange={e => setEWayBill(p => ({ ...p, transDocDate: e.target.value }))} />
-                </div>
+                <div><Label>Vehicle Number</Label><Input value={eWayBill.vehicleNumber} onChange={e => setEWayBill(p => ({ ...p, vehicleNumber: e.target.value.toUpperCase() }))} placeholder="e.g. KA01AB1234" /></div>
+                <div><Label>Approx Distance (km)</Label><Input type="number" value={eWayBill.distanceKm} onChange={e => setEWayBill(p => ({ ...p, distanceKm: e.target.value }))} placeholder="Distance in km" /></div>
+                <div><Label>Transport Doc No.</Label><Input value={eWayBill.transDocNo} onChange={e => setEWayBill(p => ({ ...p, transDocNo: e.target.value }))} placeholder="GR/RR/CN number" /></div>
+                <div><Label>Transport Doc Date</Label><Input type="date" value={eWayBill.transDocDate} onChange={e => setEWayBill(p => ({ ...p, transDocDate: e.target.value }))} /></div>
               </div>
             </CardContent>
           </Card>
         )}
+
+        {/* GST Invoicing Guide */}
+        <Card className="mt-6">
+          <Collapsible open={isGuideOpen} onOpenChange={setIsGuideOpen}>
+            <CardHeader className="pb-3">
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center justify-between w-full text-left">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                    GST Invoicing Guide (FY 2025-26 & 2026-27)
+                  </CardTitle>
+                  {isGuideOpen ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
+                </button>
+              </CollapsibleTrigger>
+              <CardDescription>Comprehensive guide covering GST invoice rules, e-Way Bills, HSN requirements & compliance</CardDescription>
+            </CardHeader>
+            <CollapsibleContent>
+              <CardContent className="pt-0">
+                <Accordion type="multiple" className="w-full">
+                  {/* Section 1: What is a GST Invoice */}
+                  <AccordionItem value="what-is">
+                    <AccordionTrigger className="text-sm font-semibold">What is a GST Invoice?</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
+                      <p>A GST Invoice is a document issued by a registered supplier to the buyer containing details of goods/services supplied, their value, and the tax charged. It serves as the primary document for claiming Input Tax Credit (ITC).</p>
+                      <p><strong>Legal basis:</strong> Section 31 of the CGST Act, 2017, read with Rule 46 of the CGST Rules, 2017.</p>
+                      <p><strong>Who must issue:</strong> Every registered person supplying taxable goods or services must issue a tax invoice. Composition dealers issue a "Bill of Supply" instead.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Section 2: Mandatory Fields */}
+                  <AccordionItem value="mandatory-fields">
+                    <AccordionTrigger className="text-sm font-semibold">Mandatory Fields in a GST Invoice (Rule 46)</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
+                      <p>As per Rule 46 of CGST Rules, a tax invoice must contain:</p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Name, address & GSTIN</strong> of the supplier</li>
+                        <li><strong>Consecutive serial number</strong> (unique for a FY, max 16 characters, containing alphabets/numerals/special characters)</li>
+                        <li><strong>Date of issue</strong></li>
+                        <li><strong>Name, address & GSTIN/UIN</strong> of the recipient (if registered)</li>
+                        <li><strong>Name & address</strong> of the recipient along with delivery address and state code (if unregistered, value &gt; ₹50,000)</li>
+                        <li><strong>HSN Code</strong> of goods or SAC of services</li>
+                        <li><strong>Description</strong> of goods or services</li>
+                        <li><strong>Quantity and unit</strong> (for goods)</li>
+                        <li><strong>Total value</strong> of supply</li>
+                        <li><strong>Taxable value</strong> after discount</li>
+                        <li><strong>Rate and amount</strong> of CGST, SGST/UTGST, IGST</li>
+                        <li><strong>Place of supply</strong> (along with state name for inter-state)</li>
+                        <li><strong>Whether tax is payable on reverse charge basis</strong></li>
+                        <li><strong>Signature</strong> or digital signature of the supplier</li>
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Section 3: HSN/SAC Requirements */}
+                  <AccordionItem value="hsn-requirements">
+                    <AccordionTrigger className="text-sm font-semibold">HSN/SAC Code Requirements (FY 2025-26 onwards)</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
+                      <p>As per Notification No. 78/2020 (amended), HSN code requirements on invoices are based on aggregate annual turnover:</p>
+                      <div className="rounded border overflow-hidden">
+                        <table className="w-full text-xs">
+                          <thead><tr className="bg-muted"><th className="p-2 text-left">Turnover</th><th className="p-2 text-left">HSN Digits Required</th></tr></thead>
+                          <tbody>
+                            <tr className="border-t"><td className="p-2">Up to ₹5 Crore</td><td className="p-2">4-digit HSN (mandatory from 01-04-2025)</td></tr>
+                            <tr className="border-t"><td className="p-2">Above ₹5 Crore</td><td className="p-2">6-digit HSN (mandatory)</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p className="text-xs"><strong>Important:</strong> From FY 2025-26, even taxpayers with turnover up to ₹5 Cr must mention 4-digit HSN on B2B invoices. 6-digit HSN is mandatory for exports and supplies to SEZ.</p>
+                      <p className="text-xs"><strong>SAC (Service Accounting Code):</strong> Services use SAC codes (starting with 99). The same turnover-based rules apply for SAC codes on invoices.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Section 4: Types of Invoices */}
+                  <AccordionItem value="invoice-types">
+                    <AccordionTrigger className="text-sm font-semibold">Types of GST Documents</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
+                      <ul className="list-disc pl-5 space-y-1.5">
+                        <li><strong>Tax Invoice:</strong> Issued for taxable supply of goods/services by a registered person</li>
+                        <li><strong>Bill of Supply:</strong> Issued by composition dealers or for exempt supplies (no tax breakup)</li>
+                        <li><strong>Credit Note:</strong> Issued when taxable value or tax in invoice exceeds actual amount, or goods returned</li>
+                        <li><strong>Debit Note:</strong> Issued when taxable value or tax in invoice falls short of actual amount</li>
+                        <li><strong>Receipt Voucher:</strong> Issued on receipt of advance payment before supply</li>
+                        <li><strong>Refund Voucher:</strong> Issued when supply is not made after receiving advance</li>
+                        <li><strong>Delivery Challan:</strong> For transport of goods without supply (job work, exhibitions)</li>
+                        <li><strong>Revised Invoice:</strong> Issued by newly registered persons for supplies made before registration</li>
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Section 5: CGST vs SGST vs IGST */}
+                  <AccordionItem value="tax-types">
+                    <AccordionTrigger className="text-sm font-semibold">CGST vs SGST vs IGST — When to Apply</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
+                      <div className="rounded border overflow-hidden">
+                        <table className="w-full text-xs">
+                          <thead><tr className="bg-muted"><th className="p-2 text-left">Scenario</th><th className="p-2 text-left">Tax Applied</th></tr></thead>
+                          <tbody>
+                            <tr className="border-t"><td className="p-2">Supplier & Buyer in same state</td><td className="p-2">CGST + SGST (split equally)</td></tr>
+                            <tr className="border-t"><td className="p-2">Supplier & Buyer in different states</td><td className="p-2">IGST (full amount)</td></tr>
+                            <tr className="border-t"><td className="p-2">Supply to/from SEZ</td><td className="p-2">IGST</td></tr>
+                            <tr className="border-t"><td className="p-2">Import of goods/services</td><td className="p-2">IGST</td></tr>
+                            <tr className="border-t"><td className="p-2">Within Union Territory</td><td className="p-2">CGST + UTGST</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p className="text-xs"><strong>Place of Supply (PoS):</strong> Determines whether IGST or CGST+SGST applies. For goods, PoS is generally where delivery terminates. For services, it is the location of the recipient.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Section 6: e-Way Bill */}
+                  <AccordionItem value="eway-bill">
+                    <AccordionTrigger className="text-sm font-semibold">e-Way Bill Rules (FY 2025-26 & 2026-27)</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
+                      <p><strong>What:</strong> An e-Way Bill is an electronic document generated on the GST portal for movement of goods worth more than ₹50,000 (in a single consignment).</p>
+                      <p><strong>When required:</strong></p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>Movement of goods valued &gt; ₹50,000 (inter-state or intra-state)</li>
+                        <li>Movement by a registered person even if value &lt; ₹50,000 (in some states)</li>
+                        <li>Inter-state movement of handicraft goods by exempt dealers</li>
+                      </ul>
+                      <p><strong>Validity (based on distance):</strong></p>
+                      <div className="rounded border overflow-hidden">
+                        <table className="w-full text-xs">
+                          <thead><tr className="bg-muted"><th className="p-2 text-left">Type</th><th className="p-2 text-left">Distance</th><th className="p-2 text-left">Validity</th></tr></thead>
+                          <tbody>
+                            <tr className="border-t"><td className="p-2">Regular</td><td className="p-2">Up to 200 km</td><td className="p-2">1 day</td></tr>
+                            <tr className="border-t"><td className="p-2">Regular</td><td className="p-2">Every additional 200 km</td><td className="p-2">+1 day each</td></tr>
+                            <tr className="border-t"><td className="p-2">Over-dimensional cargo</td><td className="p-2">Up to 20 km</td><td className="p-2">1 day</td></tr>
+                            <tr className="border-t"><td className="p-2">Over-dimensional cargo</td><td className="p-2">Every additional 20 km</td><td className="p-2">+1 day each</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p><strong>Exemptions from e-Way Bill:</strong></p>
+                      <ul className="list-disc pl-5 space-y-1 text-xs">
+                        <li>Goods transported by non-motorized conveyance</li>
+                        <li>Goods transported from port/airport to ICD/CFS under customs supervision</li>
+                        <li>Transit cargo to/from Nepal or Bhutan</li>
+                        <li>Defence Ministry consignments</li>
+                        <li>Empty cargo containers</li>
+                        <li>Goods exempt from tax (Schedule-I items like fresh fruits, vegetables, milk)</li>
+                        <li>Goods transported within 50 km from place of business to transporter</li>
+                      </ul>
+                      <p><strong>Generation:</strong> Via <a href="https://ewaybillgst.gov.in" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ewaybillgst.gov.in</a> or through GST Suvidha Provider APIs. Can also be generated via SMS, Android app, or bulk upload.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Section 7: Time Limits */}
+                  <AccordionItem value="time-limits">
+                    <AccordionTrigger className="text-sm font-semibold">Time Limits for Issuing Invoices</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
+                      <div className="rounded border overflow-hidden">
+                        <table className="w-full text-xs">
+                          <thead><tr className="bg-muted"><th className="p-2 text-left">Supply Type</th><th className="p-2 text-left">Time Limit</th></tr></thead>
+                          <tbody>
+                            <tr className="border-t"><td className="p-2">Goods (normal)</td><td className="p-2">Before or at the time of removal/delivery</td></tr>
+                            <tr className="border-t"><td className="p-2">Goods (continuous supply)</td><td className="p-2">On or before the due date of payment</td></tr>
+                            <tr className="border-t"><td className="p-2">Services (general)</td><td className="p-2">Within 30 days from date of supply</td></tr>
+                            <tr className="border-t"><td className="p-2">Services (banking/insurance)</td><td className="p-2">Within 45 days from date of supply</td></tr>
+                            <tr className="border-t"><td className="p-2">Exports</td><td className="p-2">Before or after shipment (not later than 15 days from date of BL)</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Section 8: Reverse Charge */}
+                  <AccordionItem value="reverse-charge">
+                    <AccordionTrigger className="text-sm font-semibold">Reverse Charge Mechanism (RCM)</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
+                      <p>Under RCM, the recipient of goods/services pays the tax instead of the supplier. Applicable under:</p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li><strong>Section 9(3):</strong> Notified goods/services — e.g., legal services by advocate, sponsorship services, GTA services, director services to a company</li>
+                        <li><strong>Section 9(4):</strong> Supply from unregistered person to registered person (currently applicable only for specified categories like real estate)</li>
+                      </ul>
+                      <p><strong>Invoice under RCM:</strong> The recipient must issue a self-invoice. The invoice must clearly mention "Tax payable on reverse charge basis."</p>
+                      <p><strong>ITC on RCM:</strong> Tax paid under RCM is eligible for ITC, provided it is used for business purposes and conditions under Section 16 are satisfied.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Section 9: ITC on Invoices */}
+                  <AccordionItem value="itc-rules">
+                    <AccordionTrigger className="text-sm font-semibold">Input Tax Credit (ITC) — Key Rules for FY 2025-26</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
+                      <p>ITC can only be claimed if:</p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>You possess a valid <strong>tax invoice or debit note</strong></li>
+                        <li>You have actually <strong>received the goods/services</strong></li>
+                        <li>The supplier has <strong>filed GSTR-1</strong> and the invoice reflects in your <strong>GSTR-2B</strong></li>
+                        <li>You have <strong>paid the tax to the government</strong> (supplier's obligation)</li>
+                        <li>You have <strong>filed your GSTR-3B</strong></li>
+                        <li>The invoice is not for <strong>blocked credits</strong> under Section 17(5) — motor vehicles, food & beverages, personal consumption, etc.</li>
+                      </ul>
+                      <p><strong>Time limit to claim ITC:</strong> Earlier of the due date of GSTR-3B for September of following year OR date of filing annual return.</p>
+                      <p className="text-xs"><strong>New for FY 2025-26:</strong> GSTR-2B auto-populated ITC is the benchmark. ITC cannot exceed GSTR-2B amount + 5% (10% earlier). Ensure all your suppliers file returns timely.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Section 10: Key Deadlines */}
+                  <AccordionItem value="deadlines">
+                    <AccordionTrigger className="text-sm font-semibold">Key GST Filing Deadlines (FY 2025-26 & 2026-27)</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
+                      <div className="rounded border overflow-hidden">
+                        <table className="w-full text-xs">
+                          <thead><tr className="bg-muted"><th className="p-2 text-left">Return</th><th className="p-2 text-left">Due Date</th><th className="p-2 text-left">Details</th></tr></thead>
+                          <tbody>
+                            <tr className="border-t"><td className="p-2 font-medium">GSTR-1</td><td className="p-2">11th of next month</td><td className="p-2">Outward supplies (sales invoices)</td></tr>
+                            <tr className="border-t"><td className="p-2 font-medium">GSTR-3B</td><td className="p-2">20th of next month</td><td className="p-2">Summary return with tax payment</td></tr>
+                            <tr className="border-t"><td className="p-2 font-medium">GSTR-1 (QRMP)</td><td className="p-2">13th of month following quarter</td><td className="p-2">Quarterly filers (turnover ≤ ₹5 Cr)</td></tr>
+                            <tr className="border-t"><td className="p-2 font-medium">GSTR-3B (QRMP)</td><td className="p-2">22nd/24th of month following quarter</td><td className="p-2">Quarterly filers (date varies by state)</td></tr>
+                            <tr className="border-t"><td className="p-2 font-medium">GSTR-9</td><td className="p-2">31st December</td><td className="p-2">Annual return (turnover &gt; ₹2 Cr)</td></tr>
+                            <tr className="border-t"><td className="p-2 font-medium">GSTR-9C</td><td className="p-2">31st December</td><td className="p-2">Reconciliation statement (turnover &gt; ₹5 Cr)</td></tr>
+                            <tr className="border-t"><td className="p-2 font-medium">IFF</td><td className="p-2">13th of each month</td><td className="p-2">Invoice Furnishing Facility for QRMP quarterly filers</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p className="text-xs"><strong>Late fee:</strong> ₹50/day (₹20 for nil return) for GSTR-3B. ₹50/day for GSTR-1. Maximum cap varies. Interest at 18% p.a. on tax liability.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Section 11: E-invoicing */}
+                  <AccordionItem value="e-invoicing">
+                    <AccordionTrigger className="text-sm font-semibold">E-Invoicing (IRN) Requirements</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
+                      <p><strong>E-invoicing</strong> is mandatory for businesses with aggregate turnover exceeding specified thresholds:</p>
+                      <div className="rounded border overflow-hidden">
+                        <table className="w-full text-xs">
+                          <thead><tr className="bg-muted"><th className="p-2 text-left">Effective Date</th><th className="p-2 text-left">Turnover Threshold</th></tr></thead>
+                          <tbody>
+                            <tr className="border-t"><td className="p-2">From 01-08-2023</td><td className="p-2">₹5 Crore and above</td></tr>
+                            <tr className="border-t"><td className="p-2">Applicable for FY 2025-26</td><td className="p-2">₹5 Crore and above (any preceding FY from 2017-18)</td></tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <p><strong>How it works:</strong></p>
+                      <ul className="list-disc pl-5 space-y-1 text-xs">
+                        <li>Generate invoice in your system in e-invoice format (JSON)</li>
+                        <li>Upload to Invoice Registration Portal (IRP) — <a href="https://einvoice1.gst.gov.in" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">einvoice1.gst.gov.in</a></li>
+                        <li>IRP validates, generates IRN (Invoice Reference Number) and QR code</li>
+                        <li>Signed invoice returned; auto-populates GSTR-1 and e-Way Bill</li>
+                      </ul>
+                      <p className="text-xs"><strong>Penalty:</strong> Non-compliance with e-invoicing attracts penalty of 100% of tax due or ₹10,000, whichever is higher, per invoice.</p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  {/* Section 12: Common Mistakes */}
+                  <AccordionItem value="common-mistakes">
+                    <AccordionTrigger className="text-sm font-semibold">Common GST Invoicing Mistakes to Avoid</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground space-y-2">
+                      <ul className="list-disc pl-5 space-y-1.5">
+                        <li><strong>Wrong GSTIN:</strong> Always verify buyer's GSTIN before invoicing. A wrong GSTIN means buyer cannot claim ITC.</li>
+                        <li><strong>Missing HSN/SAC:</strong> Non-compliance can lead to rejection of ITC claim and penalty.</li>
+                        <li><strong>Wrong place of supply:</strong> Leads to wrong tax type (IGST vs CGST+SGST), causing reconciliation issues.</li>
+                        <li><strong>Invoice date mismatch:</strong> Invoice date should match the actual date of supply for proper reporting.</li>
+                        <li><strong>Not mentioning reverse charge:</strong> If applicable, failing to mention RCM on invoice violates compliance.</li>
+                        <li><strong>Duplicate invoice numbers:</strong> Serial numbers must be unique within a financial year.</li>
+                        <li><strong>Not issuing credit/debit notes:</strong> For returns, price revisions, or corrections — issue CN/DN instead of modifying the original invoice.</li>
+                        <li><strong>Missing shipping address:</strong> For B2C invoices above ₹50,000, shipping address with state code is mandatory.</li>
+                      </ul>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+
+                <div className="mt-4 p-3 rounded-lg bg-muted/50 border flex items-start gap-2">
+                  <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                  <p className="text-xs text-muted-foreground">
+                    <strong>Disclaimer:</strong> This guide is for informational purposes only and is based on GST laws applicable as of FY 2025-26.
+                    Always refer to official notifications and consult a CA/tax professional for specific compliance queries. Visit{" "}
+                    <a href="https://cbic-gst.gov.in" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">cbic-gst.gov.in</a> for latest updates.
+                  </p>
+                </div>
+              </CardContent>
+            </CollapsibleContent>
+          </Collapsible>
+        </Card>
 
         {/* HSN Reference - Collapsible */}
         <Card className="mt-6">
@@ -834,12 +1046,7 @@ const GSTInvoiceGenerator = () => {
               </CollapsibleTrigger>
               <CardDescription className="flex items-center gap-2 mt-1">
                 Click to expand &bull;
-                <a
-                  href="https://cbic-gst.gov.in/gst-goods-services-rates.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-primary hover:underline"
-                >
+                <a href="https://cbic-gst.gov.in/gst-goods-services-rates.html" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
                   Official CBIC HSN/SAC Search <ExternalLink className="h-3 w-3" />
                 </a>
               </CardDescription>
@@ -848,12 +1055,7 @@ const GSTInvoiceGenerator = () => {
               <CardContent className="pt-0">
                 <div className="relative mb-4">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search by code, name, or description..."
-                    value={hsnSearchQuery}
-                    onChange={e => setHsnSearchQuery(e.target.value)}
-                    className="pl-9"
-                  />
+                  <Input placeholder="Search by code, name, or description..." value={hsnSearchQuery} onChange={e => setHsnSearchQuery(e.target.value)} className="pl-9" />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-[400px] overflow-y-auto pr-1">
                   {filteredHsnCodes.map(h => (
@@ -867,9 +1069,7 @@ const GSTInvoiceGenerator = () => {
                           <Info className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
                         </div>
                       </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[250px]">
-                        <p className="text-xs">{h.tooltip}</p>
-                      </TooltipContent>
+                      <TooltipContent side="top" className="max-w-[250px]"><p className="text-xs">{h.tooltip}</p></TooltipContent>
                     </Tooltip>
                   ))}
                   {filteredHsnCodes.length === 0 && (
