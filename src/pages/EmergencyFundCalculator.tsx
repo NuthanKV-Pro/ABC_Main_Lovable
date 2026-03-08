@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { AlertTriangle, Shield, TrendingUp, Wallet, Home, Car, Heart, GraduationCap, Users, Briefcase, PiggyBank, Target, CheckCircle, Info, Clock, Building, Lightbulb, ArrowLeft } from "lucide-react";
+import { AlertTriangle, Shield, TrendingUp, Wallet, Home, Car, Heart, GraduationCap, Users, Briefcase, PiggyBank, Target, CheckCircle, Info, Clock, Building, Lightbulb, ArrowLeft, RotateCcw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import Footer from "@/components/Footer";
@@ -133,17 +133,30 @@ const EmergencyFundCalculator = () => {
       {/* Header */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => goBack()}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
-                <Shield className="h-6 w-6" />
-                Emergency Fund Calculator
-              </h1>
-              <p className="text-sm text-muted-foreground">Plan your financial safety net</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => goBack()}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
+                  <Shield className="h-6 w-6" />
+                  Emergency Fund Calculator
+                </h1>
+                <p className="text-sm text-muted-foreground">Plan your financial safety net</p>
+              </div>
             </div>
+            <Button variant="ghost" size="icon" onClick={() => {
+              if (!window.confirm("Reset all data in this tool?")) return;
+              ['emergency_fund_target', 'emergency_fund_current', 'emergency_fund_saved', 'emergency_fund_months'].forEach(k => localStorage.removeItem(k));
+              setMonthlyIncome(75000); setRent(15000); setUtilities(5000); setGroceries(8000);
+              setTransportation(5000); setInsurance(3000); setEmiPayments(10000); setOtherExpenses(5000);
+              setJobStability("moderate"); setDependents(2); setHealthConditions("none");
+              setHasSpouseIncome("no"); setIndustryType("stable");
+              setCurrentSavings(100000); setMonthlySavingCapacity(15000);
+            }}>
+              <RotateCcw className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </header>

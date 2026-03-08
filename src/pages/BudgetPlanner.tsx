@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Plus, Trash2, PiggyBank, TrendingUp, AlertTriangle, CheckCircle, Target, Lightbulb, Info } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, PiggyBank, TrendingUp, AlertTriangle, CheckCircle, Target, Lightbulb, Info, RotateCcw } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -105,14 +105,23 @@ const BudgetPlanner = () => {
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => goBack()}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-primary">Budget Planner</h1>
-              <p className="text-sm text-muted-foreground">Create & track monthly budgets</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => goBack()}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-primary">Budget Planner</h1>
+                <p className="text-sm text-muted-foreground">Create & track monthly budgets</p>
+              </div>
             </div>
+            <Button variant="ghost" size="icon" onClick={() => {
+              if (!window.confirm("Reset all data in this tool?")) return;
+              setMonthlyIncome(100000); setCategories(defaultCategories);
+              setNewCategory({ name: '', type: 'need' });
+            }}>
+              <RotateCcw className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </header>

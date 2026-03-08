@@ -326,6 +326,15 @@ const CapitalGains = () => {
             >
               Ask When to Sell
             </Button>
+            <Button variant="ghost" size="icon" onClick={() => {
+              if (!window.confirm("Reset all data in this tool?")) return;
+              ['cg_data', 'cg_total'].forEach(k => localStorage.removeItem(k));
+              setShares([{ ...defaultAsset }]); setMutualFunds([{ ...defaultAsset }]);
+              setProperty([{ ...defaultAsset }]); setCrypto([{ ...defaultAsset }]);
+              toast({ title: "Data Reset", description: "All capital gains data has been cleared." });
+            }}>
+              <RotateCcw className="w-4 h-4" />
+            </Button>
             <Button 
               onClick={handleSave}
               className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"

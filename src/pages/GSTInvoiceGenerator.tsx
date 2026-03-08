@@ -402,7 +402,10 @@ const GSTInvoiceGenerator = () => {
     }));
   };
 
-  const handleReset = () => {
+  const handleResetAll = () => {
+    if (!window.confirm("Reset all data in this tool?")) return;
+    localStorage.removeItem(DRAFTS_KEY);
+    setSavedDrafts([]);
     setSellerGSTIN(""); setBuyerGSTIN(""); setSellerName(""); setBuyerName("");
     setSellerState("29"); setBuyerState("29");
     setInvoiceNo("INV-2026-001"); setInvoiceDate(new Date().toISOString().split('T')[0]);
@@ -412,6 +415,7 @@ const GSTInvoiceGenerator = () => {
     setSellerBillingAddress({ ...emptyAddress }); setBuyerBillingAddress({ ...emptyAddress });
     setBuyerShippingAddress({ ...emptyAddress }); setShippingSameAsBilling(true);
     setIsExportInvoice(false); setSelectedCurrency("INR"); setExchangeRate(1);
+    toast("Data reset successfully");
   };
 
   const handleCurrencyChange = (code: string) => {
@@ -702,7 +706,7 @@ const GSTInvoiceGenerator = () => {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button variant="outline" size="sm" onClick={handleReset} className="gap-1.5"><RotateCcw className="h-4 w-4" /> Reset</Button>
+            <Button variant="outline" size="sm" onClick={handleResetAll} className="gap-1.5"><RotateCcw className="h-4 w-4" /> Reset</Button>
             <Dialog>
               <DialogTrigger asChild><Button variant="outline" size="sm" className="gap-1.5"><Save className="h-4 w-4" /> Save Draft</Button></DialogTrigger>
               <DialogContent className="sm:max-w-md">
