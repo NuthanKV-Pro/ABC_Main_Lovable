@@ -957,6 +957,13 @@ const GSTInvoiceGenerator = () => {
               {reverseCharge && <div className="flex items-center gap-2 text-sm text-amber-500"><AlertTriangle className="h-4 w-4" /> Tax payable under Reverse Charge</div>}
               <Separator />
               <div className="flex justify-between text-lg font-bold"><span>Grand Total</span><span className="text-primary">{formatCurrency(totals.grandTotal)}</span></div>
+              {isForeignCurrency && (
+                <>
+                  <div className="flex justify-between text-sm"><span className="text-muted-foreground">Grand Total in {selectedCurrency}</span><span className="font-semibold">{formatForeignCurrency(totals.grandTotal)}</span></div>
+                  <div className="flex justify-between text-xs text-muted-foreground"><span>Exchange Rate</span><span>1 {selectedCurrency} = {formatCurrency(exchangeRate)}</span></div>
+                </>
+              )}
+              {isExportInvoice && <Badge variant="outline" className="mt-2"><Globe className="h-3 w-3 mr-1" /> Export Invoice</Badge>}
             </div>
           </CardContent>
         </Card>
