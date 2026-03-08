@@ -516,14 +516,15 @@ const GSTInvoiceGenerator = () => {
     doc.rect(0, 0, pageWidth, 28, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(20); doc.setFont('helvetica', 'bold');
-    doc.text("TAX INVOICE", pageWidth / 2, 16, { align: "center" });
+    doc.text(isExportInvoice ? "EXPORT TAX INVOICE" : "TAX INVOICE", pageWidth / 2, 16, { align: "center" });
     doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-    doc.text(`Invoice No: ${invoiceNo}  |  Date: ${invoiceDate}`, pageWidth / 2, 24, { align: "center" });
+    doc.text(`Invoice No: ${invoiceNo}  |  Date: ${invoiceDate}${isForeignCurrency ? `  |  Currency: ${selectedCurrency}` : ''}`, pageWidth / 2, 24, { align: "center" });
 
     doc.setTextColor(0, 0, 0);
     let y = 36;
     doc.setFontSize(8); doc.setTextColor(100, 100, 100);
-    doc.text(`Supply Type: ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}${reverseCharge ? "  |  Reverse Charge: Yes" : ""}`, 14, y);
+    const supplyLine = `Supply Type: ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}${reverseCharge ? "  |  Reverse Charge: Yes" : ""}${isForeignCurrency ? `  |  Exchange Rate: 1 ${selectedCurrency} = INR ${exchangeRate}` : ""}`;
+    doc.text(supplyLine, 14, y);
     doc.setTextColor(0, 0, 0);
     y += 8;
 
