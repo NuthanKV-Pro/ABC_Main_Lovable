@@ -1118,6 +1118,65 @@ const Index = () => {
         </div>
       </header>
 
+      {/* Triple-confirmation Clear All dialogs */}
+      <AlertDialog open={clearStep === 1} onOpenChange={(open) => !open && setClearStep(0)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will erase <strong>all saved data</strong> across every tool — salary, deductions, calculators, health scores, and more.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setClearStep(0)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setClearStep(2)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={clearStep === 2} onOpenChange={(open) => !open && setClearStep(0)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>This cannot be undone</AlertDialogTitle>
+            <AlertDialogDescription>
+              You will permanently lose data from: Tax heads, Budget Planner, FIRE & Retirement, Net Worth, SIP & EMI, Health Score, GST, HUF, Compliance Calendar, Financial Statements, Wedding Planner, Profile settings, and all synced data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setClearStep(0)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setClearStep(3)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              I understand, continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={clearStep === 3} onOpenChange={(open) => !open && setClearStep(0)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-destructive">Final confirmation</AlertDialogTitle>
+            <AlertDialogDescription>
+              This is your last chance. Click below to permanently delete <strong>everything</strong>. There is no way to recover this data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setClearStep(0)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                localStorage.clear();
+                toast({ title: "All data cleared", description: "Every tool has been reset. Reloading…" });
+                setTimeout(() => window.location.reload(), 800);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Yes, delete everything
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Floating Navigation Bar */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
