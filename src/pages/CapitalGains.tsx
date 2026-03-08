@@ -21,62 +21,41 @@ interface AssetData {
   capitalGain: number;
 }
 
+const defaultAsset: AssetData = {
+  id: "1",
+  assetName: "",
+  dateOfPurchase: "",
+  dateOfSale: "",
+  purchasePrice: 0,
+  salePrice: 0,
+  expenses: 0,
+  capitalGain: 0,
+};
+
 const CapitalGains = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const { toast } = useToast();
-  
-  const [shares, setShares] = useState<AssetData[]>([
-    {
-      id: "1",
-      assetName: "",
-      dateOfPurchase: "",
-      dateOfSale: "",
-      purchasePrice: 0,
-      salePrice: 0,
-      expenses: 0,
-      capitalGain: 0,
-    },
-  ]);
 
-  const [mutualFunds, setMutualFunds] = useState<AssetData[]>([
-    {
-      id: "1",
-      assetName: "",
-      dateOfPurchase: "",
-      dateOfSale: "",
-      purchasePrice: 0,
-      salePrice: 0,
-      expenses: 0,
-      capitalGain: 0,
-    },
-  ]);
+  const [shares, setShares] = useState<AssetData[]>(() => {
+    const saved = localStorage.getItem('cg_data');
+    return saved ? JSON.parse(saved).shares || [{ ...defaultAsset }] : [{ ...defaultAsset }];
+  });
 
-  const [property, setProperty] = useState<AssetData[]>([
-    {
-      id: "1",
-      assetName: "",
-      dateOfPurchase: "",
-      dateOfSale: "",
-      purchasePrice: 0,
-      salePrice: 0,
-      expenses: 0,
-      capitalGain: 0,
-    },
-  ]);
+  const [mutualFunds, setMutualFunds] = useState<AssetData[]>(() => {
+    const saved = localStorage.getItem('cg_data');
+    return saved ? JSON.parse(saved).mutualFunds || [{ ...defaultAsset }] : [{ ...defaultAsset }];
+  });
 
-  const [crypto, setCrypto] = useState<AssetData[]>([
-    {
-      id: "1",
-      assetName: "",
-      dateOfPurchase: "",
-      dateOfSale: "",
-      purchasePrice: 0,
-      salePrice: 0,
-      expenses: 0,
-      capitalGain: 0,
-    },
-  ]);
+  const [property, setProperty] = useState<AssetData[]>(() => {
+    const saved = localStorage.getItem('cg_data');
+    return saved ? JSON.parse(saved).property || [{ ...defaultAsset }] : [{ ...defaultAsset }];
+  });
+
+  const [crypto, setCrypto] = useState<AssetData[]>(() => {
+    const saved = localStorage.getItem('cg_data');
+    return saved ? JSON.parse(saved).crypto || [{ ...defaultAsset }] : [{ ...defaultAsset }];
+  });
 
   const calculateGain = (salePrice: number, purchasePrice: number, expenses: number) => {
     return salePrice - purchasePrice - expenses;
