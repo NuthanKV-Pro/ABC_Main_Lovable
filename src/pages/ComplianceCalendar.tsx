@@ -355,6 +355,128 @@ const ComplianceCalendar = () => {
     );
   };
 
+  const calendarDays = useMemo(() => {
+    const year = calendarMonth.getFullYear();
+    const month = calendarMonth.getMonth();
+    const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const weeks: (number | null)[][] = [];
+    let currentWeek: (number | null)[] = Array(firstDay).fill(null);
+    
+    for (let d = 1; d <= daysInMonth; d++) {
+      currentWeek.push(d);
+      if (currentWeek.length === 7) {
+        weeks.push(currentWeek);
+        currentWeek = [];
+      }
+    }
+    if (currentWeek.length > 0) {
+      while (currentWeek.length < 7) currentWeek.push(null);
+      weeks.push(currentWeek);
+    }
+    return weeks;
+  }, [calendarMonth]);
+
+  const eventsForCalendarDay = useCallback((day: number) => {
+    const year = calendarMonth.getFullYear();
+    const month = calendarMonth.getMonth();
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return filteredEvents.filter(e => e.dueDate === dateStr);
+  }, [calendarMonth, filteredEvents]);
+
+  const calendarMonthLabel = calendarMonth.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+
+  const navigateCalendarMonth = (dir: number) => {
+    setCalendarMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + dir, 1));
+  };
+
+  const renderCalendarView = () => (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <Button variant="ghost" size="icon" onClick={() => navigateCalendarMonth(-1)}>
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+        <h3 className="text-lg font-semibold">{calendarMonthLabel}</h3>
+        <Button variant="ghost" size="icon" onClick={() => navigateCalendarMonth(1)}>
+          <ChevronRight className="h-5 w-5" />
+        </Button>
+      </div>
+      <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
+          <div key={d} className="bg-muted px-1 py-2 text-center text-xs font-semibold text-muted-foreground">
+            {d}
+          </div>
+        ))}
+        {calendarDays.flat().map((day, i) => {
+          if (day === null) return <div key={`empty-${i}`} className="bg-card min-h-[90px]" />;
+          const dayEvents = eventsForCalendarDay(day);
+          const today = new Date();
+          const isToday = today.getFullYear() === calendarMonth.getFullYear() && today.getMonth() === calendarMonth.getMonth() && today.getDate() === day;
+          
+          return (
+            <div
+              key={`day-${day}`}
+              className={`bg-card min-h-[90px] p-1 ${isToday ? "ring-2 ring-primary ring-inset" : ""}`}
+            >
+              <span className={`text-xs font-medium block mb-0.5 ${isToday ? "text-primary font-bold" : "text-foreground"}`}>
+                {day}
+              </span>
+              <div className="space-y-0.5 overflow-y-auto max-h-[70px]">
+                {dayEvents.slice(0, 3).map(ev => {
+                  const isCompleted = completedIds.has(ev.id);
+                  return (
+                    <Popover key={ev.id}>
+                      <PopoverTrigger asChild>
+                        <button
+                          className={`w-full text-left text-[10px] leading-tight px-1 py-0.5 rounded truncate border ${
+                            isCompleted
+                              ? "bg-muted/50 text-muted-foreground line-through border-muted"
+                              : categoryColors[ev.category]
+                          }`}
+                        >
+                          {ev.title.length > 20 ? ev.title.slice(0, 20) + "…" : ev.title}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-72 p-3" side="right">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <Badge variant="outline" className={`text-[10px] ${categoryColors[ev.category]}`}>
+                              {categoryLabels[ev.category]}
+                            </Badge>
+                            {ev.formNo && <Badge variant="secondary" className="text-[10px]">{ev.formNo}</Badge>}
+                          </div>
+                          <p className="font-medium text-sm">{ev.title}</p>
+                          <p className="text-xs text-muted-foreground">{ev.description}</p>
+                          <div className="text-[11px] text-muted-foreground space-y-0.5">
+                            <p>📅 {new Date(ev.dueDate).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}</p>
+                            <p>👤 {ev.applicable}</p>
+                            {ev.section && <p>📖 {ev.section}</p>}
+                            <p className="text-amber-600">⚠️ {ev.penalty}</p>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant={isCompleted ? "outline" : "default"}
+                            className="w-full text-xs"
+                            onClick={() => toggleComplete(ev.id)}
+                          >
+                            {isCompleted ? "Mark Incomplete" : "Mark Complete"}
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  );
+                })}
+                {dayEvents.length > 3 && (
+                  <span className="text-[10px] text-muted-foreground px-1">+{dayEvents.length - 3} more</span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
