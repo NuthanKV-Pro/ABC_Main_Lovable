@@ -1071,7 +1071,7 @@ const GSTInvoiceGenerator = () => {
 
                   {/* Preview Summary */}
                   <div className="flex justify-end">
-                    <div className="w-64 space-y-1.5 text-sm">
+                    <div className="w-72 space-y-1.5 text-sm">
                       <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatCurrency(totals.subtotal)}</span></div>
                       {totals.totalDiscount > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Discount</span><span className="text-destructive">-{formatCurrency(totals.totalDiscount)}</span></div>}
                       {isInterState ? (
@@ -1082,6 +1082,12 @@ const GSTInvoiceGenerator = () => {
                       </>)}
                       <Separator />
                       <div className="flex justify-between font-bold text-base"><span>Grand Total</span><span className="text-primary">{formatCurrency(totals.grandTotal)}</span></div>
+                      {isForeignCurrency && (
+                        <>
+                          <div className="flex justify-between text-xs"><span className="text-muted-foreground">In {selectedCurrency}</span><span className="font-semibold">{formatForeignCurrency(totals.grandTotal)}</span></div>
+                          <div className="flex justify-between text-[10px] text-muted-foreground"><span>Rate: 1 {selectedCurrency} = ₹{exchangeRate}</span></div>
+                        </>
+                      )}
                     </div>
                   </div>
 
