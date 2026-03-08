@@ -1260,9 +1260,14 @@ const FinancialStatements = () => {
               <Button variant="outline" size="sm" onClick={loadSampleData}>
                 <Calculator className="h-4 w-4 mr-2" /> Sample Data
               </Button>
-              <Button variant="outline" size="sm" onClick={resetData}>
-                <RefreshCw className="h-4 w-4 mr-2" /> Reset
-              </Button>
+              <ResetConfirmDialog
+                onConfirm={resetData}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    <RotateCcw className="h-4 w-4 mr-2" /> Reset
+                  </Button>
+                }
+              />
               <Button variant="default" size="sm" onClick={exportAllStatementsPDF}>
                 <Download className="h-4 w-4 mr-2" /> Export All PDFs
               </Button>

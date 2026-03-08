@@ -706,7 +706,7 @@ const GSTInvoiceGenerator = () => {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button variant="outline" size="sm" onClick={handleResetAll} className="gap-1.5"><RotateCcw className="h-4 w-4" /> Reset</Button>
+            <ResetConfirmDialog onConfirm={handleResetAll} trigger={<Button variant="outline" size="sm" className="gap-1.5"><RefreshCw className="h-4 w-4" /> Reset</Button>} />
             <Dialog>
               <DialogTrigger asChild><Button variant="outline" size="sm" className="gap-1.5"><Save className="h-4 w-4" /> Save Draft</Button></DialogTrigger>
               <DialogContent className="sm:max-w-md">
