@@ -120,6 +120,7 @@ const sampleTransactions: EscrowTransaction[] = [
 
 const Escrow = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [useSampleData, setUseSampleData] = useState(true);
   const [transactions, setTransactions] = useState<EscrowTransaction[]>(sampleTransactions);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);

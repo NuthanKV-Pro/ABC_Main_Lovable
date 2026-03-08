@@ -31,6 +31,7 @@ const itrForms = [
 
 const ITRFilingAssistant = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [assessmentYear, setAssessmentYear] = useState("2026-27");
   const [step, setStep] = useState(1);
 

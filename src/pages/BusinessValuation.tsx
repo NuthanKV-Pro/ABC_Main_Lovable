@@ -268,6 +268,7 @@ const INDUSTRY_BENCHMARKS: Record<string, {
 // ─── COMPONENT ──────────────────────────────────────────────────────────────
 const BusinessValuation = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { toast } = useToast();
 
   // DCF State
@@ -644,7 +645,7 @@ const BusinessValuation = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button variant="ghost" size="icon" onClick={() => goBack()}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>

@@ -1543,6 +1543,7 @@ interface ContractDetails {
 
 const ContractDrafter = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [activeTab, setActiveTab] = useState("contracts");
   const [details, setDetails] = useState<ContractDetails>({
     contractType: "",
@@ -3902,7 +3903,7 @@ const ContractDrafter = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <Button variant="ghost" size="icon" onClick={() => goBack()}>
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>
