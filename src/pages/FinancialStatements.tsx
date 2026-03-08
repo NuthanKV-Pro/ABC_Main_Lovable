@@ -131,7 +131,6 @@ const sampleFinancialData: FinancialData = {
 const FinancialStatements = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
-  const goBack = useGoBack();
   const { toast } = useToast();
   const [data, setData] = useState<FinancialData>(defaultFinancialData);
   const [savedStatements, setSavedStatements] = useState<SavedStatement[]>([]);
