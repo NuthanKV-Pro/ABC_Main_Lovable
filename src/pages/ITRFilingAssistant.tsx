@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, FileText, CheckCircle, Circle, AlertTriangle, Download, ChevronRight, User, Building, Briefcase, Globe } from "lucide-react";
+import { ArrowLeft, FileText, CheckCircle, Circle, AlertTriangle, Download, ChevronRight, User, Building, Briefcase, Globe, Link2, IndianRupee } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useTaxData } from "@/hooks/useTaxData";
+import { useToast } from "@/hooks/use-toast";
 
 interface ChecklistItem {
   id: string;
