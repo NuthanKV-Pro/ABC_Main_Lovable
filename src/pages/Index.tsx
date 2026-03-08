@@ -183,6 +183,53 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
     ]
   },
   {
+    name: "🔀 Compare & Decide",
+    icon: GitCompare,
+    description: "Side-by-side comparisons for smarter financial decisions",
+    tools: [
+      {
+        id: "tax-saving-comparison",
+        title: "PPF vs ELSS vs NPS vs FD",
+        description: "Compare 80C investments: after-tax returns, lock-in, risk",
+        icon: Scale,
+        route: "/tax-saving-comparison",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
+      },
+      {
+        id: "investment-mode-comparison",
+        title: "SIP vs Lumpsum vs RD",
+        description: "Best investment mode for your goal",
+        icon: TrendingUp,
+        route: "/investment-mode-comparison",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
+      },
+      {
+        id: "regime-optimizer",
+        title: "Old vs New Regime",
+        description: "Data-driven tax regime recommendation",
+        icon: GitCompare,
+        route: "/regime-optimizer",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
+      },
+      {
+        id: "insurance-comparison",
+        title: "Term vs Endowment vs ULIP",
+        description: "Insurance products: real returns & smart strategy",
+        icon: Shield,
+        route: "/insurance-comparison",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
+      }
+    ]
+  },
+  {
     name: "Tax Planning & Optimization",
     icon: Calculator,
     description: "Maximize tax savings and optimize your strategy",
