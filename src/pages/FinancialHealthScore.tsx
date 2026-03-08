@@ -123,7 +123,14 @@ const inputFields = [
 
 const FinancialHealthScore = () => {
   const goBack = useGoBack();
-  const [inputs, setInputs] = useState<FinancialInputs>(defaultInputs);
+  const [inputs, setInputs] = useState<FinancialInputs>(() => {
+    const saved: Partial<FinancialInputs> = {};
+    for (const key of Object.keys(defaultInputs) as (keyof FinancialInputs)[]) {
+      const v = parseFloat(localStorage.getItem(`fhs_${key}`) || "0");
+      if (!isNaN(v) && v > 0) saved[key] = v;
+    }
+    return { ...defaultInputs, ...saved };
+  });
   const [calculated, setCalculated] = useState(false);
 
   const scores = useMemo(() => calculateScores(inputs), [inputs]);
