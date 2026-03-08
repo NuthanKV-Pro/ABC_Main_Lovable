@@ -435,7 +435,17 @@ const GSTInvoiceGenerator = () => {
   }, [items, isInterState]);
 
   const showEWayBill = totals.grandTotal > 50000;
+  const currencyInfo = currencyData.find(c => c.code === selectedCurrency) || currencyData[0];
+  const isForeignCurrency = selectedCurrency !== "INR";
   const formatCurrency = (n: number) => "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const formatForeignCurrency = (n: number) => {
+    const fcAmount = exchangeRate > 0 ? n / exchangeRate : 0;
+    return `${currencyInfo.symbol}${fcAmount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+  const formatDualCurrency = (n: number) => {
+    if (!isForeignCurrency) return formatCurrency(n);
+    return `${formatForeignCurrency(n)} (${formatCurrency(n)})`;
+  };
   const isSellerGSTINValid = validateGSTIN(sellerGSTIN);
   const isBuyerGSTINValid = !buyerGSTIN || validateGSTIN(buyerGSTIN);
 
