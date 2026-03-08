@@ -148,14 +148,25 @@ const TDSCalculator = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
-        <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => goBack()}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">TDS Calculator & Tracker</h1>
-            <p className="text-muted-foreground text-sm">Calculate TDS rates by section & reconcile Form 26AS</p>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => goBack()}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">TDS Calculator & Tracker</h1>
+              <p className="text-muted-foreground text-sm">Calculate TDS rates by section & reconcile Form 26AS</p>
+            </div>
           </div>
+          {taxData.salary.hasData && !importedFromSalary && (
+            <Button variant="outline" className="gap-2 border-primary/50" onClick={importSalaryData}>
+              <Link2 className="h-4 w-4" />
+              Import Salary Data
+            </Button>
+          )}
+          {importedFromSalary && (
+            <Badge variant="secondary" className="gap-1"><CheckCircle className="h-3 w-3" /> Salary Imported</Badge>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
