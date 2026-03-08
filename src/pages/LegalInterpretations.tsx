@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
-import { ArrowLeft, Scale, Search, BookOpen, FileText, Gavel, Filter, ChevronDown, ExternalLink, Clock, Tag, Building, Copy, Check } from "lucide-react";
+import { ArrowLeft, Scale, Search, BookOpen, FileText, Gavel, Filter, ChevronDown, ExternalLink, Clock, Tag, Building, Copy, Check, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -1176,6 +1176,49 @@ const courts = [
   "Permanent Court of Arbitration, The Hague"
 ];
 
+// Related tools mapping: category/keyword → route + label
+const relatedToolsMap: { keywords: string[]; route: string; label: string }[] = [
+  { keywords: ["Section 54", "Capital Gains", "capital gain", "Section 45", "Section 48", "Section 49", "Section 50B", "Section 55"], route: "/section-54-planner", label: "Section 54 Planner" },
+  { keywords: ["Capital Gains", "capital gain", "LTCG", "STCG"], route: "/cg", label: "Capital Gains Calculator" },
+  { keywords: ["Transfer Pricing", "Section 92", "Section 92C", "Section 92CA", "Section 92E", "Form 3CEB"], route: "/foreign-income-dtaa", label: "Foreign Income & DTAA" },
+  { keywords: ["Depreciation", "Section 32"], route: "/financial-statements", label: "Financial Statements" },
+  { keywords: ["TDS", "Section 194", "Section 195", "Section 192", "Form 16", "Form 26AS"], route: "/tds-calculator", label: "TDS Calculator" },
+  { keywords: ["Section 80C", "Section 80D", "Deduction"], route: "/deductions", label: "Deductions" },
+  { keywords: ["GST", "CGST", "IGST", "GSTR", "Input Tax Credit", "ITC"], route: "/gst-invoice-generator", label: "GST Invoice Generator" },
+  { keywords: ["Section 44AB", "Tax Audit", "audit"], route: "/tax-audit-checker", label: "Tax Audit Checker" },
+  { keywords: ["ITR", "Return", "Section 139"], route: "/itr-filing-assistant", label: "ITR Filing Assistant" },
+  { keywords: ["Salary", "Section 15", "Section 17", "perquisite"], route: "/salary", label: "Salary Income" },
+  { keywords: ["House Property", "Section 22", "Section 24"], route: "/hp", label: "House Property" },
+  { keywords: ["Business", "Section 28", "Section 37", "Section 43B"], route: "/pgbp", label: "Business & Profession" },
+  { keywords: ["IBC", "Insolvency", "CIRP", "liquidation", "CoC", "NCLT"], route: "/financial-ratios", label: "Financial Ratios" },
+  { keywords: ["RERA", "Real Estate", "homebuyer"], route: "/stamp-duty-calculator", label: "Stamp Duty Calculator" },
+  { keywords: ["HRA", "Section 10(13A)"], route: "/salary-restructuring", label: "Salary Restructuring" },
+  { keywords: ["Regime", "Old Regime", "New Regime"], route: "/regime-optimizer", label: "Regime Optimizer" },
+  { keywords: ["Section 54EC", "bonds"], route: "/section-54-planner", label: "Section 54 Planner" },
+  { keywords: ["HUF"], route: "/huf-tax-planner", label: "HUF Tax Planner" },
+  { keywords: ["Tax Notice", "Section 148", "Section 153A", "reassessment"], route: "/tax-notice-assistant", label: "Tax Notice Assistant" },
+  { keywords: ["compliance", "penalty", "Section 234", "Section 271"], route: "/compliance-calendar", label: "Compliance Calendar" },
+];
+
+const getRelatedTools = (caseItem: CaseLaw): { route: string; label: string }[] => {
+  const tools: { route: string; label: string }[] = [];
+  const seen = new Set<string>();
+  const searchText = `${caseItem.category} ${caseItem.summary} ${caseItem.relevantSections.join(' ')} ${caseItem.keyPrinciples.join(' ')}`;
+
+  for (const mapping of relatedToolsMap) {
+    if (seen.has(mapping.route)) continue;
+    for (const keyword of mapping.keywords) {
+      if (searchText.toLowerCase().includes(keyword.toLowerCase())) {
+        tools.push({ route: mapping.route, label: mapping.label });
+        seen.add(mapping.route);
+        break;
+      }
+    }
+    if (tools.length >= 3) break;
+  }
+  return tools;
+};
+
 const LegalInterpretations = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
@@ -1539,6 +1582,29 @@ For a detailed analysis, please consider:
                               ))}
                             </div>
                           </div>
+                          {/* Related Tools */}
+                          {(() => {
+                            const tools = getRelatedTools(caseItem);
+                            if (tools.length === 0) return null;
+                            return (
+                              <div>
+                                <h4 className="font-medium mb-2 flex items-center gap-1.5">
+                                  <ArrowRight className="h-3.5 w-3.5 text-primary" />
+                                  Related Tools:
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {tools.map((tool, idx) => (
+                                    <Link key={idx} to={tool.route}>
+                                      <Badge className="cursor-pointer bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors gap-1">
+                                        {tool.label}
+                                        <ExternalLink className="h-3 w-3" />
+                                      </Badge>
+                                    </Link>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })()}
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>

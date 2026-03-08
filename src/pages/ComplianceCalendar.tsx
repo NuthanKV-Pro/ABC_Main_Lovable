@@ -4,7 +4,7 @@ import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Calendar, CheckCircle, Clock, AlertTriangle, Building, FileText, Receipt, Bell, BellOff, Filter, List, CalendarDays, ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { ArrowLeft, Calendar, CheckCircle, Clock, AlertTriangle, Building, FileText, Receipt, Bell, BellOff, Filter, List, CalendarDays, ChevronLeft, ChevronRight, Download, CalendarPlus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -407,6 +407,56 @@ const ComplianceCalendar = () => {
     setCalendarMonth(new Date(now.getFullYear(), now.getMonth(), 1));
   };
 
+  const exportICS = () => {
+    const sorted = [...filteredEvents].sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+    const lines: string[] = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//ABC Pro//Compliance Calendar//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'X-WR-CALNAME:Compliance Calendar FY 2026-27',
+    ];
+
+    sorted.forEach(event => {
+      const dueDate = new Date(event.dueDate);
+      const dtStart = `${dueDate.getFullYear()}${String(dueDate.getMonth() + 1).padStart(2, '0')}${String(dueDate.getDate()).padStart(2, '0')}`;
+      // Reminder 7 days before
+      const uid = `${event.id}@abcpro-compliance`;
+      lines.push('BEGIN:VEVENT');
+      lines.push(`DTSTART;VALUE=DATE:${dtStart}`);
+      lines.push(`DTEND;VALUE=DATE:${dtStart}`);
+      lines.push(`SUMMARY:${event.title}`);
+      lines.push(`DESCRIPTION:${event.description}\\nApplicable: ${event.applicable}\\nPenalty: ${event.penalty}${event.section ? '\\nSection: ' + event.section : ''}${event.formNo ? '\\nForm: ' + event.formNo : ''}`);
+      lines.push(`CATEGORIES:${categoryLabels[event.category]}`);
+      lines.push(`UID:${uid}`);
+      lines.push('BEGIN:VALARM');
+      lines.push('TRIGGER:-P7D');
+      lines.push('ACTION:DISPLAY');
+      lines.push(`DESCRIPTION:${event.title} is due in 7 days`);
+      lines.push('END:VALARM');
+      lines.push('BEGIN:VALARM');
+      lines.push('TRIGGER:-P1D');
+      lines.push('ACTION:DISPLAY');
+      lines.push(`DESCRIPTION:${event.title} is due tomorrow!`);
+      lines.push('END:VALARM');
+      lines.push('END:VEVENT');
+    });
+
+    lines.push('END:VCALENDAR');
+    const content = lines.join('\r\n');
+    const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Compliance_Calendar_FY2026-27.ics`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast({ title: "📅 ICS Exported", description: `${sorted.length} deadlines exported. Import into Google Calendar, Outlook, or Apple Calendar.` });
+  };
+
   const exportPDF = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -609,6 +659,14 @@ const ComplianceCalendar = () => {
                 <CalendarDays className="h-4 w-4" /> Calendar
               </Button>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportICS}
+              className="gap-2"
+            >
+              <CalendarPlus className="h-4 w-4" /> Export .ics
+            </Button>
             <Button
               variant="outline"
               size="sm"
