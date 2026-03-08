@@ -23,6 +23,13 @@ const FIRECalculator = () => {
   const [inflation, setInflation] = useState(6);
   const [swr, setSwr] = useState(3.5);
 
+  useAutoPopulate([
+    { key: "fhs_age", setter: setAge, defaultValue: 30 },
+    { key: "fhs_monthlyExpenses", setter: setMonthlyExp, defaultValue: 50000 },
+    { key: "fhs_totalInvestments", setter: setCurrentSavings, defaultValue: 500000 },
+    { key: "fhs_monthlySavings", setter: setMonthlySavings, defaultValue: 30000 },
+  ]);
+
   const annualExp = monthlyExp * 12;
   const fireNumber = annualExp / (swr / 100);
   const realReturn = ((1 + expectedReturn / 100) / (1 + inflation / 100) - 1);

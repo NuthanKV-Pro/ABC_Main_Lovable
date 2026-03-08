@@ -25,6 +25,10 @@ const HomeAffordabilityCalculator = () => {
   const [existingEMIs, setExistingEMIs] = useState<number>(0);
   const [creditCardDues, setCreditCardDues] = useState<number>(0);
   const [otherDebts, setOtherDebts] = useState<number>(0);
+
+  useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
+  ]);
   
   // Loan parameters
   const [interestRate, setInterestRate] = useState<number>(8.5);

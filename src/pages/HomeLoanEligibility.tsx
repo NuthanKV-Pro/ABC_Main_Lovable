@@ -19,6 +19,11 @@ const HomeLoanEligibility = () => {
   const [tenureYears, setTenureYears] = useState<number>(20);
   const [creditScore, setCreditScore] = useState<string>("750-799");
 
+  useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
+    { key: "fhs_monthlyDebtPayment", setter: setExistingEMI, defaultValue: 0 },
+  ]);
+
   // FOIR (Fixed Obligation to Income Ratio) based on credit score
   const getFOIR = (score: string) => {
     switch (score) {

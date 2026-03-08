@@ -20,6 +20,11 @@ const RetirementCalculator = () => {
   const [expectedReturn, setExpectedReturn] = useState<number>(8);
   const [lifeExpectancy, setLifeExpectancy] = useState<number>(85);
 
+  useAutoPopulate([
+    { key: "fhs_age", setter: setCurrentAge, defaultValue: 30 },
+    { key: "fhs_monthlyExpenses", setter: setMonthlyExpenses, defaultValue: 50000 },
+  ]);
+
   const yearsToRetirement = Math.max(0, retirementAge - currentAge);
   const yearsInRetirement = Math.max(0, lifeExpectancy - retirementAge);
 

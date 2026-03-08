@@ -39,6 +39,10 @@ const BudgetPlanner = () => {
   const [categories, setCategories] = useState<BudgetCategory[]>(defaultCategories);
   const [newCategory, setNewCategory] = useState({ name: '', type: 'need' as 'need' | 'want' | 'saving' });
 
+  useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
+  ]);
+
   const addCategory = () => {
     if (newCategory.name.trim()) {
       setCategories([
