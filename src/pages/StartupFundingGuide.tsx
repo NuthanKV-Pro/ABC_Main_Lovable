@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Rocket, ExternalLink, Search, Landmark, Users, Building2 } from "lucide-react";
+import { ArrowLeft, Rocket, ExternalLink, Search, Landmark, Users, Building2, Zap } from "lucide-react";
 import { useGoBack } from "@/hooks/useGoBack";
 
 interface FundingEntry {
@@ -69,6 +69,21 @@ const ANGELS: FundingEntry[] = [
   { name: "Chennai Angels", description: "South India angel network backing startups in SaaS, healthcare, and manufacturing.", stage: "Pre-Seed to Seed", sector: "SaaS, Healthcare, Manufacturing", ticketSize: "₹25L–₹2Cr", website: "https://www.chennaiangels.com", keyPeople: [{ name: "Sriram Subramanya", linkedin: "https://www.linkedin.com/in/sriramsubramanya/" }] },
 ];
 
+const ACCELERATORS: FundingEntry[] = [
+  { name: "Y Combinator", description: "World's top accelerator. $500K investment for 7% equity. 3-month batch program, open to Indian startups.", stage: "Pre-Seed to Seed", sector: "Agnostic", ticketSize: "$500K", website: "https://www.ycombinator.com", keyPeople: [{ name: "Garry Tan", linkedin: "https://www.linkedin.com/in/garrytan/" }] },
+  { name: "Techstars", description: "Global accelerator with India-focused programs. $120K investment, mentorship-driven.", stage: "Pre-Seed to Seed", sector: "Agnostic", ticketSize: "$120K", website: "https://www.techstars.com", keyPeople: [{ name: "Maelle Gavet", linkedin: "https://www.linkedin.com/in/maellegalvet/" }] },
+  { name: "GSF Accelerator", description: "India's first & largest private accelerator. $150K–$250K for 8–15% equity.", stage: "Pre-Seed", sector: "Tech, SaaS, Consumer", ticketSize: "$150K–$250K", website: "https://gsfindia.com", keyPeople: [{ name: "Rajesh Sawhney", linkedin: "https://www.linkedin.com/in/rajeshsawhney/" }] },
+  { name: "Microsoft for Startups (India)", description: "Up to $150K Azure credits, go-to-market support, enterprise customer connects.", stage: "Seed to Series A", sector: "SaaS, AI/ML, Cloud", ticketSize: "$150K credits", website: "https://www.microsoft.com/en-in/startups", keyPeople: [] },
+  { name: "Google for Startups Accelerator India", description: "3-month equity-free program. Mentorship from Google engineers, GCP credits up to $200K.", stage: "Seed to Series A", sector: "AI/ML, Fintech, Healthtech", ticketSize: "Equity-free + $200K credits", website: "https://startup.google.com/accelerator/india/", keyPeople: [] },
+  { name: "Axilor Ventures", description: "Founded by Infosys co-founders. 100-day accelerator program + seed funding.", stage: "Pre-Seed to Seed", sector: "SaaS, Consumer, Fintech", ticketSize: "₹25L–₹2Cr", website: "https://axilor.com", keyPeople: [{ name: "Kris Gopalakrishnan", linkedin: "https://www.linkedin.com/in/kabordi/" }] },
+  { name: "Zone Startups India (BSE)", description: "BSE-backed accelerator in Mumbai. Focus on fintech and enterprise tech.", stage: "Seed", sector: "Fintech, Enterprise", ticketSize: "₹15L–₹50L", website: "https://zonestartups.com", keyPeople: [] },
+  { name: "Jio GenNext", description: "Reliance-backed accelerator for early-stage startups. Access to Jio ecosystem.", stage: "Seed/Early", sector: "Consumer Tech, IoT, Media", ticketSize: "Up to ₹25L + ecosystem access", website: "https://www.jiogennext.com", keyPeople: [] },
+  { name: "NASSCOM 10,000 Startups", description: "India's largest tech startup initiative. Incubation, funding connects, and market access.", stage: "Ideation to Seed", sector: "Deep Tech, AI, SaaS", ticketSize: "Varies", website: "https://10000startups.com", keyPeople: [] },
+  { name: "Villgro", description: "India's oldest social enterprise incubator. Focus on healthcare, agriculture, and education.", stage: "Pre-Seed to Seed", sector: "Healthcare, Agri, Education", ticketSize: "₹25L–₹1.5Cr", website: "https://villgro.org", keyPeople: [{ name: "Paul Basil", linkedin: "https://www.linkedin.com/in/paulbasil/" }] },
+  { name: "500 Global (fka 500 Startups)", description: "Global accelerator with active India investments. $150K for 6% equity.", stage: "Pre-Seed to Seed", sector: "Agnostic", ticketSize: "$150K", website: "https://500.co", keyPeople: [{ name: "Christine Tsai", linkedin: "https://www.linkedin.com/in/christinetsai/" }] },
+  { name: "Chinaccelerator / MOX", description: "SOSV-backed accelerator with cross-border India-Asia focus. $150K investment.", stage: "Pre-Seed to Seed", sector: "Mobile, Cross-border", ticketSize: "$150K", website: "https://chinaccelerator.com", keyPeople: [] },
+];
+
 const ALL_STAGES = ["Pre-Seed", "Seed", "Series A", "Series A+", "Growth", "All"];
 const ALL_SECTORS = ["Agnostic", "SaaS", "Consumer", "Fintech", "Healthcare", "Deep Tech", "D2C", "MSME", "All"];
 
@@ -90,6 +105,7 @@ const StartupFundingGuide = () => {
   const filteredGovt = useMemo(() => filterEntries(GOVT_SCHEMES), [search, stageFilter, sectorFilter]);
   const filteredVCs = useMemo(() => filterEntries(VCS), [search, stageFilter, sectorFilter]);
   const filteredAngels = useMemo(() => filterEntries(ANGELS), [search, stageFilter, sectorFilter]);
+  const filteredAccelerators = useMemo(() => filterEntries(ACCELERATORS), [search, stageFilter, sectorFilter]);
 
   const renderCard = (entry: FundingEntry) => (
     <Card key={entry.name} className="hover:border-primary/30 transition-colors">
@@ -154,10 +170,11 @@ const StartupFundingGuide = () => {
         </Card>
 
         <Tabs defaultValue="govt" className="space-y-4">
-          <TabsList className="grid grid-cols-3 w-full max-w-lg">
+          <TabsList className="grid grid-cols-4 w-full max-w-2xl">
             <TabsTrigger value="govt" className="flex items-center gap-1"><Landmark className="h-4 w-4" /> Govt ({filteredGovt.length})</TabsTrigger>
             <TabsTrigger value="vcs" className="flex items-center gap-1"><Building2 className="h-4 w-4" /> VCs ({filteredVCs.length})</TabsTrigger>
             <TabsTrigger value="angels" className="flex items-center gap-1"><Users className="h-4 w-4" /> Angels ({filteredAngels.length})</TabsTrigger>
+            <TabsTrigger value="accelerators" className="flex items-center gap-1"><Zap className="h-4 w-4" /> Accelerators ({filteredAccelerators.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="govt">
@@ -175,6 +192,12 @@ const StartupFundingGuide = () => {
           <TabsContent value="angels">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredAngels.length > 0 ? filteredAngels.map(renderCard) : <p className="text-muted-foreground text-center col-span-2 py-8">No matching angel networks found.</p>}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="accelerators">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredAccelerators.length > 0 ? filteredAccelerators.map(renderCard) : <p className="text-muted-foreground text-center col-span-2 py-8">No matching accelerators found.</p>}
             </div>
           </TabsContent>
         </Tabs>
