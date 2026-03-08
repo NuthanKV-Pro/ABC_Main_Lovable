@@ -827,7 +827,142 @@ const GSTInvoiceGenerator = () => {
           </CardContent>
         </Card>
 
-        {/* e-Way Bill Section */}
+        {/* Live Invoice Preview */}
+        <Card className="mt-6">
+          <Collapsible open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+            <CardHeader className="pb-3">
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center justify-between w-full text-left">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Eye className="h-5 w-5 text-primary" />
+                    Live Invoice Preview
+                  </CardTitle>
+                  {isPreviewOpen ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
+                </button>
+              </CollapsibleTrigger>
+              <CardDescription>See a live formatted preview of your invoice as you fill in details</CardDescription>
+            </CardHeader>
+            <CollapsibleContent>
+              <CardContent className="pt-0">
+                <div className="border rounded-lg bg-card p-6 space-y-6 shadow-inner max-w-3xl mx-auto">
+                  {/* Preview Header */}
+                  <div className="text-center border-b pb-4">
+                    <h2 className="text-2xl font-bold text-primary tracking-tight">TAX INVOICE</h2>
+                    <div className="flex justify-center gap-4 text-sm text-muted-foreground mt-1">
+                      <span>Invoice No: <strong className="text-foreground">{invoiceNo || "—"}</strong></span>
+                      <span>Date: <strong className="text-foreground">{invoiceDate || "—"}</strong></span>
+                    </div>
+                    <div className="flex justify-center gap-3 mt-2">
+                      <Badge variant={isInterState ? "default" : "secondary"}>{isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}</Badge>
+                      {reverseCharge && <Badge variant="outline" className="text-amber-600 border-amber-400">Reverse Charge</Badge>}
+                    </div>
+                  </div>
+
+                  {/* Seller / Buyer */}
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="p-3 rounded-lg bg-muted/40 border">
+                      <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">Seller</p>
+                      <p className="font-semibold text-foreground">{sellerName || "—"}</p>
+                      <p className="text-muted-foreground text-xs">GSTIN: {sellerGSTIN || "—"}</p>
+                      <p className="text-muted-foreground text-xs">State: {states[sellerState] || "—"}</p>
+                      {formatAddr(sellerBillingAddress) && <p className="text-muted-foreground text-xs mt-1">{formatAddr(sellerBillingAddress)}</p>}
+                    </div>
+                    <div className="p-3 rounded-lg bg-muted/40 border">
+                      <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">Buyer</p>
+                      <p className="font-semibold text-foreground">{buyerName || "—"}</p>
+                      <p className="text-muted-foreground text-xs">GSTIN: {buyerGSTIN || "B2C (Unregistered)"}</p>
+                      <p className="text-muted-foreground text-xs">State: {states[buyerState] || "—"}</p>
+                      {formatAddr(buyerBillingAddress) && <p className="text-muted-foreground text-xs mt-1">Billing: {formatAddr(buyerBillingAddress)}</p>}
+                      {!shippingSameAsBilling && formatAddr(buyerShippingAddress) && <p className="text-muted-foreground text-xs">Shipping: {formatAddr(buyerShippingAddress)}</p>}
+                    </div>
+                  </div>
+
+                  {/* Items Table */}
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/60">
+                          <TableHead className="text-xs">#</TableHead>
+                          <TableHead className="text-xs">Description</TableHead>
+                          <TableHead className="text-xs">HSN/SAC</TableHead>
+                          <TableHead className="text-xs text-right">Qty</TableHead>
+                          <TableHead className="text-xs text-right">Rate</TableHead>
+                          <TableHead className="text-xs text-right">Disc%</TableHead>
+                          <TableHead className="text-xs text-right">Taxable</TableHead>
+                          {isInterState ? (
+                            <TableHead className="text-xs text-right">IGST</TableHead>
+                          ) : (<>
+                            <TableHead className="text-xs text-right">CGST</TableHead>
+                            <TableHead className="text-xs text-right">SGST</TableHead>
+                          </>)}
+                          <TableHead className="text-xs text-right">Total</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {items.map((item, idx) => {
+                          const lt = item.qty * item.rate;
+                          const da = (lt * item.discount) / 100;
+                          const tv = lt - da;
+                          const gstAmt = (tv * item.gstRate) / 100;
+                          return (
+                            <TableRow key={item.id} className="text-xs">
+                              <TableCell>{idx + 1}</TableCell>
+                              <TableCell className="font-medium">{item.description || "—"}</TableCell>
+                              <TableCell className="font-mono">{item.hsnCode || "—"}</TableCell>
+                              <TableCell className="text-right">{item.qty}</TableCell>
+                              <TableCell className="text-right">{formatCurrency(item.rate)}</TableCell>
+                              <TableCell className="text-right">{item.discount}%</TableCell>
+                              <TableCell className="text-right">{formatCurrency(tv)}</TableCell>
+                              {isInterState ? (
+                                <TableCell className="text-right">{formatCurrency(gstAmt)}</TableCell>
+                              ) : (<>
+                                <TableCell className="text-right">{formatCurrency(gstAmt / 2)}</TableCell>
+                                <TableCell className="text-right">{formatCurrency(gstAmt / 2)}</TableCell>
+                              </>)}
+                              <TableCell className="text-right font-semibold">{formatCurrency(tv + gstAmt)}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Preview Summary */}
+                  <div className="flex justify-end">
+                    <div className="w-64 space-y-1.5 text-sm">
+                      <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatCurrency(totals.subtotal)}</span></div>
+                      {totals.totalDiscount > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Discount</span><span className="text-destructive">-{formatCurrency(totals.totalDiscount)}</span></div>}
+                      {isInterState ? (
+                        <div className="flex justify-between"><span className="text-muted-foreground">IGST</span><span>{formatCurrency(totals.totalIGST)}</span></div>
+                      ) : (<>
+                        <div className="flex justify-between"><span className="text-muted-foreground">CGST</span><span>{formatCurrency(totals.totalCGST)}</span></div>
+                        <div className="flex justify-between"><span className="text-muted-foreground">SGST</span><span>{formatCurrency(totals.totalSGST)}</span></div>
+                      </>)}
+                      <Separator />
+                      <div className="flex justify-between font-bold text-base"><span>Grand Total</span><span className="text-primary">{formatCurrency(totals.grandTotal)}</span></div>
+                    </div>
+                  </div>
+
+                  {/* e-Way Bill in preview */}
+                  {showEWayBill && (eWayBill.transporterName || eWayBill.vehicleNumber) && (
+                    <div className="border-t pt-3 text-xs space-y-1">
+                      <p className="font-semibold text-sm flex items-center gap-1.5"><Truck className="h-4 w-4" /> Transport Details</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-muted-foreground">
+                        {eWayBill.transporterName && <span>Transporter: <strong className="text-foreground">{eWayBill.transporterName}</strong></span>}
+                        {eWayBill.vehicleNumber && <span>Vehicle: <strong className="text-foreground">{eWayBill.vehicleNumber}</strong></span>}
+                        <span>Mode: <strong className="text-foreground capitalize">{eWayBill.transportMode}</strong></span>
+                        {eWayBill.distanceKm && <span>Distance: <strong className="text-foreground">{eWayBill.distanceKm} km</strong></span>}
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="text-[10px] text-muted-foreground text-center pt-2 border-t">This is a computer-generated invoice. No signature required.</p>
+                </div>
+              </CardContent>
+            </CollapsibleContent>
+          </Collapsible>
+        </Card>
+
         {showEWayBill && (
           <Card className="mt-6 border-amber-500/30">
             <CardHeader>
