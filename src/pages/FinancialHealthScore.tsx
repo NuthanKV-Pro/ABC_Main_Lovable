@@ -155,7 +155,6 @@ const FinancialHealthScore = () => {
 
   const handleCalculate = () => setCalculated(true);
   const handleReset = () => {
-    if (!window.confirm("Reset all data in this tool?")) return;
     Object.keys(defaultInputs).forEach(key => localStorage.removeItem(`fhs_${key}`));
     setInputs(defaultInputs);
     setCalculated(false);

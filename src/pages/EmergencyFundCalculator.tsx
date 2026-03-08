@@ -146,17 +146,14 @@ const EmergencyFundCalculator = () => {
                 <p className="text-sm text-muted-foreground">Plan your financial safety net</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => {
-              if (!window.confirm("Reset all data in this tool?")) return;
+            <ResetConfirmDialog onConfirm={() => {
               ['emergency_fund_target', 'emergency_fund_current', 'emergency_fund_saved', 'emergency_fund_months'].forEach(k => localStorage.removeItem(k));
               setMonthlyIncome(75000); setRent(15000); setUtilities(5000); setGroceries(8000);
               setTransportation(5000); setInsurance(3000); setEmiPayments(10000); setOtherExpenses(5000);
               setJobStability("moderate"); setDependents(2); setHealthConditions("none");
               setHasSpouseIncome("no"); setIndustryType("stable");
               setCurrentSavings(100000); setMonthlySavingCapacity(15000);
-            }}>
-              <RotateCcw className="h-4 w-4" />
-            </Button>
+            }} />
           </div>
         </div>
       </header>

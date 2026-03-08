@@ -174,15 +174,12 @@ const NetWorthCalculator = () => {
                 <p className="text-sm text-muted-foreground">Track assets vs liabilities</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => {
-              if (!window.confirm("Reset all data in this tool?")) return;
+            <ResetConfirmDialog onConfirm={() => {
               ['net_worth_total', 'net_worth_assets', 'net_worth_liabilities', 'net_worth_data'].forEach(k => localStorage.removeItem(k));
               setAssets(defaultAssets.map(a => ({ ...a, value: 0 })));
               setLiabilities(defaultLiabilities.map(l => ({ ...l, value: 0 })));
               toast({ title: "Data Reset", description: "All net worth data has been cleared." });
-            }}>
-              <RotateCcw className="h-4 w-4" />
-            </Button>
+            }} />
           </div>
         </div>
       </header>

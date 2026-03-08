@@ -684,14 +684,11 @@ const ComplianceCalendar = () => {
               {notificationsEnabled ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
               {notificationsEnabled ? "Notifications On" : "Enable Alerts"}
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => {
-              if (!window.confirm("Reset all completed status?")) return;
+            <ResetConfirmDialog onConfirm={() => {
               localStorage.removeItem('compliance_completed_2026');
               setCompletedIds(new Set());
               toast({ title: "Data Reset", description: "All completion status has been cleared." });
-            }}>
-              <RotateCcw className="h-4 w-4" />
-            </Button>
+            }} />
           </div>
         </div>
 

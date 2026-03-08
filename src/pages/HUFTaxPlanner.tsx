@@ -84,14 +84,11 @@ const HUFTaxPlanner = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => {
-              if (!window.confirm("Reset all data in this tool?")) return;
+            <ResetConfirmDialog onConfirm={() => {
               localStorage.removeItem('huf_planner_data');
               setHufName(""); setKartaName(""); setMembers([]); setIncomes([]);
               setDed80C(0); setDed80D(0); setIndIncome(0); setIndDed(0);
-            }}>
-              <RotateCcw className="h-4 w-4" />
-            </Button>
+            }} />
             <ExportButton getConfig={getExportConfig} />
           </div>
         </div>

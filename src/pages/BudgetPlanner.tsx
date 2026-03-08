@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Plus, Trash2, PiggyBank, TrendingUp, AlertTriangle, CheckCircle, Target, Lightbulb, Info, RotateCcw } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, PiggyBank, TrendingUp, AlertTriangle, CheckCircle, Target, Lightbulb, Info } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -115,13 +116,10 @@ const BudgetPlanner = () => {
                 <p className="text-sm text-muted-foreground">Create & track monthly budgets</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => {
-              if (!window.confirm("Reset all data in this tool?")) return;
+            <ResetConfirmDialog onConfirm={() => {
               setMonthlyIncome(100000); setCategories(defaultCategories);
               setNewCategory({ name: '', type: 'need' });
-            }}>
-              <RotateCcw className="h-4 w-4" />
-            </Button>
+            }} />
           </div>
         </div>
       </header>

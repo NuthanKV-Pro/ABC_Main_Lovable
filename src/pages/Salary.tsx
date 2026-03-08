@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Save, Download, ExternalLink, RefreshCw } from "lucide-react";
+import { ArrowLeft, Save, Download, ExternalLink } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import Chatbot from "@/components/Chatbot";
 import TaxBreakdownCharts from "@/components/TaxBreakdownCharts";
 import TaxDeadlineReminders from "@/components/TaxDeadlineReminders";
@@ -233,7 +234,6 @@ const Salary = () => {
   };
 
   const handleClearForm = () => {
-    if (!window.confirm("Reset all data in this tool?")) return;
     setEmployerName("");
     setOfficeAddress("");
     setEmploymentNature("");

@@ -103,14 +103,11 @@ const RetirementCalculator = () => {
                 <p className="text-sm text-muted-foreground">Plan your retirement savings</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => {
-              if (!window.confirm("Reset all data in this tool?")) return;
+            <ResetConfirmDialog onConfirm={() => {
               ['retirement_corpus_needed', 'retirement_monthly_savings', 'retirement_data'].forEach(k => localStorage.removeItem(k));
               setCurrentAge(30); setRetirementAge(60); setMonthlyExpenses(50000);
               setInflationRate(6); setExpectedReturn(8); setLifeExpectancy(85);
-            }}>
-              <RotateCcw className="w-4 h-4" />
-            </Button>
+            }} />
           </div>
         </div>
       </header>

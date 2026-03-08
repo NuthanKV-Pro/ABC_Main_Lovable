@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Save, RotateCcw } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import Chatbot from "@/components/Chatbot";
 import { useToast } from "@/hooks/use-toast";
 
@@ -69,8 +70,7 @@ const OtherSources = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => {
-                if (!window.confirm("Reset all data in this tool?")) return;
+              <ResetConfirmDialog onConfirm={() => {
                 localStorage.removeItem('os_total');
                 setIncomeData([
                   { particulars: "Bank SB Interest", amount: "" },
@@ -79,9 +79,7 @@ const OtherSources = () => {
                   { particulars: "Other Income", amount: "" },
                 ]);
                 toast({ title: "Data Reset", description: "All other sources data has been cleared." });
-              }}>
-                <RotateCcw className="w-4 h-4" />
-              </Button>
+              }} />
               <Button 
                 onClick={handleSave}
                 className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"

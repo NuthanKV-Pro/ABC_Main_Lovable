@@ -117,13 +117,10 @@ const SIPCalculator = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => {
-                if (!window.confirm("Reset all data in this tool?")) return;
+              <ResetConfirmDialog onConfirm={() => {
                 ['sip_monthly', 'sip_data'].forEach(k => localStorage.removeItem(k));
                 setMonthlyInvestment("10000"); setDuration("10"); setExpectedReturn("12");
-              }}>
-                <RotateCcw className="h-4 w-4" />
-              </Button>
+              }} />
               <ExportButton getConfig={getExportConfig} />
             </div>
           </div>

@@ -257,7 +257,6 @@ const FinancialStatements = () => {
 
   // Reset data
   const resetData = () => {
-    if (!window.confirm("Reset all data in this tool?")) return;
     ['financialStatementsData', 'financialStatementsJournals', 'financialStatementsSaved'].forEach(k => localStorage.removeItem(k));
     setData(defaultFinancialData);
     setJournalEntries([]);

@@ -403,7 +403,6 @@ const GSTInvoiceGenerator = () => {
   };
 
   const handleResetAll = () => {
-    if (!window.confirm("Reset all data in this tool?")) return;
     localStorage.removeItem(DRAFTS_KEY);
     setSavedDrafts([]);
     setSellerGSTIN(""); setBuyerGSTIN(""); setSellerName(""); setBuyerName("");

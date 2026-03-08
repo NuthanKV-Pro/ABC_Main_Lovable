@@ -1251,15 +1251,12 @@ const FinancialRatios = () => {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={() => {
-              if (!window.confirm("Reset all data in this tool?")) return;
+            <ResetConfirmDialog onConfirm={() => {
               ['financialRatiosData', 'financialRatiosMultiYear', 'financialRatiosIndustry', 'financialRatiosCompanyName', 'financialRatiosSavedReports'].forEach(k => localStorage.removeItem(k));
               setFinancialData(defaultFinancialData); setMultiYearData([]); setRatiosCalculated(false);
               setSelectedIndustry('manufacturing'); setCompanyName(''); setSavedReports([]);
               toast({ title: "Data Reset", description: "All financial ratios data has been cleared." });
-            }}>
-              <RotateCcw className="w-4 h-4" />
-            </Button>
+            }} />
             {/* Save Report Button */}
             <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
               <DialogTrigger asChild>
