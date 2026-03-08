@@ -226,6 +226,26 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         tag: "New",
         tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
         starred: true
+      },
+      {
+        id: "my-financial-profile",
+        title: "My Financial Profile",
+        description: "Unified snapshot of income, tax, investments, debt & goals",
+        icon: Users,
+        route: "/my-financial-profile",
+        tag: "New",
+        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+        starred: true
+      },
+      {
+        id: "quick-summary",
+        title: "Quick Summary",
+        description: "Key numbers at a glance — taxable income, net worth, FIRE progress",
+        icon: BarChart,
+        route: "/quick-summary",
+        tag: "New",
+        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+        starred: true
       }
     ]
   },
