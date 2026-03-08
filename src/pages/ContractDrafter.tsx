@@ -3200,6 +3200,7 @@ const ContractDrafter = () => {
       witnessName: "",
     });
     setGeneratedContract("");
+    setImportedClauses([]);
     toast({
       title: "Form Reset",
       description: "All fields have been cleared.",
