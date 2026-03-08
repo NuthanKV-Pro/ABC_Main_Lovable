@@ -109,6 +109,8 @@ export const routeMap: Record<string, RouteInfo> = {
   "/life-event-wizards": { label: "Life Event Wizards", parent: "/prototypes" },
   "/financial-health-score": { label: "Financial Health Score", parent: "/prototypes" },
   "/smart-action-plan": { label: "Smart Action Plan", parent: "/prototypes" },
+  "/my-financial-profile": { label: "My Financial Profile", parent: "/prototypes" },
+  "/quick-summary": { label: "Quick Summary", parent: "/prototypes" },
 };
 
 export function getBreadcrumbs(pathname: string): { label: string; path: string }[] {
