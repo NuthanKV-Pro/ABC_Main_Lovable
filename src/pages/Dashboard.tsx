@@ -64,6 +64,7 @@ const previousYears = ["2026-27", "2025-26", "2024-25", "2023-24", "2022-23", "2
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { toast } = useToast();
   const { profile, updateProfile } = useUserProfile();
   const [selectedYear, setSelectedYear] = useState("2026-27");
