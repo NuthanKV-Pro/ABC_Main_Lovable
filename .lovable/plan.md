@@ -1,19 +1,16 @@
 
 
-## Plan: Add Business Valuation to Featured Tools on Index Page
+## Plan: Fix Profile Settings Breadcrumb to Be App-Level
 
-**What**: Add a "Business Valuation" card to the Featured Tools section in `/src/pages/Index.tsx`.
+The breadcrumb shows "Home > Prototypes > Tax Dashboard > Profile Settings" because `/profile` has `parent: "/dashboard"` in the route config. Since Profile Settings is app-wide, its parent should be `/prototypes`.
 
-**How**:
-1. Add a new tool entry after the existing featured tools (e.g., after "Salary Optimisation Engine") in the `⭐ Featured Tools` array (~line 171):
-   - `id`: `"business-valuation"`
-   - `title`: `"Business Valuation"`
-   - `description`: `"DCF, Comps, LBO & Monte Carlo"`
-   - `icon`: `TrendingUp` (already imported)
-   - `route`: `"/business-valuation"`
-   - `tag`: `"Live"`
-   - `tagColor`: green (matching other Live tools)
-   - `starred`: `true`
+### Change
 
-Single file edit, one new object added to the array.
+**`src/lib/routeConfig.ts` (line 23)**
+- Change `parent: "/dashboard"` → `parent: "/prototypes"`
+
+This makes the breadcrumb show "Home > Prototypes > Profile Settings" and the back button navigate to `/prototypes` instead of the Tax Dashboard.
+
+### Files Changed (1)
+- `src/lib/routeConfig.ts`
 
