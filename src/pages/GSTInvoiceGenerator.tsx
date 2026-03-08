@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -348,6 +349,7 @@ const AddressFields = ({ address, onChange, label }: { address: AddressDetails; 
 const GSTInvoiceGenerator = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
+  const { activeEntity } = useUserProfile();
   const [sellerGSTIN, setSellerGSTIN] = useState("29ABCDE1234F1Z5");
   const [buyerGSTIN, setBuyerGSTIN] = useState("");
   const [sellerName, setSellerName] = useState("ABC Enterprises");
@@ -385,6 +387,25 @@ const GSTInvoiceGenerator = () => {
   const [items, setItems] = useState<InvoiceItem[]>([
     { id: "1", description: "Software Development Services", hsnCode: "9985", qty: 1, rate: 100000, gstRate: 18, discount: 0 },
   ]);
+
+  // Pre-fill seller details from active legal entity
+  useEffect(() => {
+    if (activeEntity) {
+      setSellerName(activeEntity.name);
+      if (activeEntity.gstns.length > 0) {
+        setSellerGSTIN(activeEntity.gstns[0]);
+        // Extract state code from first 2 digits of GSTIN
+        const stateCode = activeEntity.gstns[0].substring(0, 2);
+        if (/^\d{2}$/.test(stateCode)) setSellerState(stateCode);
+      }
+      if (activeEntity.registeredAddress) {
+        setSellerBillingAddress(prev => ({
+          ...prev,
+          line1: activeEntity.registeredAddress,
+        }));
+      }
+    }
+  }, [activeEntity]);
 
   const addItem = () => {
     setItems(prev => [...prev, { id: Date.now().toString(), description: "", hsnCode: "", qty: 1, rate: 0, gstRate: 18, discount: 0 }]);

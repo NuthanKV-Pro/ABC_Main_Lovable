@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRef, useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
+import ActiveEntitySelector from "@/components/ActiveEntitySelector";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 import SolarSystemBackground from "@/components/SolarSystemBackground";
@@ -1082,6 +1083,7 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
+              <ActiveEntitySelector />
               <SearchBar />
               <Tooltip>
                 <TooltipTrigger asChild>
