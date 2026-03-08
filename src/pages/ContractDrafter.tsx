@@ -3918,7 +3918,7 @@ const ContractDrafter = () => {
                     <RotateCcw className="h-4 w-4 mr-2" />
                     Reset
                   </Button>
-                  <Button onClick={exportToPDF} disabled={!generatedContract}>
+                  <Button onClick={exportToPDF} disabled={!generatedContract && importedClauses.length === 0}>
                     <Download className="h-4 w-4 mr-2" />
                     Export PDF
                   </Button>
