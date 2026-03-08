@@ -73,6 +73,16 @@ import DeductionPlayground from "./pages/DeductionPlayground";
 import Escrow from "./pages/Escrow";
 import ClauseFinder from "./pages/ClauseFinder";
 import BusinessValuation from "./pages/BusinessValuation";
+import TDSCalculator from "./pages/TDSCalculator";
+import ITRFilingAssistant from "./pages/ITRFilingAssistant";
+import GSTInvoiceGenerator from "./pages/GSTInvoiceGenerator";
+import Section54Planner from "./pages/Section54Planner";
+import SalaryRestructuring from "./pages/SalaryRestructuring";
+import TaxAuditChecker from "./pages/TaxAuditChecker";
+import WillEstatePlanner from "./pages/WillEstatePlanner";
+import ForeignIncomeDTAA from "./pages/ForeignIncomeDTAA";
+import ComplianceCalendar from "./pages/ComplianceCalendar";
+import TaxNoticeAssistant from "./pages/TaxNoticeAssistant";
 import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
@@ -160,6 +170,16 @@ const App = () => (
             <Route path="/escrow" element={<Escrow />} />
             <Route path="/clause-finder" element={<ClauseFinder />} />
             <Route path="/business-valuation" element={<BusinessValuation />} />
+            <Route path="/tds-calculator" element={<TDSCalculator />} />
+            <Route path="/itr-filing-assistant" element={<ITRFilingAssistant />} />
+            <Route path="/gst-invoice-generator" element={<GSTInvoiceGenerator />} />
+            <Route path="/section-54-planner" element={<Section54Planner />} />
+            <Route path="/salary-restructuring" element={<SalaryRestructuring />} />
+            <Route path="/tax-audit-checker" element={<TaxAuditChecker />} />
+            <Route path="/will-estate-planner" element={<WillEstatePlanner />} />
+            <Route path="/foreign-income-dtaa" element={<ForeignIncomeDTAA />} />
+            <Route path="/compliance-calendar" element={<ComplianceCalendar />} />
+            <Route path="/tax-notice-assistant" element={<TaxNoticeAssistant />} />
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
