@@ -11,6 +11,17 @@ import { motion } from "framer-motion";
 import SolarSystemBackground from "@/components/SolarSystemBackground";
 import PrototypeBanner from "@/components/PrototypeBanner";
 import OnboardingTour from "@/components/OnboardingTour";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "@/hooks/use-toast";
 
 const modules = [
   {
