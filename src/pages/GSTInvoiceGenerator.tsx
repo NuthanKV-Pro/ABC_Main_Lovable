@@ -352,7 +352,16 @@ const GSTInvoiceGenerator = () => {
   };
   const removeItem = (id: string) => setItems(prev => prev.filter(i => i.id !== id));
   const updateItem = (id: string, field: keyof InvoiceItem, value: any) => {
-    setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
+    setItems(prev => prev.map(i => {
+      if (i.id !== id) return i;
+      const updated = { ...i, [field]: value };
+      // Auto-suggest GST rate when HSN code changes
+      if (field === "hsnCode") {
+        const suggestion = getGstSuggestion(String(value));
+        if (suggestion) updated.gstRate = suggestion.rate;
+      }
+      return updated;
+    }));
   };
 
   const handleReset = () => {
