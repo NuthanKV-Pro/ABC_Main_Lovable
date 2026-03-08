@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -123,7 +123,14 @@ const inputFields = [
 
 const FinancialHealthScore = () => {
   const goBack = useGoBack();
-  const [inputs, setInputs] = useState<FinancialInputs>(defaultInputs);
+  const [inputs, setInputs] = useState<FinancialInputs>(() => {
+    const saved: Partial<FinancialInputs> = {};
+    for (const key of Object.keys(defaultInputs) as (keyof FinancialInputs)[]) {
+      const v = parseFloat(localStorage.getItem(`fhs_${key}`) || "0");
+      if (!isNaN(v) && v > 0) saved[key] = v;
+    }
+    return { ...defaultInputs, ...saved };
+  });
   const [calculated, setCalculated] = useState(false);
 
   const scores = useMemo(() => calculateScores(inputs), [inputs]);
@@ -133,6 +140,13 @@ const FinancialHealthScore = () => {
   const handleChange = (key: string, value: string) => {
     setInputs((prev) => ({ ...prev, [key]: Number(value) || 0 }));
   };
+
+  // Persist inputs to localStorage for Smart Action Plan
+  useEffect(() => {
+    Object.entries(inputs).forEach(([key, value]) => {
+      localStorage.setItem(`fhs_${key}`, String(value));
+    });
+  }, [inputs]);
 
   const handleCalculate = () => setCalculated(true);
   const handleReset = () => { setInputs(defaultInputs); setCalculated(false); };
