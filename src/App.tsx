@@ -95,6 +95,7 @@ import InsuranceComparison from "./pages/InsuranceComparison";
 import CompareAndDecide from "./pages/CompareAndDecide";
 import LifeEventWizards from "./pages/LifeEventWizards";
 import FinancialHealthScore from "./pages/FinancialHealthScore";
+import SmartActionPlan from "./pages/SmartActionPlan";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -206,6 +207,7 @@ const App = () => (
             <Route path="/compare-and-decide" element={<CompareAndDecide />} />
             <Route path="/life-event-wizards" element={<LifeEventWizards />} />
             <Route path="/financial-health-score" element={<FinancialHealthScore />} />
+            <Route path="/smart-action-plan" element={<SmartActionPlan />} />
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

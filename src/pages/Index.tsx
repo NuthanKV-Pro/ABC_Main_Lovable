@@ -216,6 +216,16 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         tag: "New",
         tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
         starred: true
+      },
+      {
+        id: "smart-action-plan",
+        title: "Smart Action Plan",
+        description: "Personalized to-do list based on your income, deductions & goals",
+        icon: Zap,
+        route: "/smart-action-plan",
+        tag: "New",
+        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+        starred: true
       }
     ]
   },
