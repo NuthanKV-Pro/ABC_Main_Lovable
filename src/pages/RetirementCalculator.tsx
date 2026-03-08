@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { ArrowLeft, Calculator, TrendingUp, Wallet, PiggyBank, RotateCcw } from "lucide-react";
+import { ArrowLeft, Calculator, TrendingUp, Wallet, PiggyBank } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import Footer from "@/components/Footer";
 
 const RetirementCalculator = () => {

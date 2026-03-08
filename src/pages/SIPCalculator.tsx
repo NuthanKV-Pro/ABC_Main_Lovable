@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, TrendingUp, ExternalLink, RotateCcw } from "lucide-react";
+import { ArrowLeft, TrendingUp, ExternalLink } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import Footer from "@/components/Footer";
 import ExportButton from "@/components/ExportButton";
 import { ExportConfig, formatINRCompact } from "@/utils/unifiedExport";

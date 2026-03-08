@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Building2, FileText, TrendingUp, Wallet, Plus, Trash2, Save, FolderOpen, Download, RefreshCw, Calculator, BarChart3, ArrowUpDown, BookOpen } from "lucide-react";
+import { ArrowLeft, Building2, FileText, TrendingUp, Wallet, Plus, Trash2, Save, FolderOpen, Download, Calculator, BarChart3, ArrowUpDown, BookOpen } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import jsPDF from "jspdf";

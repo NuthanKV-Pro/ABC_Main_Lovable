@@ -127,15 +127,12 @@ const EMICalculator = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => {
-                if (!window.confirm("Reset all data in this tool?")) return;
+              <ResetConfirmDialog onConfirm={() => {
                 ['emi_monthly_total', 'emi_data'].forEach(k => localStorage.removeItem(k));
                 setLoanAmount(1000000); setDownPayment(0); setRate(8.5);
                 setTenureYears(1); setTenureMonths(0);
                 toast.success("Data reset successfully");
-              }}>
-                <RotateCcw className="h-4 w-4" />
-              </Button>
+              }} />
               <Button onClick={exportToPDF} className="gap-2">
                 <Download className="h-4 w-4" />
                 <span className="hidden sm:inline">Export PDF</span>

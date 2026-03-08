@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Users, Plus, Trash2, ArrowLeft, IndianRupee, TrendingUp, PiggyBank, RotateCcw } from "lucide-react";
+import { Users, Plus, Trash2, ArrowLeft, IndianRupee, TrendingUp, PiggyBank } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import { useGoBack } from "@/hooks/useGoBack";
 import ExportButton from "@/components/ExportButton";
 import { ExportConfig } from "@/utils/unifiedExport";

@@ -6,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Plus, Trash2, TrendingUp, TrendingDown, Wallet, Building, Car, Coins, CreditCard, Home, Briefcase, Landmark, PiggyBank, AlertTriangle, Info, CheckCircle, Lightbulb, RotateCcw } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, TrendingUp, TrendingDown, Wallet, Building, Car, Coins, CreditCard, Home, Briefcase, Landmark, PiggyBank, AlertTriangle, Info, CheckCircle, Lightbulb } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import { Progress } from "@/components/ui/progress";
 
 interface Asset {

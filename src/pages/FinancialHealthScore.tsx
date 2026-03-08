@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Heart, Shield, PiggyBank, TrendingUp, Wallet, Umbrella, Info } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import { useGoBack } from "@/hooks/useGoBack";
 import { motion } from "framer-motion";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
