@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, FileText, Download, RotateCcw, Shield, Plus, Trash2, Lock, Sparkles, Cookie, Palette } from "lucide-react";
+import { ArrowLeft, FileText, Download, RotateCcw, Shield, Plus, Trash2, Lock, Sparkles, Cookie, Palette, BookOpen, X } from "lucide-react";
+import ClauseLibraryPanel from "@/components/ClauseLibraryPanel";
+import type { Clause } from "@/lib/clauseDatabase";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -1556,6 +1558,16 @@ const ContractDrafter = () => {
     witnessName: "",
   });
   const [generatedContract, setGeneratedContract] = useState<string>("");
+  const [importedClauses, setImportedClauses] = useState<Clause[]>([]);
+  const importedClauseIds = new Set(importedClauses.map(c => c.id));
+
+  const handleImportClause = (clause: Clause) => {
+    setImportedClauses(prev => [...prev, clause]);
+  };
+
+  const handleRemoveImportedClause = (clauseId: string) => {
+    setImportedClauses(prev => prev.filter(c => c.id !== clauseId));
+  };
   
   // T&C State
   const [tncDetails, setTncDetails] = useState<TnCDetails>({
@@ -3109,10 +3121,10 @@ const ContractDrafter = () => {
   };
 
   const exportToPDF = () => {
-    if (!generatedContract) {
+    if (!generatedContract && importedClauses.length === 0) {
       toast({
         title: "No Contract",
-        description: "Please generate a contract first.",
+        description: "Please generate a contract or import clauses first.",
         variant: "destructive",
       });
       return;
@@ -3134,7 +3146,15 @@ const ContractDrafter = () => {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     
-    const lines = doc.splitTextToSize(generatedContract, 180);
+    let fullText = generatedContract;
+    if (importedClauses.length > 0) {
+      fullText += "\n\n" + "─".repeat(60) + "\n\nIMPORTED CLAUSES\n\n";
+      importedClauses.forEach((clause, idx) => {
+        fullText += `${idx + 1}. ${clause.title.toUpperCase()}\n\n${clause.fullText}\n\n`;
+      });
+    }
+
+    const lines = doc.splitTextToSize(fullText, 180);
     let y = 35;
     const pageHeight = 280;
     
@@ -3888,7 +3908,7 @@ const ContractDrafter = () => {
                   <FileText className="h-6 w-6" />
                   Legal Document Drafter
                 </h1>
-                <p className="text-sm text-muted-foreground">Draft contracts, T&Cs, privacy policies, and cookie banners</p>
+                <p className="text-sm text-muted-foreground">Draft contracts, T&Cs, privacy policies, cookie banners & import legal clauses</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -3898,11 +3918,17 @@ const ContractDrafter = () => {
                     <RotateCcw className="h-4 w-4 mr-2" />
                     Reset
                   </Button>
-                  <Button onClick={exportToPDF} disabled={!generatedContract}>
+                  <Button onClick={exportToPDF} disabled={!generatedContract && importedClauses.length === 0}>
                     <Download className="h-4 w-4 mr-2" />
                     Export PDF
                   </Button>
                 </>
+              )}
+              {activeTab === "clauses" && importedClauses.length > 0 && (
+                <Button variant="outline" onClick={() => { setImportedClauses([]); toast({ title: "Cleared", description: "All imported clauses removed." }); }}>
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Clear All Imports
+                </Button>
               )}
               {activeTab === "tnc" && (
                 <>
@@ -3947,10 +3973,14 @@ const ContractDrafter = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-3xl grid-cols-4">
+          <TabsList className="grid w-full max-w-4xl grid-cols-5">
             <TabsTrigger value="contracts" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Contracts
+            </TabsTrigger>
+            <TabsTrigger value="clauses" className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4" />
+              Clause Library
             </TabsTrigger>
             <TabsTrigger value="tnc" className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
@@ -4108,14 +4138,87 @@ const ContractDrafter = () => {
                   <CardTitle>Contract Preview</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {generatedContract ? (
+                  {generatedContract || importedClauses.length > 0 ? (
                     <div className="bg-muted/50 rounded-lg p-4 font-mono text-sm whitespace-pre-wrap max-h-[600px] overflow-y-auto">
                       {generatedContract}
+                      {importedClauses.length > 0 && (
+                        <>
+                          {generatedContract && "\n\n"}
+                          {"─".repeat(60)}{"\n\n"}
+                          {"IMPORTED CLAUSES\n\n"}
+                          {importedClauses.map((clause, idx) => (
+                            <div key={clause.id} className="relative group mb-4">
+                              <button
+                                onClick={() => handleRemoveImportedClause(clause.id)}
+                                className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-destructive text-destructive-foreground rounded-full p-0.5"
+                                title="Remove clause"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                              {`${idx + 1}. ${clause.title.toUpperCase()}\n\n${clause.fullText}\n\n`}
+                            </div>
+                          ))}
+                        </>
+                      )}
                     </div>
                   ) : (
                     <div className="bg-muted/50 rounded-lg p-8 text-center text-muted-foreground">
                       <FileText className="h-16 w-16 mx-auto mb-4 opacity-50" />
                       <p>Fill in the details and click "Generate Contract" to see the preview here.</p>
+                      <p className="text-xs mt-2">You can also import clauses from the Clause Library tab.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Clause Library Tab */}
+          <TabsContent value="clauses">
+            <div className="grid lg:grid-cols-2 gap-6">
+              <div>
+                <ClauseLibraryPanel
+                  onImportClause={handleImportClause}
+                  importedClauseIds={importedClauseIds}
+                />
+              </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5" />
+                    Imported Clauses ({importedClauses.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {importedClauses.length > 0 ? (
+                    <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+                      {importedClauses.map((clause, idx) => (
+                        <div key={clause.id} className="border border-border/50 rounded-lg p-3 relative group">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-sm font-semibold">{idx + 1}. {clause.title}</h4>
+                              <p className="text-xs text-muted-foreground mt-1">{clause.description}</p>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 shrink-0 text-muted-foreground hover:text-destructive"
+                              onClick={() => handleRemoveImportedClause(clause.id)}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <pre className="whitespace-pre-wrap text-[10px] leading-relaxed text-foreground/80 font-sans mt-2 max-h-32 overflow-y-auto bg-muted/30 rounded p-2">
+                            {clause.fullText}
+                          </pre>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-muted/50 rounded-lg p-8 text-center text-muted-foreground">
+                      <BookOpen className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                      <p>Browse the clause library on the left and click "Import to Contract" to add clauses here.</p>
+                      <p className="text-xs mt-2">Imported clauses will appear in the Contract Preview.</p>
                     </div>
                   )}
                 </CardContent>

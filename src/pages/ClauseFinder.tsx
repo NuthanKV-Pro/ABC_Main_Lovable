@@ -9,7 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
 
-interface Clause {
+export interface Clause {
   id: string;
   title: string;
   description: string;
@@ -18,7 +18,7 @@ interface Clause {
   importance: "essential" | "recommended" | "optional";
 }
 
-interface ClauseCategory {
+export interface ClauseCategory {
   id: string;
   name: string;
   icon: React.ComponentType<{ className?: string }>;
@@ -27,7 +27,7 @@ interface ClauseCategory {
   clauses: Clause[];
 }
 
-const clauseDatabase: ClauseCategory[] = [
+export const clauseDatabase: ClauseCategory[] = [
   {
     id: "governance",
     name: "Governance & Control",
@@ -817,7 +817,7 @@ const clauseDatabase: ClauseCategory[] = [
   }
 ];
 
-const importanceBadge = {
+export const importanceBadge = {
   essential: { label: "Essential", className: "bg-red-500/20 text-red-400 border-red-500/30" },
   recommended: { label: "Recommended", className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
   optional: { label: "Optional", className: "bg-blue-500/20 text-blue-400 border-blue-500/30" }
