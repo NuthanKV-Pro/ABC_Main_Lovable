@@ -148,6 +148,51 @@ const ITRFilingAssistant = () => {
 
         {step === 1 && (
           <div className="space-y-6">
+            {/* Income Summary from other tools */}
+            {(taxData.salary.hasData || taxData.capitalGains.hasData || taxData.business.hasData || taxData.houseProperty.hasData) && (
+              <Card className="border-primary/30 bg-primary/5">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <IndianRupee className="h-5 w-5 text-primary" />
+                      Income Summary (from your data)
+                    </CardTitle>
+                    {!autoDetected && (
+                      <Button size="sm" variant="outline" className="gap-2" onClick={autoDetectFromData}>
+                        <Link2 className="h-4 w-4" />
+                        Auto-fill Wizard
+                      </Button>
+                    )}
+                    {autoDetected && (
+                      <Badge variant="secondary" className="gap-1"><CheckCircle className="h-3 w-3" /> Auto-detected</Badge>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    {[
+                      { label: "Salary", value: taxData.salary.total, has: taxData.salary.hasData },
+                      { label: "House Property", value: taxData.houseProperty.total, has: taxData.houseProperty.hasData },
+                      { label: "Business", value: taxData.business.total, has: taxData.business.hasData },
+                      { label: "Capital Gains", value: taxData.capitalGains.total, has: taxData.capitalGains.hasData },
+                      { label: "Deductions", value: taxData.deductions.total, has: taxData.deductions.hasData },
+                    ].map(item => (
+                      <div key={item.label} className={`p-3 rounded-lg border text-center ${item.has ? 'bg-background' : 'bg-muted/30'}`}>
+                        <p className="text-xs text-muted-foreground">{item.label}</p>
+                        <p className={`text-sm font-bold ${item.has ? 'text-primary' : 'text-muted-foreground'}`}>
+                          {item.has ? formatCurrency(item.value) : '—'}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 pt-3 border-t flex items-center justify-between">
+                    <span className="text-sm font-medium">Estimated Gross Total Income</span>
+                    <span className="text-lg font-bold text-primary">{formatCurrency(taxData.grossTotal)}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card>
               <CardHeader>
                 <CardTitle>ITR Form Selection Wizard</CardTitle>
