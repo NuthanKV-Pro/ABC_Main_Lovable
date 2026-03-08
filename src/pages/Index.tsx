@@ -949,15 +949,22 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <SearchBar />
-              <Button
-                variant="outline"
-                size="icon"
-                className="shrink-0 flex"
-                aria-label="Compliance Calendar"
-                onClick={() => navigate("/compliance-calendar")}
-              >
-                <Calendar className="h-4 w-4 text-primary" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="shrink-0 flex"
+                    aria-label="Compliance Calendar"
+                    onClick={() => navigate("/compliance-calendar")}
+                  >
+                    <Calendar className="h-4 w-4 text-primary" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Compliance Calendar</p>
+                </TooltipContent>
+              </Tooltip>
               <Button
                 variant="outline"
                 size="icon"
