@@ -196,6 +196,16 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         tag: "Live",
         tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
         starred: true
+      },
+      {
+        id: "life-event-wizards",
+        title: "Life Event Wizards",
+        description: "Guided financial flows for buying a house, marriage, business & retirement",
+        icon: Workflow,
+        route: "/life-event-wizards",
+        tag: "New",
+        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+        starred: true
       }
     ]
   },
