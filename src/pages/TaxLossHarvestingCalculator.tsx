@@ -25,6 +25,7 @@ interface Holding {
 
 const TaxLossHarvestingCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [holdings, setHoldings] = useState<Holding[]>([
     { id: '1', name: 'Stock A', purchasePrice: 1000, currentPrice: 1200, quantity: 100, type: 'equity', holdingPeriod: 'long' },
@@ -442,7 +443,7 @@ const TaxLossHarvestingCalculator = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <Button variant="ghost" size="icon" onClick={() => goBack()}>
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>

@@ -248,6 +248,7 @@ const samplePresets: Record<SamplePreset, SampleDataPreset> = {
 
 const DeductionPlayground = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { toast } = useToast();
   
   // User details
