@@ -200,7 +200,7 @@ const FinancialHealthScore = () => {
               ))}
               <div className="flex gap-2 pt-2">
                 <Button className="flex-1" onClick={handleCalculate}>Calculate Score</Button>
-                <Button variant="outline" onClick={handleReset}>Reset</Button>
+                <ResetConfirmDialog onConfirm={handleReset} trigger={<Button variant="outline">Reset</Button>} />
               </div>
             </CardContent>
           </Card>
