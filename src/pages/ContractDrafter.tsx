@@ -4159,6 +4159,59 @@ const ContractDrafter = () => {
             </div>
           </TabsContent>
 
+          {/* Clause Library Tab */}
+          <TabsContent value="clauses">
+            <div className="grid lg:grid-cols-2 gap-6">
+              <div>
+                <ClauseLibraryPanel
+                  onImportClause={handleImportClause}
+                  importedClauseIds={importedClauseIds}
+                />
+              </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5" />
+                    Imported Clauses ({importedClauses.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {importedClauses.length > 0 ? (
+                    <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+                      {importedClauses.map((clause, idx) => (
+                        <div key={clause.id} className="border border-border/50 rounded-lg p-3 relative group">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-sm font-semibold">{idx + 1}. {clause.title}</h4>
+                              <p className="text-xs text-muted-foreground mt-1">{clause.description}</p>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 shrink-0 text-muted-foreground hover:text-destructive"
+                              onClick={() => handleRemoveImportedClause(clause.id)}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <pre className="whitespace-pre-wrap text-[10px] leading-relaxed text-foreground/80 font-sans mt-2 max-h-32 overflow-y-auto bg-muted/30 rounded p-2">
+                            {clause.fullText}
+                          </pre>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-muted/50 rounded-lg p-8 text-center text-muted-foreground">
+                      <BookOpen className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                      <p>Browse the clause library on the left and click "Import to Contract" to add clauses here.</p>
+                      <p className="text-xs mt-2">Imported clauses will appear in the Contract Preview.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* T&C Tab */}
           <TabsContent value="tnc">
             <div className="grid lg:grid-cols-2 gap-6">
