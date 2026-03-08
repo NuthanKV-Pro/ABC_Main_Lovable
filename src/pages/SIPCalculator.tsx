@@ -5,11 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, TrendingUp, ExternalLink, Download } from "lucide-react";
+import { ArrowLeft, TrendingUp, ExternalLink } from "lucide-react";
 import Footer from "@/components/Footer";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import { toast } from "sonner";
+import ExportButton from "@/components/ExportButton";
+import { ExportConfig, formatINRCompact } from "@/utils/unifiedExport";
 
 const SIPCalculator = () => {
   const navigate = useNavigate();
