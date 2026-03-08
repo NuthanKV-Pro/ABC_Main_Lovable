@@ -125,7 +125,7 @@ const DebtToIncomeCalculator = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-sm">Your Salary (Net)</Label>
+                <Label className="text-sm flex items-center">Your Salary (Net)<AutoPopulateBadge fieldKey="monthlyIncome" populatedFields={populatedFields} onReset={resetField} /></Label>
                 <div className="relative">
                   <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
