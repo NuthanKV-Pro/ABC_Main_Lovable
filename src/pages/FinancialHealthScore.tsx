@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -133,6 +133,13 @@ const FinancialHealthScore = () => {
   const handleChange = (key: string, value: string) => {
     setInputs((prev) => ({ ...prev, [key]: Number(value) || 0 }));
   };
+
+  // Persist inputs to localStorage for Smart Action Plan
+  useEffect(() => {
+    Object.entries(inputs).forEach(([key, value]) => {
+      localStorage.setItem(`fhs_${key}`, String(value));
+    });
+  }, [inputs]);
 
   const handleCalculate = () => setCalculated(true);
   const handleReset = () => { setInputs(defaultInputs); setCalculated(false); };
