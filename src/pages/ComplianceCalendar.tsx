@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Calendar, CheckCircle, Clock, AlertTriangle, Building, FileText, Receipt, Bell, BellOff, Filter } from "lucide-react";
+import { ArrowLeft, Calendar, CheckCircle, Clock, AlertTriangle, Building, FileText, Receipt, Bell, BellOff, Filter, List, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface ComplianceEvent {
   id: string;
@@ -165,7 +166,8 @@ const ComplianceCalendar = () => {
   const [isComposition, setIsComposition] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState("all");
-
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  const [calendarMonth, setCalendarMonth] = useState(() => new Date(2026, 3, 1)); // April 2026
   const [completedIds, setCompletedIds] = useState<Set<string>>(() => {
     const saved = localStorage.getItem("compliance_completed_2026");
     return saved ? new Set(JSON.parse(saved)) : new Set();
@@ -353,6 +355,128 @@ const ComplianceCalendar = () => {
     );
   };
 
+  const calendarDays = useMemo(() => {
+    const year = calendarMonth.getFullYear();
+    const month = calendarMonth.getMonth();
+    const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const weeks: (number | null)[][] = [];
+    let currentWeek: (number | null)[] = Array(firstDay).fill(null);
+    
+    for (let d = 1; d <= daysInMonth; d++) {
+      currentWeek.push(d);
+      if (currentWeek.length === 7) {
+        weeks.push(currentWeek);
+        currentWeek = [];
+      }
+    }
+    if (currentWeek.length > 0) {
+      while (currentWeek.length < 7) currentWeek.push(null);
+      weeks.push(currentWeek);
+    }
+    return weeks;
+  }, [calendarMonth]);
+
+  const eventsForCalendarDay = useCallback((day: number) => {
+    const year = calendarMonth.getFullYear();
+    const month = calendarMonth.getMonth();
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return filteredEvents.filter(e => e.dueDate === dateStr);
+  }, [calendarMonth, filteredEvents]);
+
+  const calendarMonthLabel = calendarMonth.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+
+  const navigateCalendarMonth = (dir: number) => {
+    setCalendarMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + dir, 1));
+  };
+
+  const renderCalendarView = () => (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <Button variant="ghost" size="icon" onClick={() => navigateCalendarMonth(-1)}>
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+        <h3 className="text-lg font-semibold">{calendarMonthLabel}</h3>
+        <Button variant="ghost" size="icon" onClick={() => navigateCalendarMonth(1)}>
+          <ChevronRight className="h-5 w-5" />
+        </Button>
+      </div>
+      <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden">
+        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
+          <div key={d} className="bg-muted px-1 py-2 text-center text-xs font-semibold text-muted-foreground">
+            {d}
+          </div>
+        ))}
+        {calendarDays.flat().map((day, i) => {
+          if (day === null) return <div key={`empty-${i}`} className="bg-card min-h-[90px]" />;
+          const dayEvents = eventsForCalendarDay(day);
+          const today = new Date();
+          const isToday = today.getFullYear() === calendarMonth.getFullYear() && today.getMonth() === calendarMonth.getMonth() && today.getDate() === day;
+          
+          return (
+            <div
+              key={`day-${day}`}
+              className={`bg-card min-h-[90px] p-1 ${isToday ? "ring-2 ring-primary ring-inset" : ""}`}
+            >
+              <span className={`text-xs font-medium block mb-0.5 ${isToday ? "text-primary font-bold" : "text-foreground"}`}>
+                {day}
+              </span>
+              <div className="space-y-0.5 overflow-y-auto max-h-[70px]">
+                {dayEvents.slice(0, 3).map(ev => {
+                  const isCompleted = completedIds.has(ev.id);
+                  return (
+                    <Popover key={ev.id}>
+                      <PopoverTrigger asChild>
+                        <button
+                          className={`w-full text-left text-[10px] leading-tight px-1 py-0.5 rounded truncate border ${
+                            isCompleted
+                              ? "bg-muted/50 text-muted-foreground line-through border-muted"
+                              : categoryColors[ev.category]
+                          }`}
+                        >
+                          {ev.title.length > 20 ? ev.title.slice(0, 20) + "…" : ev.title}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-72 p-3" side="right">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <Badge variant="outline" className={`text-[10px] ${categoryColors[ev.category]}`}>
+                              {categoryLabels[ev.category]}
+                            </Badge>
+                            {ev.formNo && <Badge variant="secondary" className="text-[10px]">{ev.formNo}</Badge>}
+                          </div>
+                          <p className="font-medium text-sm">{ev.title}</p>
+                          <p className="text-xs text-muted-foreground">{ev.description}</p>
+                          <div className="text-[11px] text-muted-foreground space-y-0.5">
+                            <p>📅 {new Date(ev.dueDate).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}</p>
+                            <p>👤 {ev.applicable}</p>
+                            {ev.section && <p>📖 {ev.section}</p>}
+                            <p className="text-amber-600">⚠️ {ev.penalty}</p>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant={isCompleted ? "outline" : "default"}
+                            className="w-full text-xs"
+                            onClick={() => toggleComplete(ev.id)}
+                          >
+                            {isCompleted ? "Mark Incomplete" : "Mark Complete"}
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  );
+                })}
+                {dayEvents.length > 3 && (
+                  <span className="text-[10px] text-muted-foreground px-1">+{dayEvents.length - 3} more</span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
@@ -370,15 +494,35 @@ const ComplianceCalendar = () => {
               <p className="text-muted-foreground text-sm">FY 2026-27 (1 Apr 2026 – 31 Mar 2027) • All statutory deadlines</p>
             </div>
           </div>
-          <Button
-            variant={notificationsEnabled ? "secondary" : "default"}
-            size="sm"
-            onClick={enableNotifications}
-            className="gap-2"
-          >
-            {notificationsEnabled ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
-            {notificationsEnabled ? "Notifications On" : "Enable Alerts"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center border rounded-lg overflow-hidden">
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                className="rounded-none gap-1.5"
+                onClick={() => setViewMode("list")}
+              >
+                <List className="h-4 w-4" /> List
+              </Button>
+              <Button
+                variant={viewMode === "calendar" ? "default" : "ghost"}
+                size="sm"
+                className="rounded-none gap-1.5"
+                onClick={() => setViewMode("calendar")}
+              >
+                <CalendarDays className="h-4 w-4" /> Calendar
+              </Button>
+            </div>
+            <Button
+              variant={notificationsEnabled ? "secondary" : "default"}
+              size="sm"
+              onClick={enableNotifications}
+              className="gap-2"
+            >
+              {notificationsEnabled ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+              {notificationsEnabled ? "Notifications On" : "Enable Alerts"}
+            </Button>
+          </div>
         </div>
 
         {/* Alert Banner */}
@@ -458,38 +602,41 @@ const ComplianceCalendar = () => {
           ))}
         </div>
 
-        {/* Events by Category Tabs */}
-        <Tabs defaultValue="all">
-          <TabsList className="mb-4 flex-wrap h-auto gap-1">
-            <TabsTrigger value="all" className="text-xs">All ({filteredEvents.length})</TabsTrigger>
-            {Object.entries(categoryCounts).map(([cat, counts]) => (
-              <TabsTrigger key={cat} value={cat} className="text-xs">
-                {categoryLabels[cat]} ({counts.total})
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        {/* View: List or Calendar */}
+        {viewMode === "list" ? (
+          <Tabs defaultValue="all">
+            <TabsList className="mb-4 flex-wrap h-auto gap-1">
+              <TabsTrigger value="all" className="text-xs">All ({filteredEvents.length})</TabsTrigger>
+              {Object.entries(categoryCounts).map(([cat, counts]) => (
+                <TabsTrigger key={cat} value={cat} className="text-xs">
+                  {categoryLabels[cat]} ({counts.total})
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
-          {["all", ...Object.keys(categoryCounts)].map((tab) => (
-            <TabsContent key={tab} value={tab} className="space-y-2">
-              {filteredEvents
-                .filter((e) => tab === "all" || e.category === tab)
-                .sort((a, b) => {
-                  // Sort: overdue first, then by date
-                  const aComp = completedIds.has(a.id) ? 1 : 0;
-                  const bComp = completedIds.has(b.id) ? 1 : 0;
-                  if (aComp !== bComp) return aComp - bComp;
-                  return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-                })
-                .map(renderEventCard)}
-              {filteredEvents.filter((e) => tab === "all" || e.category === tab).length === 0 && (
-                <div className="text-center py-12 text-muted-foreground">
-                  <Calendar className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                  <p>No deadlines found for this filter combination.</p>
-                </div>
-              )}
-            </TabsContent>
-          ))}
-        </Tabs>
+            {["all", ...Object.keys(categoryCounts)].map((tab) => (
+              <TabsContent key={tab} value={tab} className="space-y-2">
+                {filteredEvents
+                  .filter((e) => tab === "all" || e.category === tab)
+                  .sort((a, b) => {
+                    const aComp = completedIds.has(a.id) ? 1 : 0;
+                    const bComp = completedIds.has(b.id) ? 1 : 0;
+                    if (aComp !== bComp) return aComp - bComp;
+                    return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+                  })
+                  .map(renderEventCard)}
+                {filteredEvents.filter((e) => tab === "all" || e.category === tab).length === 0 && (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Calendar className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                    <p>No deadlines found for this filter combination.</p>
+                  </div>
+                )}
+              </TabsContent>
+            ))}
+          </Tabs>
+        ) : (
+          renderCalendarView()
+        )}
 
         {/* Legend */}
         <Card className="mt-6">

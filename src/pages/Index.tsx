@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard, Star, BookOpen, Crown, Rocket, Globe, ArrowLeft, FileSearch, FilePlus, ReceiptText, CalendarCheck, Mail, Gavel, Calendar } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRef, useState, useEffect } from "react";
 import SearchBar from "@/components/SearchBar";
 import Footer from "@/components/Footer";
@@ -949,15 +950,22 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <SearchBar />
-              <Button
-                variant="outline"
-                size="icon"
-                className="shrink-0 flex"
-                aria-label="Compliance Calendar"
-                onClick={() => navigate("/compliance-calendar")}
-              >
-                <Calendar className="h-4 w-4 text-primary" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="shrink-0 flex"
+                    aria-label="Compliance Calendar"
+                    onClick={() => navigate("/compliance-calendar")}
+                  >
+                    <Calendar className="h-4 w-4 text-primary" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Compliance Calendar</p>
+                </TooltipContent>
+              </Tooltip>
               <Button
                 variant="outline"
                 size="icon"
