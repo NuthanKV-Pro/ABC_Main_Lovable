@@ -11,6 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const GoldLoanCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [goldWeight, setGoldWeight] = useState<number>(10);
   const [purity, setPurity] = useState<string>("22");
   const [goldRate, setGoldRate] = useState<number>(6500);
@@ -46,7 +47,7 @@ const GoldLoanCalculator = () => {
       <div className="max-w-4xl mx-auto">
         <Button 
           variant="ghost" 
-          onClick={() => navigate(-1)}
+          onClick={() => goBack()}
           className="mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />

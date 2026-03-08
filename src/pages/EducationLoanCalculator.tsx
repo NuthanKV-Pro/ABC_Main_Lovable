@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 const EducationLoanCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [loanAmount, setLoanAmount] = useState<number>(1000000);
   const [interestRate, setInterestRate] = useState<number>(10);
   const [courseDuration, setCourseDuration] = useState<number>(4);
@@ -68,7 +69,7 @@ const EducationLoanCalculator = () => {
       <div className="max-w-5xl mx-auto">
         <Button 
           variant="ghost" 
-          onClick={() => navigate(-1)}
+          onClick={() => goBack()}
           className="mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />

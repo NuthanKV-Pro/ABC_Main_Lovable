@@ -11,6 +11,7 @@ import { Slider } from "@/components/ui/slider";
 
 const RentVsBuyCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   
   // Buying inputs
   const [propertyPrice, setPropertyPrice] = useState<number>(5000000);
