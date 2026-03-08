@@ -6,36 +6,44 @@ const BreadcrumbNav = () => {
   const { pathname } = useLocation();
   const crumbs = getBreadcrumbs(pathname);
 
-  // Don't show breadcrumbs on landing page or if no crumbs
   if (pathname === "/" || crumbs.length <= 1) return null;
 
   return (
     <nav
       aria-label="Breadcrumb"
-      className="sticky top-0 z-40 bg-muted/80 border-b border-border/50 backdrop-blur-md"
+      className="sticky top-0 z-40 backdrop-blur-xl border-b border-border/30"
+      style={{
+        background: `linear-gradient(90deg, hsl(var(--card) / 0.85), hsl(var(--muted) / 0.7))`,
+      }}
     >
       <div className="container mx-auto px-4">
-        <ol className="flex items-center gap-1 py-2 text-xs sm:text-sm overflow-x-auto">
+        <ol className="flex items-center gap-1.5 py-2.5 text-xs sm:text-sm overflow-x-auto">
           {crumbs.map((crumb, index) => {
             const isLast = index === crumbs.length - 1;
             const isFirst = index === 0;
 
             return (
-              <li key={crumb.path} className="flex items-center gap-1 shrink-0">
+              <li key={crumb.path} className="flex items-center gap-1.5 shrink-0">
                 {index > 0 && (
-                  <ChevronRight className="h-3 w-3 text-muted-foreground/60 shrink-0" />
+                  <ChevronRight className="h-3 w-3 text-primary/40 shrink-0" />
                 )}
                 {isLast ? (
-                  <span className="font-medium text-foreground truncate max-w-[200px]">
+                  <span className="font-semibold text-primary truncate max-w-[220px] tracking-tight">
                     {crumb.label}
                   </span>
                 ) : (
                   <Link
                     to={crumb.path}
-                    className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 truncate max-w-[150px]"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1.5 truncate max-w-[160px] group"
                   >
-                    {isFirst && <Home className="h-3 w-3 shrink-0" />}
-                    <span>{crumb.label}</span>
+                    {isFirst && (
+                      <span className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-primary/10 group-hover:bg-primary/20 transition-colors duration-200">
+                        <Home className="h-3 w-3 text-primary shrink-0" />
+                      </span>
+                    )}
+                    <span className="group-hover:underline underline-offset-2 decoration-primary/30">
+                      {crumb.label}
+                    </span>
                   </Link>
                 )}
               </li>
