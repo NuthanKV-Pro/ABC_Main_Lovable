@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard, Star, BookOpen, Crown, Rocket, Globe, ArrowLeft, FileSearch, FilePlus, ReceiptText, CalendarCheck, Mail, Gavel, Calendar, Zap, Trash2 } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard, Star, BookOpen, Crown, Rocket, Globe, ArrowLeft, FileSearch, FilePlus, ReceiptText, CalendarCheck, Mail, Gavel, Calendar, Zap, Trash2, User } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRef, useState, useEffect } from "react";
@@ -1124,6 +1124,22 @@ const Index = () => {
               >
                 <BookOpen className="h-4 w-4 text-blue-500" />
               </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="shrink-0 flex"
+                    aria-label="My Profile"
+                    onClick={() => navigate("/profile")}
+                  >
+                    <User className="h-4 w-4 text-primary" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>My Profile</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>

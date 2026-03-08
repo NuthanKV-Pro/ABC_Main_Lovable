@@ -6,16 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Save, RotateCcw, User, Shield, Bell, Palette, Trash2 } from "lucide-react";
+import { ArrowLeft, Save, RotateCcw, User, Shield, Bell, Palette, Trash2, Building2, Plus, Pencil, ChevronDown } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useToast } from "@/hooks/use-toast";
+import LegalEntityDialog from "@/components/LegalEntityDialog";
+import type { LegalEntity } from "@/hooks/useUserProfile";
 
 const ProfileSettings = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
-  const { profile, updateProfile, resetProfile } = useUserProfile();
+  const { profile, updateProfile, resetProfile, legalEntities, addEntity, updateEntity, deleteEntity } = useUserProfile();
   const { toast } = useToast();
   
   const [formData, setFormData] = useState(profile);
@@ -24,52 +27,49 @@ const ProfileSettings = () => {
     taxReminders: true,
     darkMode: false,
   });
+  const [entityDialogOpen, setEntityDialogOpen] = useState(false);
+  const [editingEntity, setEditingEntity] = useState<LegalEntity | null>(null);
+  const [deleteEntityId, setDeleteEntityId] = useState<string | null>(null);
 
   const handleSave = () => {
     updateProfile(formData);
-    toast({
-      title: "Profile Updated",
-      description: "Your profile settings have been saved successfully.",
-    });
+    toast({ title: "Profile Updated", description: "Your profile settings have been saved successfully." });
   };
 
   const handleReset = () => {
     resetProfile();
     setFormData({
-      name: 'Shankaran Pillai',
-      pan: 'ABCDE1234F',
-      email: '',
-      phone: '',
-      address: '',
-      dateOfBirth: '',
-      assesseeType: 'Individual',
+      name: 'Shankaran Pillai', pan: 'ABCDE1234F', email: '', phone: '', address: '', dateOfBirth: '', assesseeType: 'Individual',
     });
-    toast({
-      title: "Profile Reset",
-      description: "Your profile has been reset to default values.",
-    });
+    toast({ title: "Profile Reset", description: "Your profile has been reset to default values." });
   };
 
   const handleClearAllData = () => {
-    // Clear all localStorage data
     localStorage.clear();
-    
-    // Reset form to defaults
     setFormData({
-      name: 'Shankaran Pillai',
-      pan: 'ABCDE1234F',
-      email: '',
-      phone: '',
-      address: '',
-      dateOfBirth: '',
-      assesseeType: 'Individual',
+      name: 'Shankaran Pillai', pan: 'ABCDE1234F', email: '', phone: '', address: '', dateOfBirth: '', assesseeType: 'Individual',
     });
-    
-    toast({
-      title: "All Data Cleared",
-      description: "All locally stored data has been permanently deleted.",
-      variant: "destructive",
-    });
+    toast({ title: "All Data Cleared", description: "All locally stored data has been permanently deleted.", variant: "destructive" });
+  };
+
+  const handleSaveEntity = (data: Omit<LegalEntity, "id">) => {
+    if (editingEntity) {
+      updateEntity(editingEntity.id, data);
+      toast({ title: "Entity Updated", description: `${data.name} has been updated.` });
+    } else {
+      addEntity(data);
+      toast({ title: "Entity Added", description: `${data.name} has been added.` });
+    }
+    setEditingEntity(null);
+  };
+
+  const handleDeleteEntity = () => {
+    if (deleteEntityId) {
+      const entity = legalEntities.find(e => e.id === deleteEntityId);
+      deleteEntity(deleteEntityId);
+      toast({ title: "Entity Deleted", description: `${entity?.name || "Entity"} has been removed.`, variant: "destructive" });
+      setDeleteEntityId(null);
+    }
   };
 
   return (
@@ -105,64 +105,32 @@ const ProfileSettings = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter your full name"
-                  />
+                  <Input id="name" value={formData.name} onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))} placeholder="Enter your full name" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pan">PAN Number</Label>
-                  <Input
-                    id="pan"
-                    value={formData.pan}
-                    onChange={(e) => setFormData(prev => ({ ...prev, pan: e.target.value.toUpperCase() }))}
-                    placeholder="ABCDE1234F"
-                    maxLength={10}
-                  />
+                  <Input id="pan" value={formData.pan} onChange={(e) => setFormData(prev => ({ ...prev, pan: e.target.value.toUpperCase() }))} placeholder="ABCDE1234F" maxLength={10} />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    placeholder="your@email.com"
-                  />
+                  <Input id="email" type="email" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} placeholder="your@email.com" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    placeholder="+91 98765 43210"
-                  />
+                  <Input id="phone" value={formData.phone} onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))} placeholder="+91 98765 43210" />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="dob">Date of Birth</Label>
-                  <Input
-                    id="dob"
-                    type="date"
-                    value={formData.dateOfBirth}
-                    onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                  />
+                  <Input id="dob" type="date" value={formData.dateOfBirth} onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="assesseeType">Assessee Type</Label>
-                  <Select
-                    value={formData.assesseeType}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, assesseeType: value }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
+                  <Select value={formData.assesseeType} onValueChange={(value) => setFormData(prev => ({ ...prev, assesseeType: value }))}>
+                    <SelectTrigger><SelectValue placeholder="Select type" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Individual">Individual</SelectItem>
                       <SelectItem value="HUF">HUF</SelectItem>
@@ -175,13 +143,70 @@ const ProfileSettings = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="address">Address</Label>
-                <Input
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                  placeholder="Enter your address"
-                />
+                <Input id="address" value={formData.address} onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))} placeholder="Enter your address" />
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Legal Entities */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  <CardTitle>Legal Entities</CardTitle>
+                </div>
+                <Button size="sm" className="gap-1" onClick={() => { setEditingEntity(null); setEntityDialogOpen(true); }}>
+                  <Plus className="w-4 h-4" /> Add Entity
+                </Button>
+              </div>
+              <CardDescription>Manage your business and legal entities</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {legalEntities.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">No legal entities added yet. Click "Add Entity" to get started.</p>
+              ) : (
+                <div className="space-y-3">
+                  {legalEntities.map(entity => (
+                    <Collapsible key={entity.id}>
+                      <div className="border rounded-lg">
+                        <CollapsibleTrigger className="flex items-center justify-between w-full px-4 py-3 hover:bg-muted/50 transition-colors">
+                          <div className="flex items-center gap-3 text-left">
+                            <Building2 className="w-4 h-4 text-muted-foreground shrink-0" />
+                            <div>
+                              <p className="font-medium text-sm">{entity.name}</p>
+                              <p className="text-xs text-muted-foreground">{entity.type} • PAN: {entity.pan || "—"}</p>
+                            </div>
+                          </div>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 [[data-state=open]_&]:rotate-180" />
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <div className="px-4 pb-4 pt-1 border-t space-y-2 text-sm">
+                            {entity.natureOfBusiness && <p><span className="text-muted-foreground">Nature:</span> {entity.natureOfBusiness}</p>}
+                            {entity.dateOfIncorporation && <p><span className="text-muted-foreground">Incorporated:</span> {entity.dateOfIncorporation}</p>}
+                            {entity.registeredAddress && <p><span className="text-muted-foreground">Registered Address:</span> {entity.registeredAddress}</p>}
+                            {entity.businessAddress && <p><span className="text-muted-foreground">Business Address:</span> {entity.businessAddress}</p>}
+                            {entity.gstns.length > 0 && (
+                              <div>
+                                <span className="text-muted-foreground">GSTN(s):</span>{" "}
+                                {entity.gstns.join(", ")}
+                              </div>
+                            )}
+                            <div className="flex gap-2 pt-2">
+                              <Button size="sm" variant="outline" className="gap-1" onClick={() => { setEditingEntity(entity); setEntityDialogOpen(true); }}>
+                                <Pencil className="w-3 h-3" /> Edit
+                              </Button>
+                              <Button size="sm" variant="destructive" className="gap-1" onClick={() => setDeleteEntityId(entity.id)}>
+                                <Trash2 className="w-3 h-3" /> Delete
+                              </Button>
+                            </div>
+                          </div>
+                        </CollapsibleContent>
+                      </div>
+                    </Collapsible>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -201,9 +226,7 @@ const ProfileSettings = () => {
                   <p className="text-sm text-muted-foreground">Choose your preferred tax regime</p>
                 </div>
                 <Select defaultValue="new">
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select regime" />
-                  </SelectTrigger>
+                  <SelectTrigger className="w-[180px]"><SelectValue placeholder="Select regime" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="old">Old Regime</SelectItem>
                     <SelectItem value="new">New Regime</SelectItem>
@@ -228,20 +251,14 @@ const ProfileSettings = () => {
                   <p className="font-medium">Email Notifications</p>
                   <p className="text-sm text-muted-foreground">Receive updates via email</p>
                 </div>
-                <Switch
-                  checked={preferences.emailNotifications}
-                  onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, emailNotifications: checked }))}
-                />
+                <Switch checked={preferences.emailNotifications} onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, emailNotifications: checked }))} />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">Tax Deadline Reminders</p>
                   <p className="text-sm text-muted-foreground">Get notified about upcoming tax deadlines</p>
                 </div>
-                <Switch
-                  checked={preferences.taxReminders}
-                  onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, taxReminders: checked }))}
-                />
+                <Switch checked={preferences.taxReminders} onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, taxReminders: checked }))} />
               </div>
             </CardContent>
           </Card>
@@ -261,10 +278,7 @@ const ProfileSettings = () => {
                   <p className="font-medium">Dark Mode</p>
                   <p className="text-sm text-muted-foreground">Switch to dark theme</p>
                 </div>
-                <Switch
-                  checked={preferences.darkMode}
-                  onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, darkMode: checked }))}
-                />
+                <Switch checked={preferences.darkMode} onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, darkMode: checked }))} />
               </div>
             </CardContent>
           </Card>
@@ -332,6 +346,32 @@ const ProfileSettings = () => {
           </div>
         </div>
       </main>
+
+      {/* Legal Entity Dialog */}
+      <LegalEntityDialog
+        open={entityDialogOpen}
+        onOpenChange={setEntityDialogOpen}
+        entity={editingEntity}
+        onSave={handleSaveEntity}
+      />
+
+      {/* Delete Entity Confirmation */}
+      <AlertDialog open={!!deleteEntityId} onOpenChange={(open) => !open && setDeleteEntityId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Entity?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove this legal entity. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteEntity} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
