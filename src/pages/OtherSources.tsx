@@ -16,6 +16,7 @@ interface IncomeRow {
 
 const OtherSources = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { toast } = useToast();
 
   const [incomeData, setIncomeData] = useState<IncomeRow[]>([
@@ -58,7 +59,7 @@ const OtherSources = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate(-1)}
+                onClick={() => goBack()}
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>

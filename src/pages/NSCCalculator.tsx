@@ -10,6 +10,7 @@ import Footer from "@/components/Footer";
 
 const NSCCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [principal, setPrincipal] = useState<number>(100000);
   const [interestRate, setInterestRate] = useState<number>(7.7);
   const tenure = 5; // NSC has fixed 5-year tenure
@@ -39,7 +40,7 @@ const NSCCalculator = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button variant="ghost" size="icon" onClick={() => goBack()}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
