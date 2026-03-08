@@ -5,7 +5,17 @@ import { useTaxData } from "@/hooks/useTaxData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, IndianRupee, TrendingUp, Shield, PiggyBank, Landmark, Heart, AlertTriangle, RefreshCw, CheckCircle } from "lucide-react";
+import { ArrowLeft, IndianRupee, TrendingUp, Shield, PiggyBank, Landmark, Heart, AlertTriangle, RefreshCw, CheckCircle, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 
 const fmt = (n: number) =>
