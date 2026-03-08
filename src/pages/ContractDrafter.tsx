@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { ArrowLeft, FileText, Download, RotateCcw, Shield, Plus, Trash2, Lock, Sparkles, Cookie, Palette, BookOpen, X } from "lucide-react";
 import ClauseLibraryPanel from "@/components/ClauseLibraryPanel";
 import type { Clause } from "@/lib/clauseDatabase";
