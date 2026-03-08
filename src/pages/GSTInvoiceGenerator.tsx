@@ -586,7 +586,11 @@ const GSTInvoiceGenerator = () => {
     if (totals.totalDiscount > 0) summaryRows.push(['Discount', `-${formatCurrency(totals.totalDiscount)}`]);
     if (isInterState) { summaryRows.push(['IGST', formatCurrency(totals.totalIGST)]); }
     else { summaryRows.push(['CGST', formatCurrency(totals.totalCGST)]); summaryRows.push(['SGST', formatCurrency(totals.totalSGST)]); }
-    summaryRows.push(['Grand Total', formatCurrency(totals.grandTotal)]);
+    summaryRows.push(['Grand Total (INR)', formatCurrency(totals.grandTotal)]);
+    if (isForeignCurrency) {
+      summaryRows.push([`Grand Total (${selectedCurrency})`, formatForeignCurrency(totals.grandTotal)]);
+      summaryRows.push(['Exchange Rate', `1 ${selectedCurrency} = ${formatCurrency(exchangeRate)}`]);
+    }
 
     autoTable(doc, {
       startY: y, body: summaryRows, theme: 'plain',
