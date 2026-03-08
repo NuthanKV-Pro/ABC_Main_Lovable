@@ -1368,20 +1368,36 @@ const FinancialStatements = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsList className="grid w-full grid-cols-6 mb-6">
+            <TabsTrigger value="journal" className="gap-2">
+              <BookOpen className="h-4 w-4" /> Journal
+            </TabsTrigger>
             <TabsTrigger value="entry" className="gap-2">
-              <Wallet className="h-4 w-4" /> Data Entry
+              <Wallet className="h-4 w-4" /> Ledger
+            </TabsTrigger>
+            <TabsTrigger value="tb" className="gap-2">
+              <Calculator className="h-4 w-4" /> Trial Balance
             </TabsTrigger>
             <TabsTrigger value="bs" className="gap-2">
               <FileText className="h-4 w-4" /> Balance Sheet
             </TabsTrigger>
             <TabsTrigger value="pl" className="gap-2">
-              <TrendingUp className="h-4 w-4" /> Profit & Loss
+              <TrendingUp className="h-4 w-4" /> P&L
             </TabsTrigger>
             <TabsTrigger value="cfs" className="gap-2">
               <ArrowUpDown className="h-4 w-4" /> Cash Flow
             </TabsTrigger>
           </TabsList>
+
+          {/* Journal Entry Tab */}
+          <TabsContent value="journal">
+            {renderJournalEntries()}
+          </TabsContent>
+
+          {/* Trial Balance Tab */}
+          <TabsContent value="tb" className="space-y-4">
+            {renderTrialBalance()}
+          </TabsContent>
 
           {/* Data Entry Tab */}
           <TabsContent value="entry">
