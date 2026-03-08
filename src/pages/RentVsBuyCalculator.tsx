@@ -134,7 +134,7 @@ const RentVsBuyCalculator = () => {
         <div className="mb-8">
           <Button
             variant="ghost"
-            onClick={() => navigate(-1)}
+            onClick={() => goBack()}
             className="mb-4 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />

@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 
 const DebtToIncomeCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   
   // Income inputs
   const [monthlyIncome, setMonthlyIncome] = useState<number>(100000);
@@ -90,7 +91,7 @@ const DebtToIncomeCalculator = () => {
         <div className="mb-8">
           <Button
             variant="ghost"
-            onClick={() => navigate(-1)}
+            onClick={() => goBack()}
             className="mb-4 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />

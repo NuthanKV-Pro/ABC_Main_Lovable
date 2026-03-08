@@ -37,6 +37,7 @@ const stateRates: StateRate[] = [
 
 const StampDutyCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [propertyValue, setPropertyValue] = useState<number>(5000000);
   const [selectedState, setSelectedState] = useState<string>("Maharashtra");
   const [buyerGender, setBuyerGender] = useState<string>("male");
@@ -76,7 +77,7 @@ const StampDutyCalculator = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button variant="ghost" size="icon" onClick={() => goBack()}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
