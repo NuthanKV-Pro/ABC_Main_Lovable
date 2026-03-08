@@ -3121,10 +3121,10 @@ const ContractDrafter = () => {
   };
 
   const exportToPDF = () => {
-    if (!generatedContract) {
+    if (!generatedContract && importedClauses.length === 0) {
       toast({
         title: "No Contract",
-        description: "Please generate a contract first.",
+        description: "Please generate a contract or import clauses first.",
         variant: "destructive",
       });
       return;
