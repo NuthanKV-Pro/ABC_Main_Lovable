@@ -803,7 +803,81 @@ const GSTInvoiceGenerator = () => {
           </CardContent>
         </Card>
 
-        {/* Line Items */}
+        {/* Multi-Currency / Export Invoice */}
+        <Card className="mt-6 border-primary/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Globe className="h-5 w-5 text-primary" />
+              Multi-Currency / Export Invoice
+            </CardTitle>
+            <CardDescription>Enable for export invoices — amounts will show in foreign currency with INR equivalent</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+              <div className="flex items-center gap-2 pt-2">
+                <Switch checked={isExportInvoice} onCheckedChange={(c) => {
+                  setIsExportInvoice(c);
+                  if (!c) { setSelectedCurrency("INR"); setExchangeRate(1); }
+                  if (c && selectedCurrency === "INR") { handleCurrencyChange("USD"); }
+                }} />
+                <Label className="text-sm">Export Invoice</Label>
+              </div>
+              <div>
+                <Label>Invoice Currency</Label>
+                <Select value={selectedCurrency} onValueChange={handleCurrencyChange} disabled={!isExportInvoice}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {currencyData.map(c => (
+                      <SelectItem key={c.code} value={c.code}>{c.symbol} {c.code} — {c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Exchange Rate (1 {selectedCurrency} = ₹)</Label>
+                <div className="flex gap-1.5">
+                  <Input
+                    type="number"
+                    value={exchangeRate}
+                    onChange={e => setExchangeRate(Number(e.target.value))}
+                    disabled={!isExportInvoice || selectedCurrency === "INR"}
+                    step="0.01"
+                    min="0"
+                  />
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="icon" disabled={!isExportInvoice} onClick={() => {
+                        const info = currencyData.find(c => c.code === selectedCurrency);
+                        if (info) setExchangeRate(info.defaultRate);
+                        toast.info("Reset to approximate default rate. For actual rates, check RBI reference rates.");
+                      }}>
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent><p className="text-xs">Reset to default approximate rate</p></TooltipContent>
+                  </Tooltip>
+                </div>
+              </div>
+              {isForeignCurrency && (
+                <div className="text-sm p-2 rounded-lg bg-muted/50 border">
+                  <p className="text-muted-foreground text-xs">Grand Total in {selectedCurrency}:</p>
+                  <p className="font-bold text-primary text-lg">{formatForeignCurrency(totals.grandTotal)}</p>
+                  <p className="text-xs text-muted-foreground">INR Equivalent: {formatCurrency(totals.grandTotal)}</p>
+                </div>
+              )}
+            </div>
+            {isExportInvoice && (
+              <div className="mt-3 p-2.5 rounded-lg bg-muted/30 border flex items-start gap-2">
+                <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground">
+                  <strong>Export Invoice Note:</strong> For exports, GST is either charged at 0% (under LUT/Bond) or at applicable rate with refund claim.
+                  Use RBI reference rate on the date of invoice for conversion. Items are entered in INR; the foreign currency equivalent is auto-calculated.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
