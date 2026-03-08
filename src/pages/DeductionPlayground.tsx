@@ -1383,7 +1383,7 @@ const DeductionPlayground = () => {
           {/* Mobile Layout */}
           <div className="flex flex-col gap-3 md:hidden">
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <Button variant="ghost" size="icon" onClick={() => goBack()}>
                 <ArrowLeft className="w-4 h-4" />
               </Button>
               <div className="flex-1 min-w-0">
@@ -1445,7 +1445,7 @@ const DeductionPlayground = () => {
           {/* Desktop Layout */}
           <div className="hidden md:flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <Button variant="ghost" size="icon" onClick={() => goBack()}>
                 <ArrowLeft className="w-4 h-4" />
               </Button>
               <div>

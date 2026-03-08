@@ -11,6 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 const DividendDecisionTool = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   
   // Company Financial Details
   const [earnings, setEarnings] = useState<number>(10000000); // EPS or Total Earnings
