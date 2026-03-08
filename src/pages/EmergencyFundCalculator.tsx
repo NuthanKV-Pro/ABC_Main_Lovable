@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,7 +38,7 @@ const EmergencyFundCalculator = () => {
   const [currentSavings, setCurrentSavings] = useState<number>(100000);
   const [monthlySavingCapacity, setMonthlySavingCapacity] = useState<number>(15000);
 
-  useAutoPopulate([
+  const { populatedFields, resetField } = useAutoPopulate([
     { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 75000 },
     { key: "fhs_emergencyFund", setter: setCurrentSavings, defaultValue: 100000 },
     { key: "fhs_monthlyDebtPayment", setter: setEmiPayments, defaultValue: 10000 },
