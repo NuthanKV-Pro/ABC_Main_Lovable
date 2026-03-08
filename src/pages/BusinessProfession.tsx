@@ -14,16 +14,22 @@ const BusinessProfession = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const { toast } = useToast();
-  const [presumptiveIncome, setPresumptiveIncome] = useState({
-    grossReceipts: 0,
-    presumptiveRate: 8,
-    presumptiveIncome: 0,
+  const [presumptiveIncome, setPresumptiveIncome] = useState(() => {
+    const saved = localStorage.getItem('bp_data');
+    if (saved) {
+      const data = JSON.parse(saved);
+      return data.presumptiveIncome || { grossReceipts: 0, presumptiveRate: 8, presumptiveIncome: 0 };
+    }
+    return { grossReceipts: 0, presumptiveRate: 8, presumptiveIncome: 0 };
   });
 
-  const [regularIncome, setRegularIncome] = useState({
-    grossReceipts: 0,
-    expenses: 0,
-    netIncome: 0,
+  const [regularIncome, setRegularIncome] = useState(() => {
+    const saved = localStorage.getItem('bp_data');
+    if (saved) {
+      const data = JSON.parse(saved);
+      return data.regularIncome || { grossReceipts: 0, expenses: 0, netIncome: 0 };
+    }
+    return { grossReceipts: 0, expenses: 0, netIncome: 0 };
   });
 
   const calculatePresumptive = (receipts: number, rate: number) => {
