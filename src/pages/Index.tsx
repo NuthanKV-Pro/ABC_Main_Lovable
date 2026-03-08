@@ -920,6 +920,7 @@ const Index = () => {
   const modulesRef = useRef<HTMLDivElement>(null);
   const amazingToolsRef = useRef<HTMLDivElement>(null);
   const [showFloatingNav, setShowFloatingNav] = useState(false);
+  const [clearStep, setClearStep] = useState(0);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     "⭐ Featured Tools": true
   });
