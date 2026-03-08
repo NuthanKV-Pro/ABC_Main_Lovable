@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Zap, AlertTriangle, CheckCircle2, ArrowRight, Info, Lightbulb, TrendingUp, Shield, Wallet, PiggyBank, Target } from "lucide-react";
+import { ArrowLeft, Zap, AlertTriangle, CheckCircle2, ArrowRight, Info, Lightbulb, TrendingUp, Shield, Wallet, PiggyBank, Target, BarChart3, Percent } from "lucide-react";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useTaxData } from "@/hooks/useTaxData";
 import { motion } from "framer-motion";
@@ -47,6 +47,9 @@ function generateActions(taxData: ReturnType<typeof useTaxData>): ActionItem[] {
   const monthlyExpenses = getNum("fhs_monthlyExpenses");
   const retirementCorpus = getNum("fhs_retirementCorpus");
   const age = getNum("fhs_age") || 30;
+  const monthlySavings = getNum("fhs_monthlySavings");
+  const totalInvestments = getNum("fhs_totalInvestments");
+  const annualIncome = salary.total > 0 ? salary.total : monthlyIncome * 12;
 
   // ========== 80C DEDUCTIONS ==========
   const section80C = deductions.data?.["80C"] || 0;
@@ -143,8 +146,7 @@ function generateActions(taxData: ReturnType<typeof useTaxData>): ActionItem[] {
   }
 
   // ========== INSURANCE COVERAGE ==========
-  if (monthlyIncome > 0 && salary.total > 0) {
-    const annualIncome = salary.total;
+  if (monthlyIncome > 0 && annualIncome > 0) {
     const coverageMultiple = insuranceCoverage / annualIncome;
     if (coverageMultiple < 5 && insuranceCoverage > 0) {
       actions.push({
@@ -157,7 +159,7 @@ function generateActions(taxData: ReturnType<typeof useTaxData>): ActionItem[] {
         category: "Insurance",
         icon: Shield,
       });
-    } else if (insuranceCoverage === 0 && salary.total > 500000) {
+    } else if (insuranceCoverage === 0 && annualIncome > 500000) {
       actions.push({
         id: "no-insurance",
         priority: "high",
@@ -186,8 +188,8 @@ function generateActions(taxData: ReturnType<typeof useTaxData>): ActionItem[] {
   }
 
   // ========== RETIREMENT ==========
-  if (age > 25 && salary.total > 0) {
-    const targetCorpus = salary.total * 25;
+  if (age > 25 && annualIncome > 0) {
+    const targetCorpus = annualIncome * 25;
     if (retirementCorpus < targetCorpus * 0.1) {
       actions.push({
         id: "retirement-gap",
@@ -245,7 +247,89 @@ function generateActions(taxData: ReturnType<typeof useTaxData>): ActionItem[] {
     });
   }
 
-  // ========== NO DATA AT ALL ==========
+  // ========== LOW SAVINGS RATE ==========
+  if (monthlyIncome > 0 && monthlySavings >= 0) {
+    const savingsRate = (monthlySavings / monthlyIncome) * 100;
+    if (savingsRate < 20 && monthlySavings < monthlyIncome) {
+      actions.push({
+        id: "low-savings-rate",
+        priority: savingsRate < 10 ? "high" : "medium",
+        title: `Savings rate is only ${savingsRate.toFixed(0)}% of income`,
+        description: `You're saving ${formatCurrency(monthlySavings)}/month. Aim for at least 20% (${formatCurrency(monthlyIncome * 0.2)}/month) to build wealth.`,
+        route: "/budget-planner",
+        routeLabel: "Plan Your Budget",
+        category: "Savings",
+        icon: BarChart3,
+      });
+    }
+  }
+
+  // ========== HIGH EXPENSE RATIO ==========
+  if (monthlyIncome > 0 && monthlyExpenses > 0) {
+    const expenseRatio = (monthlyExpenses / monthlyIncome) * 100;
+    if (expenseRatio > 70) {
+      actions.push({
+        id: "high-expense-ratio",
+        priority: expenseRatio > 85 ? "high" : "medium",
+        title: `${expenseRatio.toFixed(0)}% of income goes to expenses`,
+        description: `You're spending ${formatCurrency(monthlyExpenses)}/month out of ${formatCurrency(monthlyIncome)}. Reducing expenses frees up capital for investments and emergencies.`,
+        route: "/budget-planner",
+        routeLabel: "Optimize Spending",
+        category: "Budgeting",
+        icon: Percent,
+      });
+    }
+  }
+
+  // ========== LOW INVESTMENTS ==========
+  if (monthlyIncome > 0 && age > 25 && totalInvestments < monthlyIncome * 6) {
+    actions.push({
+      id: "low-investments",
+      priority: totalInvestments === 0 ? "high" : "medium",
+      title: totalInvestments === 0 ? "No investments recorded" : "Investment portfolio is small relative to income",
+      description: totalInvestments === 0
+        ? "Start investing early — even small SIPs of ₹500/month can grow significantly over time."
+        : `Your investments (${formatCurrency(totalInvestments)}) are less than 6 months of income. Consider increasing via SIP or lump sum.`,
+      route: "/sip-calculator",
+      routeLabel: "Explore SIP",
+      category: "Investments",
+      icon: TrendingUp,
+    });
+  }
+
+  // ========== TOTAL DEBT EXCEEDS ANNUAL INCOME ==========
+  if (monthlyIncome > 0 && totalDebt > annualIncome) {
+    actions.push({
+      id: "debt-exceeds-income",
+      priority: totalDebt > annualIncome * 2 ? "high" : "medium",
+      title: `Total debt (${formatCurrency(totalDebt)}) exceeds your annual income`,
+      description: `Your debt burden is ${(totalDebt / annualIncome).toFixed(1)}x your annual income. Explore consolidation or faster repayment strategies.`,
+      route: "/loan-comparison",
+      routeLabel: "Compare Loan Options",
+      category: "Debt Management",
+      icon: AlertTriangle,
+    });
+  }
+
+  // ========== NUDGE TO COMPLETE FHS ==========
+  if (monthlyIncome === 0 && grossTotal === 0 && totalDeductions === 0) {
+    // Check if any FHS key exists at all
+    const hasSomeFHS = ["fhs_monthlyIncome", "fhs_monthlyExpenses", "fhs_totalDebt"].some(k => localStorage.getItem(k) !== null);
+    if (!hasSomeFHS) {
+      actions.push({
+        id: "complete-fhs",
+        priority: "low",
+        title: "Complete your Financial Health Score",
+        description: "Fill in your income, expenses, debt, and savings data to get personalized action items and a comprehensive health score.",
+        route: "/financial-health-score",
+        routeLabel: "Take Health Check",
+        category: "Getting Started",
+        icon: Lightbulb,
+      });
+    }
+  }
+
+
   if (grossTotal === 0 && totalDeductions === 0 && monthlyIncome === 0) {
     actions.push({
       id: "start-here",
