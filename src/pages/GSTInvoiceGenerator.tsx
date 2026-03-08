@@ -664,8 +664,8 @@ const GSTInvoiceGenerator = () => {
       <head><meta charset="utf-8"><title>GST Invoice</title>
       <style>body{font-family:Calibri,sans-serif;padding:20px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:6px 8px;font-size:11px}th{background:#2980b9;color:#fff}h1{text-align:center;color:#2c3e50}.summary{text-align:right;margin-top:16px}</style>
       </head><body>
-      <h1>TAX INVOICE</h1>
-      <p>Invoice No: ${invoiceNo} | Date: ${invoiceDate} | ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}${reverseCharge ? " | Reverse Charge: Yes" : ""}</p>
+      <h1>${isExportInvoice ? "EXPORT TAX INVOICE" : "TAX INVOICE"}</h1>
+      <p>Invoice No: ${invoiceNo} | Date: ${invoiceDate} | ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}${reverseCharge ? " | Reverse Charge: Yes" : ""}${isForeignCurrency ? ` | Currency: ${selectedCurrency} | Rate: 1 ${selectedCurrency} = INR ${exchangeRate}` : ""}</p>
       <table style="width:100%;border:none;margin-bottom:16px"><tr>
         <td style="border:none;width:50%;vertical-align:top"><strong>Seller</strong><br>${sellerName}<br>GSTIN: ${sellerGSTIN}<br>State: ${states[sellerState] || "-"}${sellerAddr ? `<br>Address: ${sellerAddr}` : ""}</td>
         <td style="border:none;width:50%;vertical-align:top"><strong>Buyer</strong><br>${buyerName || "-"}<br>GSTIN: ${buyerGSTIN || "B2C (Unregistered)"}<br>State: ${states[buyerState] || "-"}${buyerAddr ? `<br>Billing: ${buyerAddr}` : ""}${shipAddr && shipAddr !== buyerAddr ? `<br>Shipping: ${shipAddr}` : ""}</td>
@@ -674,7 +674,8 @@ const GSTInvoiceGenerator = () => {
       <div class="summary">
         <p>Subtotal: ${formatCurrency(totals.subtotal)}</p>
         ${taxSummary}
-        <p><strong>Grand Total: ${formatCurrency(totals.grandTotal)}</strong></p>
+        <p><strong>Grand Total (INR): ${formatCurrency(totals.grandTotal)}</strong></p>
+        ${isForeignCurrency ? `<p><strong>Grand Total (${selectedCurrency}): ${formatForeignCurrency(totals.grandTotal)}</strong></p><p style="font-size:9px">Exchange Rate: 1 ${selectedCurrency} = INR ${exchangeRate}</p>` : ''}
       </div>
       ${eWaySection}
       <p style="font-size:9px;color:#999;margin-top:30px">This is a computer-generated invoice.</p>
