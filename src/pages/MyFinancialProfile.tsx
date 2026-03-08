@@ -45,6 +45,7 @@ const MyFinancialProfile = () => {
   const goBack = useGoBack();
   const tax = useTaxData();
   const [synced, setSynced] = useState(false);
+  const [clearStep, setClearStep] = useState(0);
 
   const handleSyncAll = () => {
     const salaryTotal = parseFloat(localStorage.getItem("salary_total") || "0");
