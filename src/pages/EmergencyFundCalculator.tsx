@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress";
 import { AlertTriangle, Shield, TrendingUp, Wallet, Home, Car, Heart, GraduationCap, Users, Briefcase, PiggyBank, Target, CheckCircle, Info, Clock, Building, Lightbulb, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import Footer from "@/components/Footer";
 
 const EmergencyFundCalculator = () => {

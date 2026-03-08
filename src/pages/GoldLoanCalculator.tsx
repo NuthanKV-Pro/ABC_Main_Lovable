@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Coins, TrendingUp, AlertTriangle, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const GoldLoanCalculator = () => {
