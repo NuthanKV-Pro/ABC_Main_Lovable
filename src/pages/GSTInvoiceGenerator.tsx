@@ -493,6 +493,9 @@ const GSTInvoiceGenerator = () => {
     if (draft.buyerBillingAddress) setBuyerBillingAddress(draft.buyerBillingAddress);
     if (draft.buyerShippingAddress) setBuyerShippingAddress(draft.buyerShippingAddress);
     setShippingSameAsBilling(draft.shippingSameAsBilling ?? true);
+    setIsExportInvoice(draft.isExportInvoice ?? false);
+    setSelectedCurrency(draft.selectedCurrency ?? "INR");
+    setExchangeRate(draft.exchangeRate ?? 1);
     setDraftsDialogOpen(false);
     toast.success(`Loaded "${draft.name}"`);
   };
