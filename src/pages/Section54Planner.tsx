@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,7 @@ const exemptionSections: ExemptionSection[] = [
 
 const Section54Planner = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [selectedSection, setSelectedSection] = useState("54");
   const [saleDate, setSaleDate] = useState("2026-01-15");
   const [saleConsideration, setSaleConsideration] = useState(15000000);
@@ -90,7 +92,7 @@ const Section54Planner = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => goBack()}><ArrowLeft className="h-5 w-5" /></Button>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">Section 54 Capital Gains Planner</h1>
             <p className="text-muted-foreground text-sm">Plan exemptions under Sec 54, 54EC, 54F & track investment deadlines</p>

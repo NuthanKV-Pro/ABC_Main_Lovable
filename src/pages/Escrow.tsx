@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -119,6 +120,7 @@ const sampleTransactions: EscrowTransaction[] = [
 
 const Escrow = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [useSampleData, setUseSampleData] = useState(true);
   const [transactions, setTransactions] = useState<EscrowTransaction[]>(sampleTransactions);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -311,7 +313,7 @@ const Escrow = () => {
             <Button 
               variant="ghost" 
               size="icon" 
-              onClick={() => navigate(-1)}
+              onClick={() => goBack()}
               className="shrink-0"
             >
               <ArrowLeft className="h-5 w-5" />

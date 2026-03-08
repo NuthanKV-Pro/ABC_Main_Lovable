@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import Chatbot from "@/components/Chatbot";
 
 const BusinessProfession = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { toast } = useToast();
   const [presumptiveIncome, setPresumptiveIncome] = useState({
     grossReceipts: 0,
@@ -61,7 +63,7 @@ const BusinessProfession = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate(-1)}
+                onClick={() => goBack()}
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>

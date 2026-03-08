@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,7 @@ import Footer from "@/components/Footer";
 
 const RDCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [monthlyDeposit, setMonthlyDeposit] = useState<number>(10000);
   const [interestRate, setInterestRate] = useState<number>(7.0);
   const [tenureYears, setTenureYears] = useState<number>(5);
@@ -41,7 +43,7 @@ const RDCalculator = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button variant="ghost" size="icon" onClick={() => goBack()}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>

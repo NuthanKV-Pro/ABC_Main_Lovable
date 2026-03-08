@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,7 @@ const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#0088FE', '#00C49F'
 
 const StockPortfolioTracker = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [holdings, setHoldings] = useState<StockHolding[]>([
     { id: '1', symbol: 'RELIANCE', name: 'Reliance Industries', quantity: 50, buyPrice: 2400, currentPrice: 2650, sector: 'Energy' },
     { id: '2', symbol: 'TCS', name: 'Tata Consultancy Services', quantity: 30, buyPrice: 3200, currentPrice: 3450, sector: 'IT Services' },
@@ -164,7 +166,7 @@ const StockPortfolioTracker = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <Button variant="ghost" size="icon" onClick={() => goBack()}>
                 <ArrowLeft className="h-5 w-5" />
               </Button>
               <div>

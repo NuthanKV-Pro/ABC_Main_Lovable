@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ interface IncomeRow {
 
 const OtherSources = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { toast } = useToast();
 
   const [incomeData, setIncomeData] = useState<IncomeRow[]>([
@@ -57,7 +59,7 @@ const OtherSources = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate(-1)}
+                onClick={() => goBack()}
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>

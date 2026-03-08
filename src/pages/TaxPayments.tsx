@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,6 +8,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 
 const TaxPayments = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
 
   const tdsRates = [
     { particular: "Salary", section: "192", rate: "Slab rates" },
@@ -30,7 +32,7 @@ const TaxPayments = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => navigate(-1)}>
+            <Button variant="ghost" onClick={() => goBack()}>
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div>

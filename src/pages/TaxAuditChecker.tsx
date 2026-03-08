@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 
 const TaxAuditChecker = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [entityType, setEntityType] = useState("individual");
   const [businessType, setBusinessType] = useState("business");
   const [turnover, setTurnover] = useState(12000000);
@@ -112,7 +114,7 @@ const TaxAuditChecker = () => {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => goBack()}><ArrowLeft className="h-5 w-5" /></Button>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">Tax Audit Checker</h1>
             <p className="text-muted-foreground text-sm">Check if Section 44AB audit is applicable & verify presumptive taxation eligibility</p>

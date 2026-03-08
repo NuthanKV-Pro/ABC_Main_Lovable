@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { ArrowLeft, Scale, Search, BookOpen, FileText, Gavel, Filter, ChevronDown, ExternalLink, Clock, Tag, Building, Copy, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -1177,6 +1178,7 @@ const courts = [
 
 const LegalInterpretations = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
@@ -1360,7 +1362,7 @@ For a detailed analysis, please consider:
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <Button variant="ghost" onClick={() => navigate(-1)} className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4 p-0">
+          <Button variant="ghost" onClick={() => goBack()} className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4 p-0">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>

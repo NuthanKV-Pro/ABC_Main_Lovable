@@ -6,11 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, TrendingDown, TrendingUp, AlertTriangle, Info, Calendar, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const SWPCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [initialInvestment, setInitialInvestment] = useState<number>(2500000);
   const [monthlyWithdrawal, setMonthlyWithdrawal] = useState<number>(25000);
   const [expectedReturn, setExpectedReturn] = useState<number>(12);
@@ -104,7 +106,7 @@ const SWPCalculator = () => {
       <div className="max-w-5xl mx-auto">
         <Button 
           variant="ghost" 
-          onClick={() => navigate(-1)}
+          onClick={() => goBack()}
           className="mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />

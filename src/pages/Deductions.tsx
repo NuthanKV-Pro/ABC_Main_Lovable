@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ const deductionSections = [
 
 const Deductions = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { toast } = useToast();
   
   const [amounts, setAmounts] = useState<Record<string, number>>(() => {
@@ -65,7 +67,7 @@ const Deductions = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => navigate(-1)}>
+              <Button variant="ghost" onClick={() => goBack()}>
                 <ArrowLeft className="w-4 h-4" />
               </Button>
               <div>

@@ -7,11 +7,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, GraduationCap, TrendingUp, AlertTriangle, Info, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const EducationLoanCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [loanAmount, setLoanAmount] = useState<number>(1000000);
   const [interestRate, setInterestRate] = useState<number>(10);
   const [courseDuration, setCourseDuration] = useState<number>(4);
@@ -67,7 +69,7 @@ const EducationLoanCalculator = () => {
       <div className="max-w-5xl mx-auto">
         <Button 
           variant="ghost" 
-          onClick={() => navigate(-1)}
+          onClick={() => goBack()}
           className="mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />

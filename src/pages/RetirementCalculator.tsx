@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import Footer from "@/components/Footer";
 
 const RetirementCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [currentAge, setCurrentAge] = useState<number>(30);
   const [retirementAge, setRetirementAge] = useState<number>(60);
   const [monthlyExpenses, setMonthlyExpenses] = useState<number>(50000);
@@ -70,7 +72,7 @@ const RetirementCalculator = () => {
             <Button 
               variant="ghost" 
               size="icon"
-              onClick={() => navigate(-1)}
+              onClick={() => goBack()}
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>

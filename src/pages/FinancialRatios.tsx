@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -303,6 +304,7 @@ const defaultFinancialData: FinancialData = {
 
 const FinancialRatios = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [financialData, setFinancialData] = useState<FinancialData>(defaultFinancialData);
   const [multiYearData, setMultiYearData] = useState<FinancialData[]>([]);
   const [ratiosCalculated, setRatiosCalculated] = useState(false);
@@ -1234,7 +1236,7 @@ const FinancialRatios = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => navigate(-1)}>
+            <Button variant="ghost" onClick={() => goBack()}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>

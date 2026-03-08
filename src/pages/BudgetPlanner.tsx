@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,7 @@ const defaultCategories: BudgetCategory[] = [
 
 const BudgetPlanner = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [monthlyIncome, setMonthlyIncome] = useState<number>(100000);
   const [categories, setCategories] = useState<BudgetCategory[]>(defaultCategories);
   const [newCategory, setNewCategory] = useState({ name: '', type: 'need' as 'need' | 'want' | 'saving' });
@@ -98,7 +100,7 @@ const BudgetPlanner = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button variant="ghost" size="icon" onClick={() => goBack()}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>

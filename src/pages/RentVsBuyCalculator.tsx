@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { Slider } from "@/components/ui/slider";
 
 const RentVsBuyCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   
   // Buying inputs
   const [propertyPrice, setPropertyPrice] = useState<number>(5000000);
@@ -132,7 +134,7 @@ const RentVsBuyCalculator = () => {
         <div className="mb-8">
           <Button
             variant="ghost"
-            onClick={() => navigate(-1)}
+            onClick={() => goBack()}
             className="mb-4 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
