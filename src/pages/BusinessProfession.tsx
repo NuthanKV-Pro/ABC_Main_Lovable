@@ -12,6 +12,7 @@ import Chatbot from "@/components/Chatbot";
 
 const BusinessProfession = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { toast } = useToast();
   const [presumptiveIncome, setPresumptiveIncome] = useState({
     grossReceipts: 0,
@@ -62,7 +63,7 @@ const BusinessProfession = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => navigate(-1)}
+                onClick={() => goBack()}
               >
                 <ArrowLeft className="w-5 h-5" />
               </Button>

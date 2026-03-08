@@ -21,6 +21,7 @@ const calculateNewRegimeTax = (income: number): number => {
 
 const TotalIncomeTax = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { toast } = useToast();
   const { profile } = useUserProfile();
 
