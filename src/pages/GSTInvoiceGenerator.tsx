@@ -771,7 +771,22 @@ const GSTInvoiceGenerator = () => {
                     return (
                       <TableRow key={item.id}>
                         <TableCell><Input className="min-w-[150px]" value={item.description} onChange={e => updateItem(item.id, "description", e.target.value)} /></TableCell>
-                        <TableCell><Input className="w-20" value={item.hsnCode} onChange={e => updateItem(item.id, "hsnCode", e.target.value)} /></TableCell>
+                        <TableCell>
+                          <div className="relative">
+                            <Input className="w-24" value={item.hsnCode} onChange={e => updateItem(item.id, "hsnCode", e.target.value)} placeholder="HSN/SAC" />
+                            {item.hsnCode && getGstSuggestion(item.hsnCode) && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-1 mt-0.5">
+                                    <Sparkles className="h-3 w-3 text-primary" />
+                                    <span className="text-[10px] text-primary font-medium truncate max-w-[80px]">{getGstSuggestion(item.hsnCode)!.label}</span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent><p className="text-xs">GST rate auto-suggested based on HSN/SAC code. You can override manually.</p></TooltipContent>
+                              </Tooltip>
+                            )}
+                          </div>
+                        </TableCell>
                         <TableCell><Input className="w-16" type="number" value={item.qty} onChange={e => updateItem(item.id, "qty", Number(e.target.value))} /></TableCell>
                         <TableCell><Input className="w-24" type="number" value={item.rate} onChange={e => updateItem(item.id, "rate", Number(e.target.value))} /></TableCell>
                         <TableCell>
