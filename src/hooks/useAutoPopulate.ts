@@ -38,6 +38,24 @@ function resolveWithSource(key: string): { value: number; source: string } {
   const incomeFromSalary = salaryTotal > 0 ? Math.round(salaryTotal / 12) : 0;
   const fhsIncome = getNum("fhs_monthlyIncome");
 
+  // Check sync_ keys first (from "Sync All Tools")
+  const syncMap: Record<string, string> = {
+    monthlyIncome: "sync_monthlyIncome",
+    fhs_age: "sync_age",
+    fhs_monthlyExpenses: "sync_monthlyExpenses",
+    fhs_totalInvestments: "sync_totalInvestments",
+    fhs_monthlySavings: "sync_monthlySavings",
+    fhs_emergencyFund: "sync_emergencyFund",
+    fhs_monthlyDebtPayment: "sync_monthlyDebtPayment",
+    fhs_totalDebt: "sync_totalDebt",
+  };
+
+  const syncKey = syncMap[key];
+  if (syncKey) {
+    const syncVal = getNum(syncKey);
+    if (syncVal > 0) return { value: syncVal, source: "My Profile" };
+  }
+
   switch (key) {
     case "monthlyIncome": {
       if (incomeFromSalary > 0) return { value: incomeFromSalary, source: "Salary" };
