@@ -984,6 +984,255 @@ const FinancialStatements = () => {
     );
   };
 
+  // Journal Entry functions
+  const addJournalEntry = () => {
+    if (!newJournal.debitAccountId || !newJournal.creditAccountId || newJournal.amount <= 0) {
+      toast({ title: "Incomplete Entry", description: "Please fill debit account, credit account, and amount.", variant: "destructive" });
+      return;
+    }
+    if (newJournal.debitAccountId === newJournal.creditAccountId) {
+      toast({ title: "Invalid Entry", description: "Debit and credit accounts must be different.", variant: "destructive" });
+      return;
+    }
+    const entry: JournalEntry = {
+      id: `je_${Date.now()}`,
+      ...newJournal,
+      posted: false,
+    };
+    setJournalEntries(prev => [...prev, entry]);
+    setNewJournal({ date: new Date().toISOString().split('T')[0], debitAccountId: '', creditAccountId: '', amount: 0, narration: '' });
+    toast({ title: "Journal Entry Added", description: "Entry saved. Click 'Post' to update ledgers." });
+  };
+
+  const postJournalEntry = (je: JournalEntry) => {
+    const debitGroup = data.accountGroups.find(g => g.id === je.debitAccountId);
+    const creditGroup = data.accountGroups.find(g => g.id === je.creditAccountId);
+    if (!debitGroup || !creditGroup) return;
+
+    setData(prev => ({
+      ...prev,
+      accountGroups: prev.accountGroups.map(g => {
+        if (g.id === je.debitAccountId) {
+          return { ...g, entries: [...g.entries, { id: `je_d_${je.id}`, particulars: `JE: ${je.narration || creditGroup.name}`, amount: je.amount, type: 'debit' as const }] };
+        }
+        if (g.id === je.creditAccountId) {
+          return { ...g, entries: [...g.entries, { id: `je_c_${je.id}`, particulars: `JE: ${je.narration || debitGroup.name}`, amount: je.amount, type: 'credit' as const }] };
+        }
+        return g;
+      })
+    }));
+    setJournalEntries(prev => prev.map(j => j.id === je.id ? { ...j, posted: true } : j));
+    toast({ title: "Journal Entry Posted", description: "Ledger accounts updated." });
+  };
+
+  const postAllJournalEntries = () => {
+    const unposted = journalEntries.filter(j => !j.posted);
+    if (unposted.length === 0) {
+      toast({ title: "Nothing to Post", description: "All entries are already posted." });
+      return;
+    }
+    unposted.forEach(je => postJournalEntry(je));
+  };
+
+  const deleteJournalEntry = (id: string) => {
+    setJournalEntries(prev => prev.filter(j => j.id !== id));
+  };
+
+  const getAccountName = (id: string) => data.accountGroups.find(g => g.id === id)?.name || id;
+
+  // Render Journal Entry Tab
+  const renderJournalEntries = () => (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-primary" />
+            New Journal Entry
+          </CardTitle>
+          <CardDescription>Record double-entry bookkeeping transactions</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div>
+              <Label>Date</Label>
+              <Input type="date" value={newJournal.date} onChange={e => setNewJournal(prev => ({ ...prev, date: e.target.value }))} />
+            </div>
+            <div>
+              <Label>Debit Account</Label>
+              <Select value={newJournal.debitAccountId} onValueChange={v => setNewJournal(prev => ({ ...prev, debitAccountId: v }))}>
+                <SelectTrigger><SelectValue placeholder="Select account" /></SelectTrigger>
+                <SelectContent>
+                  {data.accountGroups.map(g => (
+                    <SelectItem key={g.id} value={g.id}>{g.name} ({g.category})</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Credit Account</Label>
+              <Select value={newJournal.creditAccountId} onValueChange={v => setNewJournal(prev => ({ ...prev, creditAccountId: v }))}>
+                <SelectTrigger><SelectValue placeholder="Select account" /></SelectTrigger>
+                <SelectContent>
+                  {data.accountGroups.map(g => (
+                    <SelectItem key={g.id} value={g.id}>{g.name} ({g.category})</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Amount (₹)</Label>
+              <Input type="number" placeholder="Amount" value={newJournal.amount || ''} onChange={e => setNewJournal(prev => ({ ...prev, amount: parseFloat(e.target.value) || 0 }))} />
+            </div>
+            <div>
+              <Label>Narration</Label>
+              <Input placeholder="Description" value={newJournal.narration} onChange={e => setNewJournal(prev => ({ ...prev, narration: e.target.value }))} />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button onClick={addJournalEntry}><Plus className="h-4 w-4 mr-2" /> Add Entry</Button>
+            {journalEntries.some(j => !j.posted) && (
+              <Button variant="secondary" onClick={postAllJournalEntries}>
+                <ArrowUpDown className="h-4 w-4 mr-2" /> Post All to Ledger
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {journalEntries.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Journal Register ({journalEntries.length} entries)</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Debit A/c</TableHead>
+                  <TableHead>Credit A/c</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>Narration</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {journalEntries.slice().reverse().map(je => (
+                  <TableRow key={je.id} className={je.posted ? 'opacity-60' : ''}>
+                    <TableCell className="text-sm">{new Date(je.date).toLocaleDateString('en-IN')}</TableCell>
+                    <TableCell className="text-sm font-medium">{getAccountName(je.debitAccountId)}</TableCell>
+                    <TableCell className="text-sm font-medium">{getAccountName(je.creditAccountId)}</TableCell>
+                    <TableCell className="text-right text-sm">{formatCurrency(je.amount)}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{je.narration || '—'}</TableCell>
+                    <TableCell>
+                      {je.posted ? (
+                        <Badge variant="secondary" className="bg-green-500/10 text-green-600 text-xs">Posted</Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-xs">Draft</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        {!je.posted && (
+                          <Button size="sm" variant="ghost" onClick={() => postJournalEntry(je)} title="Post to Ledger">
+                            <ArrowUpDown className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                        {!je.posted && (
+                          <Button size="sm" variant="ghost" onClick={() => deleteJournalEntry(je.id)}>
+                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+
+  // Render Trial Balance
+  const renderTrialBalance = () => {
+    const trialData = data.accountGroups
+      .map(g => {
+        const total = g.entries.reduce((sum, e) => sum + e.amount, 0);
+        if (total === 0) return null;
+        const isDebitNature = g.category === 'asset' || g.category === 'expense';
+        return {
+          name: g.name,
+          category: g.category,
+          subCategory: g.subCategory,
+          debit: isDebitNature ? total : 0,
+          credit: !isDebitNature ? total : 0,
+        };
+      })
+      .filter(Boolean) as { name: string; category: string; subCategory: string; debit: number; credit: number }[];
+
+    const totalDebit = trialData.reduce((s, r) => s + r.debit, 0);
+    const totalCredit = trialData.reduce((s, r) => s + r.credit, 0);
+    const isBalanced = Math.abs(totalDebit - totalCredit) < 0.01;
+
+    return (
+      <Card>
+        <CardHeader className="bg-muted/50">
+          <CardTitle className="flex items-center gap-2">
+            <Calculator className="h-5 w-5 text-primary" />
+            Trial Balance
+          </CardTitle>
+          <CardDescription>
+            {data.companyName || 'Company Name'} | As at {data.asOfDate} | FY {data.financialYear}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[40%]">Account Name</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead className="text-right">Debit (₹)</TableHead>
+                <TableHead className="text-right">Credit (₹)</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {trialData.map((row, idx) => (
+                <TableRow key={idx}>
+                  <TableCell className="font-medium">{row.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="text-xs capitalize">{row.category}</Badge>
+                  </TableCell>
+                  <TableCell className="text-right">{row.debit > 0 ? formatCurrency(row.debit) : '—'}</TableCell>
+                  <TableCell className="text-right">{row.credit > 0 ? formatCurrency(row.credit) : '—'}</TableCell>
+                </TableRow>
+              ))}
+              <TableRow className="font-bold text-lg border-t-2 border-primary bg-primary/10">
+                <TableCell colSpan={2}>TOTAL</TableCell>
+                <TableCell className="text-right">{formatCurrency(totalDebit)}</TableCell>
+                <TableCell className="text-right">{formatCurrency(totalCredit)}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+          {!isBalanced && (
+            <div className="p-4 bg-destructive/10 border-t">
+              <p className="text-destructive text-sm font-medium">
+                ⚠️ Trial Balance is not balanced. Difference: {formatCurrency(Math.abs(totalDebit - totalCredit))}
+              </p>
+            </div>
+          )}
+          {isBalanced && trialData.length > 0 && (
+            <div className="p-4 bg-green-500/10 border-t">
+              <p className="text-green-600 text-sm font-medium">✓ Trial Balance is balanced.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-muted/30 to-background">
       {/* Header */}
