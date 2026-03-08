@@ -170,6 +170,7 @@ const categoryColors: Record<string, string> = {
 
 const ComplianceCalendar = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { toast } = useToast();
   const [entityType, setEntityType] = useState("company");
   const [isGSTRegistered, setIsGSTRegistered] = useState(true);
@@ -578,7 +579,7 @@ const ComplianceCalendar = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button variant="ghost" size="icon" onClick={() => goBack()}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>

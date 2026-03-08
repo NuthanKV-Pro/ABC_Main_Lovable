@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const ProfileSettings = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { profile, updateProfile, resetProfile } = useUserProfile();
   const { toast } = useToast();
   
@@ -77,7 +78,7 @@ const ProfileSettings = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button variant="ghost" size="icon" onClick={() => goBack()}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
