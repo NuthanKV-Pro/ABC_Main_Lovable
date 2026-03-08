@@ -183,6 +183,53 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
     ]
   },
   {
+    name: "🔀 Compare & Decide",
+    icon: GitCompare,
+    description: "Side-by-side comparisons for smarter financial decisions",
+    tools: [
+      {
+        id: "tax-saving-comparison",
+        title: "PPF vs ELSS vs NPS vs FD",
+        description: "Compare 80C investments: after-tax returns, lock-in, risk",
+        icon: Scale,
+        route: "/tax-saving-comparison",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
+      },
+      {
+        id: "investment-mode-comparison",
+        title: "SIP vs Lumpsum vs RD",
+        description: "Best investment mode for your goal",
+        icon: TrendingUp,
+        route: "/investment-mode-comparison",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
+      },
+      {
+        id: "regime-optimizer",
+        title: "Old vs New Regime",
+        description: "Data-driven tax regime recommendation",
+        icon: GitCompare,
+        route: "/regime-optimizer",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
+      },
+      {
+        id: "insurance-comparison",
+        title: "Term vs Endowment vs ULIP",
+        description: "Insurance products: real returns & smart strategy",
+        icon: Shield,
+        route: "/insurance-comparison",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30",
+        starred: true
+      }
+    ]
+  },
+  {
     name: "Tax Planning & Optimization",
     icon: Calculator,
     description: "Maximize tax savings and optimize your strategy",
@@ -1334,6 +1381,7 @@ const Index = () => {
               const CategoryIcon = category.icon;
               const isExpanded = expandedCategories[category.name] ?? false;
               const isFeatured = category.name.includes("Featured");
+              const isCompare = category.name.includes("Compare");
 
               return (
                 <motion.div
@@ -1343,21 +1391,25 @@ const Index = () => {
                   className={`rounded-xl border-2 overflow-hidden ${
                     isFeatured 
                       ? 'border-yellow-500/50 bg-gradient-to-br from-yellow-500/5 to-amber-500/5' 
-                      : 'border-border bg-card/50'
+                      : isCompare
+                        ? 'border-primary/50 bg-gradient-to-br from-primary/5 to-accent/5'
+                        : 'border-border bg-card/50'
                   }`}
                 >
                   {/* Category Header */}
                   <button
                     onClick={() => toggleCategory(category.name)}
                     className={`w-full flex items-center justify-between p-4 md:p-6 hover:bg-muted/30 transition-colors ${
-                      isFeatured ? 'bg-gradient-to-r from-yellow-500/10 to-amber-500/10' : ''
+                      isFeatured ? 'bg-gradient-to-r from-yellow-500/10 to-amber-500/10' : isCompare ? 'bg-gradient-to-r from-primary/10 to-accent/10' : ''
                     }`}
                   >
                     <div className="flex items-center gap-3 md:gap-4">
                       <div className={`p-2 md:p-3 rounded-lg ${
                         isFeatured 
                           ? 'bg-gradient-to-br from-yellow-500/20 to-amber-500/20' 
-                          : 'bg-primary/10'
+                          : isCompare
+                            ? 'bg-gradient-to-br from-primary/20 to-accent/20'
+                            : 'bg-primary/10'
                       }`}>
                         <CategoryIcon className={`w-5 h-5 md:w-6 md:h-6 ${
                           isFeatured ? 'text-yellow-500' : 'text-primary'
