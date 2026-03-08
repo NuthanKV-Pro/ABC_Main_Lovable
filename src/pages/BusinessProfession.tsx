@@ -6,15 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Building2 } from "lucide-react";
 import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import { useToast } from "@/hooks/use-toast";
 import Chatbot from "@/components/Chatbot";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 
 const BusinessProfession = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const { toast } = useToast();
+  const { activeEntity } = useUserProfile();
+
   const [presumptiveIncome, setPresumptiveIncome] = useState(() => {
     const saved = localStorage.getItem('bp_data');
     if (saved) {
@@ -60,7 +64,6 @@ const BusinessProfession = () => {
   };
 
   const handleSave = () => {
-    // Save the higher of presumptive or regular income
     const total = Math.max(presumptiveIncome.presumptiveIncome, regularIncome.netIncome);
     localStorage.setItem('pgbp_total', total.toString());
     toast({
@@ -107,6 +110,39 @@ const BusinessProfession = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        {/* Active Entity Info Banner */}
+        {activeEntity && (
+          <Card className="mb-6 border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
+            <CardContent className="py-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Building2 className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-sm text-foreground">{activeEntity.name}</span>
+                    <AutoPopulateBadge />
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                      {activeEntity.type}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
+                    {activeEntity.pan && (
+                      <span>PAN: <span className="font-mono font-medium text-foreground">{activeEntity.pan}</span></span>
+                    )}
+                    {activeEntity.natureOfBusiness && (
+                      <span>Nature of Business: <span className="font-medium text-foreground">{activeEntity.natureOfBusiness}</span></span>
+                    )}
+                    {activeEntity.gstns.length > 0 && (
+                      <span>GSTIN: <span className="font-mono font-medium text-foreground">{activeEntity.gstns[0]}</span></span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <Tabs defaultValue="presumptive" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="presumptive">Presumptive Taxation</TabsTrigger>
