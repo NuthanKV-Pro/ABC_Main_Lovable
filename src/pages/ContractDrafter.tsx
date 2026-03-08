@@ -3900,7 +3900,7 @@ const ContractDrafter = () => {
                   <FileText className="h-6 w-6" />
                   Legal Document Drafter
                 </h1>
-                <p className="text-sm text-muted-foreground">Draft contracts, T&Cs, privacy policies, and cookie banners</p>
+                <p className="text-sm text-muted-foreground">Draft contracts, T&Cs, privacy policies, cookie banners & import legal clauses</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -3915,6 +3915,12 @@ const ContractDrafter = () => {
                     Export PDF
                   </Button>
                 </>
+              )}
+              {activeTab === "clauses" && importedClauses.length > 0 && (
+                <Button variant="outline" onClick={() => { setImportedClauses([]); toast({ title: "Cleared", description: "All imported clauses removed." }); }}>
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Clear All Imports
+                </Button>
               )}
               {activeTab === "tnc" && (
                 <>
