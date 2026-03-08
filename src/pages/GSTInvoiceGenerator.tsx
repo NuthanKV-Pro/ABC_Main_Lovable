@@ -365,6 +365,11 @@ const GSTInvoiceGenerator = () => {
   const [draftName, setDraftName] = useState("");
   const [savedDrafts, setSavedDrafts] = useState<InvoiceDraft[]>(getStoredDrafts);
 
+  // Multi-currency states
+  const [isExportInvoice, setIsExportInvoice] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState("INR");
+  const [exchangeRate, setExchangeRate] = useState(1);
+
   // Address states
   const [sellerBillingAddress, setSellerBillingAddress] = useState<AddressDetails>({ ...emptyAddress });
   const [buyerBillingAddress, setBuyerBillingAddress] = useState<AddressDetails>({ ...emptyAddress });
