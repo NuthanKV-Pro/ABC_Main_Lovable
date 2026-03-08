@@ -474,6 +474,7 @@ const GSTInvoiceGenerator = () => {
       sellerGSTIN, buyerGSTIN, sellerName, buyerName, sellerState, buyerState,
       invoiceNo, invoiceDate, isInterState, reverseCharge, items, eWayBill,
       sellerBillingAddress, buyerBillingAddress, buyerShippingAddress, shippingSameAsBilling,
+      isExportInvoice, selectedCurrency, exchangeRate,
     };
     const updated = [draft, ...savedDrafts].slice(0, 20);
     setSavedDrafts(updated); saveDraftsToStorage(updated); setDraftName("");
