@@ -327,6 +327,7 @@ const GSTInvoiceGenerator = () => {
   const [hsnSearchQuery, setHsnSearchQuery] = useState("");
   const [isHsnOpen, setIsHsnOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [draftsDialogOpen, setDraftsDialogOpen] = useState(false);
   const [draftName, setDraftName] = useState("");
   const [savedDrafts, setSavedDrafts] = useState<InvoiceDraft[]>(getStoredDrafts);
