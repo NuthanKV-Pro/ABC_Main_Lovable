@@ -206,6 +206,16 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         tag: "New",
         tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
         starred: true
+      },
+      {
+        id: "financial-health-score",
+        title: "Financial Health Score",
+        description: "Get a comprehensive score across 6 financial dimensions",
+        icon: Heart,
+        route: "/financial-health-score",
+        tag: "New",
+        tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+        starred: true
       }
     ]
   },
