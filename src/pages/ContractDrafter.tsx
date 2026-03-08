@@ -1558,6 +1558,16 @@ const ContractDrafter = () => {
     witnessName: "",
   });
   const [generatedContract, setGeneratedContract] = useState<string>("");
+  const [importedClauses, setImportedClauses] = useState<Clause[]>([]);
+  const importedClauseIds = new Set(importedClauses.map(c => c.id));
+
+  const handleImportClause = (clause: Clause) => {
+    setImportedClauses(prev => [...prev, clause]);
+  };
+
+  const handleRemoveImportedClause = (clauseId: string) => {
+    setImportedClauses(prev => prev.filter(c => c.id !== clauseId));
+  };
   
   // T&C State
   const [tncDetails, setTncDetails] = useState<TnCDetails>({
