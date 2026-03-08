@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Plus, Trash2, Save, RotateCcw } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import { useToast } from "@/hooks/use-toast";
 import Chatbot from "@/components/Chatbot";
 
@@ -326,15 +327,12 @@ const CapitalGains = () => {
             >
               Ask When to Sell
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => {
-              if (!window.confirm("Reset all data in this tool?")) return;
+            <ResetConfirmDialog onConfirm={() => {
               ['cg_data', 'cg_total'].forEach(k => localStorage.removeItem(k));
               setShares([{ ...defaultAsset }]); setMutualFunds([{ ...defaultAsset }]);
               setProperty([{ ...defaultAsset }]); setCrypto([{ ...defaultAsset }]);
               toast({ title: "Data Reset", description: "All capital gains data has been cleared." });
-            }}>
-              <RotateCcw className="w-4 h-4" />
-            </Button>
+            }} />
             <Button 
               onClick={handleSave}
               className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"

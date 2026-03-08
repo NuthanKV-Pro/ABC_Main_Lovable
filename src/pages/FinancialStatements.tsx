@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Building2, FileText, TrendingUp, Wallet, Plus, Trash2, Save, FolderOpen, Download, RefreshCw, Calculator, BarChart3, ArrowUpDown, BookOpen } from "lucide-react";
+import { ArrowLeft, Building2, FileText, TrendingUp, Wallet, Plus, Trash2, Save, FolderOpen, Download, Calculator, BarChart3, ArrowUpDown, BookOpen, RotateCcw } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import jsPDF from "jspdf";
@@ -257,7 +258,6 @@ const FinancialStatements = () => {
 
   // Reset data
   const resetData = () => {
-    if (!window.confirm("Reset all data in this tool?")) return;
     ['financialStatementsData', 'financialStatementsJournals', 'financialStatementsSaved'].forEach(k => localStorage.removeItem(k));
     setData(defaultFinancialData);
     setJournalEntries([]);
@@ -1260,9 +1260,14 @@ const FinancialStatements = () => {
               <Button variant="outline" size="sm" onClick={loadSampleData}>
                 <Calculator className="h-4 w-4 mr-2" /> Sample Data
               </Button>
-              <Button variant="outline" size="sm" onClick={resetData}>
-                <RefreshCw className="h-4 w-4 mr-2" /> Reset
-              </Button>
+              <ResetConfirmDialog
+                onConfirm={resetData}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    <RotateCcw className="h-4 w-4 mr-2" /> Reset
+                  </Button>
+                }
+              />
               <Button variant="default" size="sm" onClick={exportAllStatementsPDF}>
                 <Download className="h-4 w-4 mr-2" /> Export All PDFs
               </Button>

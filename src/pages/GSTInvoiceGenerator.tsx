@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Plus, Trash2, Download, FileText, AlertTriangle, RotateCcw, ExternalLink, Search, ChevronDown, ChevronUp, Info, Save, FolderOpen, Truck, BookOpen, MapPin, Copy, Eye, Sparkles, Globe, RefreshCw } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Download, FileText, AlertTriangle, ExternalLink, Search, ChevronDown, ChevronUp, Info, Save, FolderOpen, Truck, BookOpen, MapPin, Copy, Eye, Sparkles, Globe, RefreshCw } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -403,7 +404,6 @@ const GSTInvoiceGenerator = () => {
   };
 
   const handleResetAll = () => {
-    if (!window.confirm("Reset all data in this tool?")) return;
     localStorage.removeItem(DRAFTS_KEY);
     setSavedDrafts([]);
     setSellerGSTIN(""); setBuyerGSTIN(""); setSellerName(""); setBuyerName("");
@@ -706,7 +706,7 @@ const GSTInvoiceGenerator = () => {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button variant="outline" size="sm" onClick={handleResetAll} className="gap-1.5"><RotateCcw className="h-4 w-4" /> Reset</Button>
+            <ResetConfirmDialog onConfirm={handleResetAll} trigger={<Button variant="outline" size="sm" className="gap-1.5"><RefreshCw className="h-4 w-4" /> Reset</Button>} />
             <Dialog>
               <DialogTrigger asChild><Button variant="outline" size="sm" className="gap-1.5"><Save className="h-4 w-4" /> Save Draft</Button></DialogTrigger>
               <DialogContent className="sm:max-w-md">

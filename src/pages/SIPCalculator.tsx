@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, TrendingUp, ExternalLink, RotateCcw } from "lucide-react";
+import { ArrowLeft, TrendingUp, ExternalLink } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import Footer from "@/components/Footer";
 import ExportButton from "@/components/ExportButton";
 import { ExportConfig, formatINRCompact } from "@/utils/unifiedExport";
@@ -117,13 +118,10 @@ const SIPCalculator = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => {
-                if (!window.confirm("Reset all data in this tool?")) return;
+              <ResetConfirmDialog onConfirm={() => {
                 ['sip_monthly', 'sip_data'].forEach(k => localStorage.removeItem(k));
                 setMonthlyInvestment("10000"); setDuration("10"); setExpectedReturn("12");
-              }}>
-                <RotateCcw className="h-4 w-4" />
-              </Button>
+              }} />
               <ExportButton getConfig={getExportConfig} />
             </div>
           </div>

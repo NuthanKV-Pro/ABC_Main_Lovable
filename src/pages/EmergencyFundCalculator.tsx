@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { AlertTriangle, Shield, TrendingUp, Wallet, Home, Car, Heart, GraduationCap, Users, Briefcase, PiggyBank, Target, CheckCircle, Info, Clock, Building, Lightbulb, ArrowLeft, RotateCcw } from "lucide-react";
+import { AlertTriangle, Shield, TrendingUp, Wallet, Home, Car, Heart, GraduationCap, Users, Briefcase, PiggyBank, Target, CheckCircle, Info, Clock, Building, Lightbulb, ArrowLeft } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import Footer from "@/components/Footer";
@@ -146,17 +147,14 @@ const EmergencyFundCalculator = () => {
                 <p className="text-sm text-muted-foreground">Plan your financial safety net</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => {
-              if (!window.confirm("Reset all data in this tool?")) return;
+            <ResetConfirmDialog onConfirm={() => {
               ['emergency_fund_target', 'emergency_fund_current', 'emergency_fund_saved', 'emergency_fund_months'].forEach(k => localStorage.removeItem(k));
               setMonthlyIncome(75000); setRent(15000); setUtilities(5000); setGroceries(8000);
               setTransportation(5000); setInsurance(3000); setEmiPayments(10000); setOtherExpenses(5000);
               setJobStability("moderate"); setDependents(2); setHealthConditions("none");
               setHasSpouseIncome("no"); setIndustryType("stable");
               setCurrentSavings(100000); setMonthlySavingCapacity(15000);
-            }}>
-              <RotateCcw className="h-4 w-4" />
-            </Button>
+            }} />
           </div>
         </div>
       </header>

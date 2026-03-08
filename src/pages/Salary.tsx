@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Save, Download, ExternalLink, RefreshCw } from "lucide-react";
+import { ArrowLeft, Save, Download, ExternalLink, RotateCcw } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import Chatbot from "@/components/Chatbot";
 import TaxBreakdownCharts from "@/components/TaxBreakdownCharts";
 import TaxDeadlineReminders from "@/components/TaxDeadlineReminders";
@@ -233,7 +234,6 @@ const Salary = () => {
   };
 
   const handleClearForm = () => {
-    if (!window.confirm("Reset all data in this tool?")) return;
     setEmployerName("");
     setOfficeAddress("");
     setEmploymentNature("");
@@ -293,15 +293,15 @@ const Salary = () => {
                 basicSalary={parseFloat(incomeData.find(r => r.particulars === "Basic Salary")?.income || "0")}
                 hraReceived={parseFloat(incomeData.find(r => r.particulars === "HRA")?.income || "0")}
               />
-              <Button 
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={handleClearForm}
-              >
-                <RefreshCw className="w-4 h-4" />
-                Clear
-              </Button>
+              <ResetConfirmDialog
+                onConfirm={handleClearForm}
+                trigger={
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <RotateCcw className="w-4 h-4" />
+                    Clear
+                  </Button>
+                }
+              />
               <Button 
                 variant="outline"
                 className="gap-2 border-2 border-primary/50 hover:bg-primary/10"

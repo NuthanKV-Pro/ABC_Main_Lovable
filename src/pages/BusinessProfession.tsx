@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Save, RotateCcw } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
+import ResetConfirmDialog from "@/components/ResetConfirmDialog";
 import { useToast } from "@/hooks/use-toast";
 import Chatbot from "@/components/Chatbot";
 
@@ -87,15 +88,12 @@ const BusinessProfession = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" onClick={() => {
-                if (!window.confirm("Reset all data in this tool?")) return;
+              <ResetConfirmDialog onConfirm={() => {
                 ['bp_data', 'pgbp_total'].forEach(k => localStorage.removeItem(k));
                 setPresumptiveIncome({ grossReceipts: 0, presumptiveRate: 8, presumptiveIncome: 0 });
                 setRegularIncome({ grossReceipts: 0, expenses: 0, netIncome: 0 });
                 toast({ title: "Data Reset", description: "All business & profession data has been cleared." });
-              }}>
-                <RotateCcw className="w-4 h-4" />
-              </Button>
+              }} />
               <Button 
                 onClick={handleSave}
                 className="gap-2 bg-gradient-to-r from-primary to-accent text-white shadow-[var(--shadow-gold)]"
