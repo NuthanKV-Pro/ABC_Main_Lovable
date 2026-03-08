@@ -38,16 +38,7 @@ const SIPCalculator = () => {
     };
   };
 
-  const result = calculateSIP();
-
-  const formatCurrency = (amount: number) => {
-    if (amount >= 10000000) {
-      return `₹${(amount / 10000000).toFixed(2)} Cr`;
-    } else if (amount >= 100000) {
-      return `₹${(amount / 100000).toFixed(2)} L`;
-    }
-    return `₹${amount.toLocaleString('en-IN')}`;
-  };
+  const formatCurrency = (amount: number) => formatINRCompact(amount);
 
   const formatCurrencyFull = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
