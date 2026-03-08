@@ -84,13 +84,13 @@ import ForeignIncomeDTAA from "./pages/ForeignIncomeDTAA";
 import ComplianceCalendar from "./pages/ComplianceCalendar";
 import TaxNoticeAssistant from "./pages/TaxNoticeAssistant";
 import NotFound from "./pages/NotFound";
-import ComplianceCalendarButton from "./components/ComplianceCalendarButton";
+
 const queryClient = new QueryClient();
 
 const BreadcrumbLayout = () => (
   <>
     <BreadcrumbNav />
-    <ComplianceCalendarButton />
+    
     <Outlet />
   </>
 );
