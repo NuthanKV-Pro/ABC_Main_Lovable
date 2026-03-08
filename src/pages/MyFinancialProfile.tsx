@@ -5,7 +5,17 @@ import { useTaxData } from "@/hooks/useTaxData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, IndianRupee, TrendingUp, Shield, PiggyBank, Landmark, Heart, AlertTriangle, RefreshCw, CheckCircle } from "lucide-react";
+import { ArrowLeft, IndianRupee, TrendingUp, Shield, PiggyBank, Landmark, Heart, AlertTriangle, RefreshCw, CheckCircle, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
 
 const fmt = (n: number) =>
@@ -35,6 +45,7 @@ const MyFinancialProfile = () => {
   const goBack = useGoBack();
   const tax = useTaxData();
   const [synced, setSynced] = useState(false);
+  const [clearStep, setClearStep] = useState(0);
 
   const handleSyncAll = () => {
     const salaryTotal = parseFloat(localStorage.getItem("salary_total") || "0");
@@ -125,11 +136,75 @@ const MyFinancialProfile = () => {
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="flex items-center justify-between mb-4">
         <Button variant="ghost" onClick={goBack}><ArrowLeft className="mr-2 h-4 w-4" />Back</Button>
-        <Button onClick={handleSyncAll} variant={synced ? "secondary" : "default"} className="gap-2">
-          {synced ? <CheckCircle className="h-4 w-4" /> : <RefreshCw className="h-4 w-4" />}
-          {synced ? "Synced" : "Sync All Tools"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setClearStep(1)} variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+            <Trash2 className="h-4 w-4" />
+          </Button>
+          <Button onClick={handleSyncAll} variant={synced ? "secondary" : "default"} className="gap-2">
+            {synced ? <CheckCircle className="h-4 w-4" /> : <RefreshCw className="h-4 w-4" />}
+            {synced ? "Synced" : "Sync All Tools"}
+          </Button>
+        </div>
       </div>
+
+      {/* Triple-confirmation Clear All dialogs */}
+      <AlertDialog open={clearStep === 1} onOpenChange={(open) => !open && setClearStep(0)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will erase <strong>all saved data</strong> across every tool — salary, deductions, calculators, health scores, and more.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setClearStep(0)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setClearStep(2)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={clearStep === 2} onOpenChange={(open) => !open && setClearStep(0)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>This cannot be undone</AlertDialogTitle>
+            <AlertDialogDescription>
+              You will permanently lose data from: Tax heads, Budget Planner, FIRE & Retirement, Net Worth, SIP & EMI, Health Score, GST, HUF, Compliance Calendar, Financial Statements, Wedding Planner, Profile settings, and all synced data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setClearStep(0)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setClearStep(3)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              I understand, continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={clearStep === 3} onOpenChange={(open) => !open && setClearStep(0)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-destructive">Final confirmation</AlertDialogTitle>
+            <AlertDialogDescription>
+              This is your last chance. Click below to permanently delete <strong>everything</strong>. There is no way to recover this data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setClearStep(0)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                localStorage.clear();
+                toast({ title: "All data cleared", description: "Every tool has been reset. Reloading…" });
+                setTimeout(() => window.location.reload(), 800);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Yes, delete everything
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <h1 className="text-2xl md:text-3xl font-bold mb-6 text-foreground">My Financial Profile</h1>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
