@@ -166,7 +166,8 @@ const ComplianceCalendar = () => {
   const [isComposition, setIsComposition] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState("all");
-
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  const [calendarMonth, setCalendarMonth] = useState(() => new Date(2026, 3, 1)); // April 2026
   const [completedIds, setCompletedIds] = useState<Set<string>>(() => {
     const saved = localStorage.getItem("compliance_completed_2026");
     return saved ? new Set(JSON.parse(saved)) : new Set();
