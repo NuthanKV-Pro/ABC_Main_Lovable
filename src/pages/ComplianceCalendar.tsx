@@ -1,200 +1,509 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Calendar, CheckCircle, Clock, AlertTriangle, Building, FileText, Receipt } from "lucide-react";
+import { ArrowLeft, Calendar, CheckCircle, Clock, AlertTriangle, Building, FileText, Receipt, Bell, BellOff, Filter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ComplianceEvent {
   id: string;
   title: string;
   dueDate: string;
-  category: 'income-tax' | 'gst' | 'roc' | 'tds' | 'audit';
+  category: 'income-tax' | 'gst' | 'roc' | 'tds-tcs' | 'audit';
   applicable: string;
   description: string;
   penalty: string;
+  formNo?: string;
+  section?: string;
   completed: boolean;
 }
 
+const allEvents: ComplianceEvent[] = [
+  // ============ INCOME TAX - Advance Tax ============
+  { id: "at1", title: "Advance Tax – 1st Installment (15%)", dueDate: "2026-06-15", category: "income-tax", applicable: "All assessees", description: "Pay 15% of estimated tax liability for FY 2026-27", penalty: "Interest u/s 234C @ 1% per month", section: "Section 208-211", completed: false },
+  { id: "at2", title: "Advance Tax – 2nd Installment (45%)", dueDate: "2026-09-15", category: "income-tax", applicable: "All assessees", description: "Pay 45% cumulative of estimated tax for FY 2026-27", penalty: "Interest u/s 234C @ 1% per month", section: "Section 208-211", completed: false },
+  { id: "at3", title: "Advance Tax – 3rd Installment (75%)", dueDate: "2026-12-15", category: "income-tax", applicable: "All assessees", description: "Pay 75% cumulative of estimated tax for FY 2026-27", penalty: "Interest u/s 234C @ 1% per month", section: "Section 208-211", completed: false },
+  { id: "at4", title: "Advance Tax – 4th Installment (100%)", dueDate: "2027-03-15", category: "income-tax", applicable: "All assessees", description: "Pay 100% of estimated tax for FY 2026-27", penalty: "Interest u/s 234B & 234C", section: "Section 208-211", completed: false },
+
+  // ============ INCOME TAX - ITR Filing ============
+  { id: "itr1", title: "ITR Filing – Individual/HUF (Non-audit)", dueDate: "2027-07-31", category: "income-tax", applicable: "Individual/HUF (non-audit)", description: "Last date to file ITR for FY 2026-27 (AY 2027-28) for non-audit cases", penalty: "₹5,000 u/s 234F (₹1,000 if income ≤₹5L)", formNo: "ITR-1/2/3", section: "Section 139(1)", completed: false },
+  { id: "itr2", title: "ITR Filing – Firms (Non-audit)", dueDate: "2027-07-31", category: "income-tax", applicable: "Partnership Firm (non-audit)", description: "Last date for partnership firms not requiring audit", penalty: "₹5,000 u/s 234F", formNo: "ITR-5", section: "Section 139(1)", completed: false },
+  { id: "itr3", title: "ITR Filing – Companies (Audit)", dueDate: "2027-10-31", category: "income-tax", applicable: "Company", description: "Due date for companies requiring audit for FY 2026-27", penalty: "₹5,000 u/s 234F + interest u/s 234A", formNo: "ITR-6", section: "Section 139(1)", completed: false },
+  { id: "itr4", title: "ITR Filing – Audit cases (Non-TP)", dueDate: "2027-10-31", category: "income-tax", applicable: "All audit cases (excl. TP)", description: "Due date for assessees requiring audit (excl. transfer pricing)", penalty: "₹5,000 u/s 234F + interest", formNo: "ITR-3/5/6", section: "Section 139(1)", completed: false },
+  { id: "itr5", title: "ITR Filing – Transfer Pricing", dueDate: "2027-11-30", category: "income-tax", applicable: "TP cases", description: "Due date for assessees with international/specified domestic transactions", penalty: "₹5,000 u/s 234F + interest", formNo: "ITR-6", section: "Section 139(1) r/w 92E", completed: false },
+  { id: "itr6", title: "Belated / Revised ITR", dueDate: "2027-12-31", category: "income-tax", applicable: "All", description: "Last date to file belated or revised return for AY 2027-28", penalty: "₹10,000 if income > ₹5L", formNo: "As applicable", section: "Section 139(4)/139(5)", completed: false },
+  { id: "itr7", title: "Updated ITR (u/s 139(8A))", dueDate: "2028-03-31", category: "income-tax", applicable: "All", description: "File updated return within 12 months with 25% additional tax", penalty: "25% additional tax on tax + interest", section: "Section 139(8A)", completed: false },
+
+  // ============ TDS/TCS Payment & Filing ============
+  // Monthly TDS/TCS Payments
+  { id: "tds-apr", title: "TDS/TCS Payment – April 2026", dueDate: "2026-05-07", category: "tds-tcs", applicable: "All Deductors/Collectors", description: "Deposit TDS/TCS deducted/collected in April 2026", penalty: "Interest @ 1.5% per month u/s 201(1A)", section: "Section 200(1)", completed: false },
+  { id: "tds-may", title: "TDS/TCS Payment – May 2026", dueDate: "2026-06-07", category: "tds-tcs", applicable: "All Deductors/Collectors", description: "Deposit TDS/TCS deducted/collected in May 2026", penalty: "Interest @ 1.5% per month", section: "Section 200(1)", completed: false },
+  { id: "tds-jun", title: "TDS/TCS Payment – June 2026", dueDate: "2026-07-07", category: "tds-tcs", applicable: "All Deductors/Collectors", description: "Deposit TDS/TCS deducted/collected in June 2026", penalty: "Interest @ 1.5% per month", section: "Section 200(1)", completed: false },
+  { id: "tds-jul", title: "TDS/TCS Payment – July 2026", dueDate: "2026-08-07", category: "tds-tcs", applicable: "All Deductors/Collectors", description: "Deposit TDS/TCS deducted/collected in July 2026", penalty: "Interest @ 1.5% per month", section: "Section 200(1)", completed: false },
+  { id: "tds-aug", title: "TDS/TCS Payment – August 2026", dueDate: "2026-09-07", category: "tds-tcs", applicable: "All Deductors/Collectors", description: "Deposit TDS/TCS deducted/collected in August 2026", penalty: "Interest @ 1.5% per month", section: "Section 200(1)", completed: false },
+  { id: "tds-sep", title: "TDS/TCS Payment – September 2026", dueDate: "2026-10-07", category: "tds-tcs", applicable: "All Deductors/Collectors", description: "Deposit TDS/TCS deducted/collected in September 2026", penalty: "Interest @ 1.5% per month", section: "Section 200(1)", completed: false },
+  { id: "tds-oct", title: "TDS/TCS Payment – October 2026", dueDate: "2026-11-07", category: "tds-tcs", applicable: "All Deductors/Collectors", description: "Deposit TDS/TCS deducted/collected in October 2026", penalty: "Interest @ 1.5% per month", section: "Section 200(1)", completed: false },
+  { id: "tds-nov", title: "TDS/TCS Payment – November 2026", dueDate: "2026-12-07", category: "tds-tcs", applicable: "All Deductors/Collectors", description: "Deposit TDS/TCS deducted/collected in November 2026", penalty: "Interest @ 1.5% per month", section: "Section 200(1)", completed: false },
+  { id: "tds-dec", title: "TDS/TCS Payment – December 2026", dueDate: "2027-01-07", category: "tds-tcs", applicable: "All Deductors/Collectors", description: "Deposit TDS/TCS deducted/collected in December 2026", penalty: "Interest @ 1.5% per month", section: "Section 200(1)", completed: false },
+  { id: "tds-jan", title: "TDS/TCS Payment – January 2027", dueDate: "2027-02-07", category: "tds-tcs", applicable: "All Deductors/Collectors", description: "Deposit TDS/TCS deducted/collected in January 2027", penalty: "Interest @ 1.5% per month", section: "Section 200(1)", completed: false },
+  { id: "tds-feb", title: "TDS/TCS Payment – February 2027", dueDate: "2027-03-07", category: "tds-tcs", applicable: "All Deductors/Collectors", description: "Deposit TDS/TCS deducted/collected in February 2027", penalty: "Interest @ 1.5% per month", section: "Section 200(1)", completed: false },
+  { id: "tds-mar", title: "TDS/TCS Payment – March 2027 (Govt)", dueDate: "2027-03-07", category: "tds-tcs", applicable: "Government Deductors", description: "Govt deductors: same day deposit for March. Others: April 30", penalty: "Interest @ 1.5% per month", section: "Section 200(1)", completed: false },
+  { id: "tds-mar-other", title: "TDS/TCS Payment – March 2027 (Others)", dueDate: "2027-04-30", category: "tds-tcs", applicable: "Non-Govt Deductors", description: "Non-government deductors: deposit TDS for March by April 30", penalty: "Interest @ 1.5% per month", section: "Section 200(1)", completed: false },
+
+  // Quarterly TDS/TCS Returns
+  { id: "tds-q1-ret", title: "TDS Return – Q1 (Apr–Jun 2026)", dueDate: "2026-07-31", category: "tds-tcs", applicable: "All Deductors", description: "File Form 24Q (Salary) / 26Q (Non-salary) / 27Q (NRI) for Q1", penalty: "₹200/day u/s 234E + penalty u/s 271H", formNo: "24Q/26Q/27Q", section: "Section 200(3)", completed: false },
+  { id: "tds-q2-ret", title: "TDS Return – Q2 (Jul–Sep 2026)", dueDate: "2026-10-31", category: "tds-tcs", applicable: "All Deductors", description: "File quarterly TDS return for Q2", penalty: "₹200/day u/s 234E", formNo: "24Q/26Q/27Q", section: "Section 200(3)", completed: false },
+  { id: "tds-q3-ret", title: "TDS Return – Q3 (Oct–Dec 2026)", dueDate: "2027-01-31", category: "tds-tcs", applicable: "All Deductors", description: "File quarterly TDS return for Q3", penalty: "₹200/day u/s 234E", formNo: "24Q/26Q/27Q", section: "Section 200(3)", completed: false },
+  { id: "tds-q4-ret", title: "TDS Return – Q4 (Jan–Mar 2027)", dueDate: "2027-05-31", category: "tds-tcs", applicable: "All Deductors", description: "File quarterly TDS return for Q4", penalty: "₹200/day u/s 234E", formNo: "24Q/26Q/27Q", section: "Section 200(3)", completed: false },
+  { id: "tcs-q1-ret", title: "TCS Return – Q1 (Apr–Jun 2026)", dueDate: "2026-07-15", category: "tds-tcs", applicable: "All Collectors", description: "File Form 27EQ for Q1 TCS", penalty: "₹200/day u/s 234E", formNo: "27EQ", section: "Section 206C(3)", completed: false },
+  { id: "tcs-q2-ret", title: "TCS Return – Q2 (Jul–Sep 2026)", dueDate: "2026-10-15", category: "tds-tcs", applicable: "All Collectors", description: "File Form 27EQ for Q2 TCS", penalty: "₹200/day u/s 234E", formNo: "27EQ", section: "Section 206C(3)", completed: false },
+  { id: "tcs-q3-ret", title: "TCS Return – Q3 (Oct–Dec 2026)", dueDate: "2027-01-15", category: "tds-tcs", applicable: "All Collectors", description: "File Form 27EQ for Q3 TCS", penalty: "₹200/day u/s 234E", formNo: "27EQ", section: "Section 206C(3)", completed: false },
+  { id: "tcs-q4-ret", title: "TCS Return – Q4 (Jan–Mar 2027)", dueDate: "2027-05-15", category: "tds-tcs", applicable: "All Collectors", description: "File Form 27EQ for Q4 TCS", penalty: "₹200/day u/s 234E", formNo: "27EQ", section: "Section 206C(3)", completed: false },
+
+  // TDS Certificates
+  { id: "form16-q1", title: "Form 16A – Q1 (Apr–Jun 2026)", dueDate: "2026-08-15", category: "tds-tcs", applicable: "All Deductors", description: "Issue TDS certificate Form 16A for Q1", penalty: "₹100/day u/s 272A(2)(g)", formNo: "Form 16A", completed: false },
+  { id: "form16-q2", title: "Form 16A – Q2 (Jul–Sep 2026)", dueDate: "2026-11-15", category: "tds-tcs", applicable: "All Deductors", description: "Issue TDS certificate Form 16A for Q2", penalty: "₹100/day u/s 272A(2)(g)", formNo: "Form 16A", completed: false },
+  { id: "form16-q3", title: "Form 16A – Q3 (Oct–Dec 2026)", dueDate: "2027-02-15", category: "tds-tcs", applicable: "All Deductors", description: "Issue TDS certificate Form 16A for Q3", penalty: "₹100/day u/s 272A(2)(g)", formNo: "Form 16A", completed: false },
+  { id: "form16-q4", title: "Form 16A – Q4 (Jan–Mar 2027)", dueDate: "2027-06-15", category: "tds-tcs", applicable: "All Deductors", description: "Issue TDS certificate Form 16A for Q4", penalty: "₹100/day u/s 272A(2)(g)", formNo: "Form 16A", completed: false },
+  { id: "form16-salary", title: "Form 16 (Salary TDS Certificate)", dueDate: "2027-06-15", category: "tds-tcs", applicable: "Employers", description: "Issue Form 16 to employees for FY 2026-27", penalty: "₹100/day u/s 272A(2)(g)", formNo: "Form 16", completed: false },
+
+  // ============ GST Returns ============
+  // GSTR-1 (Monthly – 11th of next month)
+  ...Array.from({ length: 12 }, (_, i) => {
+    const month = new Date(2026, 3 + i, 1);
+    const dueMonth = new Date(2026, 4 + i, 11);
+    const monthName = month.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+    return {
+      id: `gstr1-${i}`,
+      title: `GSTR-1 – ${monthName}`,
+      dueDate: `${dueMonth.getFullYear()}-${String(dueMonth.getMonth() + 1).padStart(2, '0')}-11`,
+      category: "gst" as const,
+      applicable: "Regular GST (Monthly)",
+      description: `Outward supply details for ${monthName}`,
+      penalty: "₹50/day (₹20 NIL return), max ₹10,000",
+      formNo: "GSTR-1",
+      section: "Section 37",
+      completed: false,
+    };
+  }),
+  // GSTR-3B (Monthly – 20th of next month)
+  ...Array.from({ length: 12 }, (_, i) => {
+    const month = new Date(2026, 3 + i, 1);
+    const dueMonth = new Date(2026, 4 + i, 20);
+    const monthName = month.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+    return {
+      id: `gstr3b-${i}`,
+      title: `GSTR-3B – ${monthName}`,
+      dueDate: `${dueMonth.getFullYear()}-${String(dueMonth.getMonth() + 1).padStart(2, '0')}-20`,
+      category: "gst" as const,
+      applicable: "Regular GST (Monthly)",
+      description: `Summary return with tax payment for ${monthName}`,
+      penalty: "₹50/day + 18% interest on tax due",
+      formNo: "GSTR-3B",
+      section: "Section 39",
+      completed: false,
+    };
+  }),
+  // GSTR-9 Annual
+  { id: "gstr9", title: "GSTR-9 Annual Return (FY 2025-26)", dueDate: "2026-12-31", category: "gst", applicable: "Turnover > ₹2 Cr", description: "Annual return for FY 2025-26", penalty: "₹200/day (₹100 CGST + ₹100 SGST), max 0.5% of turnover", formNo: "GSTR-9", section: "Section 44", completed: false },
+  { id: "gstr9c", title: "GSTR-9C Reconciliation (FY 2025-26)", dueDate: "2026-12-31", category: "gst", applicable: "Turnover > ₹5 Cr", description: "Reconciliation statement for FY 2025-26", penalty: "Same as GSTR-9", formNo: "GSTR-9C", section: "Section 44", completed: false },
+  // CMP-08 (Composition quarterly)
+  { id: "cmp08-q1", title: "CMP-08 – Q1 (Apr–Jun 2026)", dueDate: "2026-07-18", category: "gst", applicable: "Composition Dealers", description: "Quarterly payment challan for composition dealers", penalty: "Interest @ 18% on tax due", formNo: "CMP-08", completed: false },
+  { id: "cmp08-q2", title: "CMP-08 – Q2 (Jul–Sep 2026)", dueDate: "2026-10-18", category: "gst", applicable: "Composition Dealers", description: "Quarterly payment challan for composition dealers", penalty: "Interest @ 18%", formNo: "CMP-08", completed: false },
+  { id: "cmp08-q3", title: "CMP-08 – Q3 (Oct–Dec 2026)", dueDate: "2027-01-18", category: "gst", applicable: "Composition Dealers", description: "Quarterly payment challan for composition dealers", penalty: "Interest @ 18%", formNo: "CMP-08", completed: false },
+  { id: "cmp08-q4", title: "CMP-08 – Q4 (Jan–Mar 2027)", dueDate: "2027-04-18", category: "gst", applicable: "Composition Dealers", description: "Quarterly payment challan for composition dealers", penalty: "Interest @ 18%", formNo: "CMP-08", completed: false },
+  // GSTR-4 Annual (Composition)
+  { id: "gstr4", title: "GSTR-4 Annual (Composition) FY 2026-27", dueDate: "2027-04-30", category: "gst", applicable: "Composition Dealers", description: "Annual return for composition dealers", penalty: "₹200/day, max ₹5,000", formNo: "GSTR-4", completed: false },
+
+  // ============ ROC / Company Filings ============
+  { id: "agm", title: "Annual General Meeting (AGM)", dueDate: "2026-09-30", category: "roc", applicable: "Company", description: "Hold AGM within 6 months from FY end (31 Mar 2026)", penalty: "₹1L on company + ₹5,000/day on officers", section: "Section 96", completed: false },
+  { id: "aoc4", title: "AOC-4 (Financial Statements)", dueDate: "2026-10-30", category: "roc", applicable: "Company", description: "File financial statements within 30 days of AGM", penalty: "₹100/day additional fee per document", formNo: "AOC-4", section: "Section 137", completed: false },
+  { id: "aoc4-xbrl", title: "AOC-4 XBRL", dueDate: "2026-10-30", category: "roc", applicable: "Company (XBRL applicable)", description: "XBRL filing of financial statements", penalty: "₹100/day additional fee", formNo: "AOC-4 XBRL", section: "Section 137", completed: false },
+  { id: "mgt7", title: "MGT-7/MGT-7A (Annual Return)", dueDate: "2026-11-28", category: "roc", applicable: "Company", description: "File annual return within 60 days of AGM", penalty: "₹100/day additional fee", formNo: "MGT-7/7A", section: "Section 92", completed: false },
+  { id: "adt1", title: "ADT-1 (Auditor Appointment)", dueDate: "2026-10-15", category: "roc", applicable: "Company", description: "Intimate auditor appointment to ROC within 15 days of AGM", penalty: "₹300/day additional fee", formNo: "ADT-1", section: "Section 139(1)", completed: false },
+  { id: "dir3kyc", title: "DIR-3 KYC (Directors KYC)", dueDate: "2026-09-30", category: "roc", applicable: "All Directors (DIN holders)", description: "Annual KYC for all directors holding DIN", penalty: "₹5,000 late fee + DIN deactivation", formNo: "DIR-3 KYC", section: "Rule 12A", completed: false },
+  { id: "msme1", title: "MSME-1 (Half-yearly – H1)", dueDate: "2026-10-31", category: "roc", applicable: "Company (outstanding to MSMEs)", description: "File details of outstanding payments to MSME suppliers for Apr-Sep", penalty: "₹20,000 + ₹1,000/day", formNo: "MSME-1", section: "Section 405", completed: false },
+  { id: "msme2", title: "MSME-1 (Half-yearly – H2)", dueDate: "2027-04-30", category: "roc", applicable: "Company (outstanding to MSMEs)", description: "File details of outstanding payments to MSME suppliers for Oct-Mar", penalty: "₹20,000 + ₹1,000/day", formNo: "MSME-1", section: "Section 405", completed: false },
+  { id: "llp-form8", title: "LLP Form 8 (Statement of Account)", dueDate: "2026-10-30", category: "roc", applicable: "LLP", description: "Statement of accounts & solvency within 30 days from 6 months of FY end", penalty: "₹100/day", formNo: "Form 8", completed: false },
+  { id: "llp-form11", title: "LLP Form 11 (Annual Return)", dueDate: "2027-05-30", category: "roc", applicable: "LLP", description: "Annual return for LLP within 60 days of FY end", penalty: "₹100/day", formNo: "Form 11", completed: false },
+  { id: "llp-form-a", title: "DIR-3 KYC (LLP Designated Partners)", dueDate: "2026-09-30", category: "roc", applicable: "LLP Designated Partners", description: "Annual KYC for designated partners of LLP", penalty: "₹5,000 late fee", formNo: "DIR-3 KYC", completed: false },
+
+  // ============ Audit ============
+  { id: "tax-audit", title: "Tax Audit Report (Form 3CA/3CB-3CD)", dueDate: "2027-09-30", category: "audit", applicable: "Audit applicable (Sec 44AB)", description: "Get tax audit completed and report uploaded on IT portal", penalty: "0.5% of turnover, max ₹1.5 Lakh u/s 271B", formNo: "3CA/3CB-3CD", section: "Section 44AB", completed: false },
+  { id: "tp-report", title: "Transfer Pricing Report (Form 3CEB)", dueDate: "2027-11-30", category: "audit", applicable: "International/specified domestic transactions", description: "Transfer pricing audit and report for entities with international transactions >₹1Cr", penalty: "₹1,00,000 per failure u/s 271BA", formNo: "Form 3CEB", section: "Section 92E", completed: false },
+  { id: "tp-cert", title: "Transfer Pricing Certificate", dueDate: "2027-10-31", category: "audit", applicable: "TP applicable entities", description: "Obtain and furnish certificate from CA for TP report", penalty: "₹1,00,000 u/s 271BA", section: "Section 92E", completed: false },
+];
+
+const categoryLabels: Record<string, string> = {
+  "income-tax": "Income Tax",
+  "gst": "GST",
+  "roc": "ROC / MCA",
+  "tds-tcs": "TDS / TCS",
+  "audit": "Audit",
+};
+
+const categoryColors: Record<string, string> = {
+  "income-tax": "bg-primary/10 text-primary border-primary/20",
+  "gst": "bg-amber-500/10 text-amber-600 border-amber-500/20",
+  "roc": "bg-blue-500/10 text-blue-600 border-blue-500/20",
+  "tds-tcs": "bg-purple-500/10 text-purple-600 border-purple-500/20",
+  "audit": "bg-rose-500/10 text-rose-600 border-rose-500/20",
+};
+
 const ComplianceCalendar = () => {
   const navigate = useNavigate();
-  const [fy, setFY] = useState("2025-26");
+  const { toast } = useToast();
   const [entityType, setEntityType] = useState("company");
   const [isGSTRegistered, setIsGSTRegistered] = useState(true);
   const [isAuditApplicable, setIsAuditApplicable] = useState(true);
+  const [isComposition, setIsComposition] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState("all");
 
-  const [events, setEvents] = useState<ComplianceEvent[]>([
-    // Income Tax
-    { id: "at1", title: "Advance Tax – 1st Installment (15%)", dueDate: "2025-06-15", category: "income-tax", applicable: "All", description: "Pay 15% of estimated tax liability", penalty: "Interest u/s 234C", completed: false },
-    { id: "at2", title: "Advance Tax – 2nd Installment (45%)", dueDate: "2025-09-15", category: "income-tax", applicable: "All", description: "Pay 45% cumulative of estimated tax", penalty: "Interest u/s 234C", completed: false },
-    { id: "at3", title: "Advance Tax – 3rd Installment (75%)", dueDate: "2025-12-15", category: "income-tax", applicable: "All", description: "Pay 75% cumulative of estimated tax", penalty: "Interest u/s 234C", completed: false },
-    { id: "at4", title: "Advance Tax – 4th Installment (100%)", dueDate: "2026-03-15", category: "income-tax", applicable: "All", description: "Pay 100% of estimated tax", penalty: "Interest u/s 234B & 234C", completed: false },
-    { id: "itr1", title: "ITR Filing (Non-audit)", dueDate: "2026-07-31", category: "income-tax", applicable: "Individual/HUF", description: "Due date for filing ITR without audit", penalty: "₹5,000 late fee u/s 234F", completed: false },
-    { id: "itr2", title: "ITR Filing (Audit cases)", dueDate: "2026-10-31", category: "income-tax", applicable: "Company/Audit", description: "Due date for audit cases", penalty: "₹5,000 late fee + interest", completed: false },
-    { id: "itr3", title: "Belated/Revised ITR", dueDate: "2026-12-31", category: "income-tax", applicable: "All", description: "Last date for belated or revised return", penalty: "₹10,000 late fee if income > ₹5L", completed: false },
+  const [completedIds, setCompletedIds] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem("compliance_completed_2026");
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
 
-    // TDS
-    { id: "tds-q1", title: "TDS Return – Q1 (Apr-Jun)", dueDate: "2025-07-31", category: "tds", applicable: "Deductors", description: "File Form 24Q/26Q/27Q for Q1", penalty: "₹200/day late fee u/s 234E", completed: false },
-    { id: "tds-q2", title: "TDS Return – Q2 (Jul-Sep)", dueDate: "2025-10-31", category: "tds", applicable: "Deductors", description: "File TDS return for Q2", penalty: "₹200/day late fee", completed: false },
-    { id: "tds-q3", title: "TDS Return – Q3 (Oct-Dec)", dueDate: "2026-01-31", category: "tds", applicable: "Deductors", description: "File TDS return for Q3", penalty: "₹200/day late fee", completed: false },
-    { id: "tds-q4", title: "TDS Return – Q4 (Jan-Mar)", dueDate: "2026-05-31", category: "tds", applicable: "Deductors", description: "File TDS return for Q4", penalty: "₹200/day late fee", completed: false },
+  useEffect(() => {
+    localStorage.setItem("compliance_completed_2026", JSON.stringify([...completedIds]));
+  }, [completedIds]);
 
-    // GST
-    { id: "gstr1-apr", title: "GSTR-1 (April)", dueDate: "2025-05-11", category: "gst", applicable: "GST Registered", description: "Outward supply details", penalty: "₹50/day (₹20 NIL)", completed: false },
-    { id: "gstr3b-apr", title: "GSTR-3B (April)", dueDate: "2025-05-20", category: "gst", applicable: "GST Registered", description: "Monthly summary return with tax payment", penalty: "₹50/day + 18% interest", completed: false },
-    { id: "gstr9", title: "GSTR-9 Annual Return", dueDate: "2025-12-31", category: "gst", applicable: "GST Registered (>₹2Cr)", description: "Annual return for FY 2024-25", penalty: "₹200/day max ₹0.5% of turnover", completed: false },
+  useEffect(() => {
+    if ("Notification" in window) {
+      setNotificationsEnabled(Notification.permission === "granted");
+    }
+  }, []);
 
-    // ROC
-    { id: "aoc4", title: "AOC-4 (Financial Statements)", dueDate: "2025-11-29", category: "roc", applicable: "Company", description: "Filing of financial statements with MCA", penalty: "₹100/day additional fee", completed: false },
-    { id: "mgt7", title: "MGT-7 (Annual Return)", dueDate: "2025-12-28", category: "roc", applicable: "Company", description: "Annual return with MCA", penalty: "₹100/day additional fee", completed: false },
-    { id: "adt1", title: "ADT-1 (Auditor Appointment)", dueDate: "2025-10-14", category: "roc", applicable: "Company", description: "Intimation of auditor appointment to ROC within 15 days of AGM", penalty: "₹300/day", completed: false },
-    { id: "agm", title: "Annual General Meeting", dueDate: "2025-09-30", category: "roc", applicable: "Company", description: "Hold AGM within 6 months from FY end", penalty: "₹1L on company + ₹5,000 on officers", completed: false },
-    { id: "dir3kyc", title: "DIR-3 KYC (Directors)", dueDate: "2025-09-30", category: "roc", applicable: "All Directors", description: "Annual KYC for all directors", penalty: "₹5,000 late fee", completed: false },
-    { id: "llp-form8", title: "LLP Form 8 (Statement of Account)", dueDate: "2025-10-30", category: "roc", applicable: "LLP", description: "Statement of accounts & solvency", penalty: "₹100/day", completed: false },
-    { id: "llp-form11", title: "LLP Form 11 (Annual Return)", dueDate: "2026-05-30", category: "roc", applicable: "LLP", description: "Annual return for LLP", penalty: "₹100/day", completed: false },
+  // Check for upcoming deadlines and send notifications
+  useEffect(() => {
+    if (!notificationsEnabled) return;
 
-    // Audit
-    { id: "tax-audit", title: "Tax Audit Report (3CA/3CB-3CD)", dueDate: "2026-09-30", category: "audit", applicable: "Audit applicable", description: "Get tax audit completed and report filed", penalty: "0.5% of turnover max ₹1.5L", completed: false },
-    { id: "tp-report", title: "Transfer Pricing Report (3CEB)", dueDate: "2026-11-30", category: "audit", applicable: "International transactions >₹1Cr", description: "Transfer pricing audit report", penalty: "₹1L per failure", completed: false },
-  ]);
+    const checkDeadlines = () => {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+
+      allEvents.forEach((event) => {
+        if (completedIds.has(event.id)) return;
+        const due = new Date(event.dueDate);
+        const daysLeft = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        if (daysLeft >= 0 && daysLeft <= 7) {
+          const notifKey = `notif_${event.id}_${event.dueDate}`;
+          const alreadySent = localStorage.getItem(notifKey);
+          if (!alreadySent) {
+            new Notification(`⏰ ${event.title}`, {
+              body: `Due in ${daysLeft} day${daysLeft !== 1 ? "s" : ""} (${new Date(event.dueDate).toLocaleDateString("en-IN")}). ${event.penalty}`,
+              icon: "/favicon.ico",
+            });
+            localStorage.setItem(notifKey, "sent");
+          }
+        }
+      });
+    };
+
+    checkDeadlines();
+    const interval = setInterval(checkDeadlines, 6 * 60 * 60 * 1000); // every 6 hrs
+    return () => clearInterval(interval);
+  }, [notificationsEnabled, completedIds]);
+
+  const enableNotifications = async () => {
+    if ("Notification" in window) {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        setNotificationsEnabled(true);
+        toast({ title: "🔔 Notifications Enabled", description: "You'll get alerts for deadlines within 7 days." });
+        new Notification("Compliance Calendar", { body: "You'll now receive reminders for upcoming deadlines!", icon: "/favicon.ico" });
+      } else {
+        toast({ title: "Notifications Blocked", description: "Please allow notifications in your browser settings.", variant: "destructive" });
+      }
+    }
+  };
 
   const toggleComplete = (id: string) => {
-    setEvents(prev => prev.map(e => e.id === id ? { ...e, completed: !e.completed } : e));
+    setCompletedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
 
   const filteredEvents = useMemo(() => {
-    return events.filter(e => {
+    return allEvents.filter((e) => {
       if (e.category === "gst" && !isGSTRegistered) return false;
+      if (e.category === "gst" && e.applicable === "Composition Dealers" && !isComposition) return false;
+      if (e.category === "gst" && e.applicable === "Regular GST (Monthly)" && isComposition) return false;
       if (e.category === "roc" && entityType === "individual") return false;
       if (e.category === "audit" && !isAuditApplicable) return false;
       if (e.applicable === "Company" && entityType !== "company") return false;
+      if (e.applicable === "Company (XBRL applicable)" && entityType !== "company") return false;
+      if (e.applicable === "Company (outstanding to MSMEs)" && entityType !== "company") return false;
       if (e.applicable === "LLP" && entityType !== "llp") return false;
+      if (e.applicable === "LLP Designated Partners" && entityType !== "llp") return false;
+      if (e.applicable === "Employers" && entityType === "individual") return false;
+
+      // Month filter
+      if (selectedMonth !== "all") {
+        const eventMonth = new Date(e.dueDate).getMonth();
+        const eventYear = new Date(e.dueDate).getFullYear();
+        const [filterYear, filterMonth] = selectedMonth.split("-").map(Number);
+        if (eventMonth !== filterMonth || eventYear !== filterYear) return false;
+      }
       return true;
     });
-  }, [events, entityType, isGSTRegistered, isAuditApplicable]);
+  }, [entityType, isGSTRegistered, isAuditApplicable, isComposition, selectedMonth]);
+
+  const getDaysUntil = (dateStr: string) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Math.ceil((new Date(dateStr).getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  };
 
   const categoryCounts = useMemo(() => {
-    const counts: Record<string, { total: number; completed: number }> = {};
-    filteredEvents.forEach(e => {
-      if (!counts[e.category]) counts[e.category] = { total: 0, completed: 0 };
+    const counts: Record<string, { total: number; completed: number; upcoming: number }> = {};
+    filteredEvents.forEach((e) => {
+      if (!counts[e.category]) counts[e.category] = { total: 0, completed: 0, upcoming: 0 };
       counts[e.category].total++;
-      if (e.completed) counts[e.category].completed++;
+      if (completedIds.has(e.id)) counts[e.category].completed++;
+      const days = getDaysUntil(e.dueDate);
+      if (days >= 0 && days <= 7 && !completedIds.has(e.id)) counts[e.category].upcoming++;
     });
     return counts;
-  }, [filteredEvents]);
+  }, [filteredEvents, completedIds]);
 
-  const getStatusColor = (dueDate: string, completed: boolean) => {
-    if (completed) return "text-green-500";
-    const days = Math.ceil((new Date(dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-    if (days < 0) return "text-destructive";
-    if (days < 30) return "text-amber-500";
-    return "text-muted-foreground";
+  const urgentCount = filteredEvents.filter((e) => !completedIds.has(e.id) && getDaysUntil(e.dueDate) >= 0 && getDaysUntil(e.dueDate) <= 7).length;
+  const overdueCount = filteredEvents.filter((e) => !completedIds.has(e.id) && getDaysUntil(e.dueDate) < 0).length;
+
+  const months = [
+    { value: "all", label: "All Months" },
+    { value: "2026-3", label: "April 2026" }, { value: "2026-4", label: "May 2026" },
+    { value: "2026-5", label: "June 2026" }, { value: "2026-6", label: "July 2026" },
+    { value: "2026-7", label: "August 2026" }, { value: "2026-8", label: "September 2026" },
+    { value: "2026-9", label: "October 2026" }, { value: "2026-10", label: "November 2026" },
+    { value: "2026-11", label: "December 2026" }, { value: "2027-0", label: "January 2027" },
+    { value: "2027-1", label: "February 2027" }, { value: "2027-2", label: "March 2027" },
+    // Extended for ITR/audit dates beyond March
+    { value: "2027-3", label: "April 2027" }, { value: "2027-4", label: "May 2027" },
+    { value: "2027-5", label: "June 2027" }, { value: "2027-6", label: "July 2027" },
+    { value: "2027-7", label: "August 2027" }, { value: "2027-8", label: "September 2027" },
+    { value: "2027-9", label: "October 2027" }, { value: "2027-10", label: "November 2027" },
+    { value: "2027-11", label: "December 2027" },
+    { value: "2028-2", label: "March 2028" },
+  ];
+
+  const renderEventCard = (event: ComplianceEvent) => {
+    const days = getDaysUntil(event.dueDate);
+    const isCompleted = completedIds.has(event.id);
+    const isOverdue = days < 0 && !isCompleted;
+    const isUrgent = days >= 0 && days <= 7 && !isCompleted;
+
+    return (
+      <Card
+        key={event.id}
+        className={`cursor-pointer transition-all hover:shadow-md ${isCompleted ? "opacity-50" : ""} ${isOverdue ? "border-destructive/50 bg-destructive/5" : isUrgent ? "border-amber-500/50 bg-amber-500/5" : ""}`}
+        onClick={() => toggleComplete(event.id)}
+      >
+        <CardContent className="pt-4 pb-3">
+          <div className="flex items-start gap-3">
+            {isCompleted ? (
+              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
+            ) : isOverdue ? (
+              <AlertTriangle className="h-5 w-5 text-destructive mt-0.5 shrink-0" />
+            ) : (
+              <Clock className={`h-5 w-5 mt-0.5 shrink-0 ${isUrgent ? "text-amber-500" : "text-muted-foreground"}`} />
+            )}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <p className={`font-medium text-sm ${isCompleted ? "line-through text-muted-foreground" : ""}`}>
+                  {event.title}
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${categoryColors[event.category]}`}>
+                    {categoryLabels[event.category]}
+                  </Badge>
+                  {event.formNo && (
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                      {event.formNo}
+                    </Badge>
+                  )}
+                  <span className={`text-xs font-semibold whitespace-nowrap ${isCompleted ? "text-green-500" : isOverdue ? "text-destructive" : isUrgent ? "text-amber-500" : "text-muted-foreground"}`}>
+                    {isCompleted ? "✓ Done" : isOverdue ? `${Math.abs(days)}d overdue` : days === 0 ? "Due today!" : `${days}d left`}
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">{event.description}</p>
+              <div className="flex items-center gap-3 mt-1.5 text-[11px] text-muted-foreground flex-wrap">
+                <span className="font-medium">
+                  📅 {new Date(event.dueDate).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                </span>
+                <span>👤 {event.applicable}</span>
+                {event.section && <span>📖 {event.section}</span>}
+                <span className="text-amber-600">⚠️ {event.penalty}</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
   };
-
-  const getDaysLabel = (dueDate: string) => {
-    const days = Math.ceil((new Date(dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-    if (days < 0) return `${Math.abs(days)}d overdue`;
-    if (days === 0) return "Due today!";
-    return `${days}d remaining`;
-  };
-
-  const categoryIcons: Record<string, any> = { "income-tax": FileText, "gst": Receipt, "roc": Building, "tds": FileText, "audit": FileText };
-  const categoryLabels: Record<string, string> = { "income-tax": "Income Tax", "gst": "GST", "roc": "ROC / MCA", "tds": "TDS", "audit": "Audit" };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
-        <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Compliance Calendar</h1>
-            <p className="text-muted-foreground text-sm">Track ITR, TDS, GST, ROC & audit deadlines with penalty info</p>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
+                <Calendar className="h-7 w-7 text-primary" />
+                Compliance Calendar
+              </h1>
+              <p className="text-muted-foreground text-sm">FY 2026-27 (1 Apr 2026 – 31 Mar 2027) • All statutory deadlines</p>
+            </div>
           </div>
+          <Button
+            variant={notificationsEnabled ? "secondary" : "default"}
+            size="sm"
+            onClick={enableNotifications}
+            className="gap-2"
+          >
+            {notificationsEnabled ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+            {notificationsEnabled ? "Notifications On" : "Enable Alerts"}
+          </Button>
         </div>
+
+        {/* Alert Banner */}
+        {(urgentCount > 0 || overdueCount > 0) && (
+          <div className={`mb-4 p-3 rounded-lg border flex items-center gap-3 ${overdueCount > 0 ? "bg-destructive/10 border-destructive/30" : "bg-amber-500/10 border-amber-500/30"}`}>
+            <AlertTriangle className={`h-5 w-5 shrink-0 ${overdueCount > 0 ? "text-destructive" : "text-amber-500"}`} />
+            <div className="text-sm">
+              {overdueCount > 0 && <span className="text-destructive font-semibold">{overdueCount} overdue deadline{overdueCount > 1 ? "s" : ""}! </span>}
+              {urgentCount > 0 && <span className="text-amber-600 font-semibold">{urgentCount} deadline{urgentCount > 1 ? "s" : ""} due within 7 days.</span>}
+            </div>
+          </div>
+        )}
 
         {/* Filters */}
         <Card className="mb-6">
           <CardContent className="pt-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 items-end">
               <div>
-                <Label>Entity Type</Label>
+                <Label className="text-xs">Entity Type</Label>
                 <Select value={entityType} onValueChange={setEntityType}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="individual">Individual</SelectItem>
+                    <SelectItem value="individual">Individual / HUF</SelectItem>
                     <SelectItem value="firm">Partnership Firm</SelectItem>
                     <SelectItem value="llp">LLP</SelectItem>
                     <SelectItem value="company">Company</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center gap-2 pt-6"><Switch checked={isGSTRegistered} onCheckedChange={setIsGSTRegistered} /><Label className="text-sm">GST Registered</Label></div>
-              <div className="flex items-center gap-2 pt-6"><Switch checked={isAuditApplicable} onCheckedChange={setIsAuditApplicable} /><Label className="text-sm">Audit Applicable</Label></div>
+              <div>
+                <Label className="text-xs">Month</Label>
+                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {months.map((m) => (
+                      <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={isGSTRegistered} onCheckedChange={setIsGSTRegistered} id="gst-toggle" />
+                <Label htmlFor="gst-toggle" className="text-xs">GST Registered</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={isAuditApplicable} onCheckedChange={setIsAuditApplicable} id="audit-toggle" />
+                <Label htmlFor="audit-toggle" className="text-xs">Audit Applicable</Label>
+              </div>
+              {isGSTRegistered && (
+                <div className="flex items-center gap-2">
+                  <Switch checked={isComposition} onCheckedChange={setIsComposition} id="comp-toggle" />
+                  <Label htmlFor="comp-toggle" className="text-xs">Composition Scheme</Label>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
           {Object.entries(categoryCounts).map(([cat, counts]) => (
-            <Card key={cat}>
-              <CardContent className="pt-4 text-center">
-                <p className="text-xs text-muted-foreground">{categoryLabels[cat]}</p>
-                <p className="text-lg font-bold">{counts.completed}/{counts.total}</p>
-                <Badge variant={counts.completed === counts.total ? "default" : "secondary"} className="text-xs">{counts.completed === counts.total ? "✓ Done" : "Pending"}</Badge>
+            <Card key={cat} className={`${counts.upcoming > 0 ? "ring-1 ring-amber-500/50" : ""}`}>
+              <CardContent className="pt-3 pb-3 text-center">
+                <p className="text-[11px] text-muted-foreground font-medium">{categoryLabels[cat]}</p>
+                <p className="text-xl font-bold">{counts.completed}/{counts.total}</p>
+                <div className="flex justify-center gap-1 mt-1">
+                  {counts.completed === counts.total ? (
+                    <Badge className="text-[10px] bg-green-500/20 text-green-600 border-green-500/30">✓ All Done</Badge>
+                  ) : counts.upcoming > 0 ? (
+                    <Badge className="text-[10px] bg-amber-500/20 text-amber-600 border-amber-500/30">{counts.upcoming} urgent</Badge>
+                  ) : (
+                    <Badge variant="secondary" className="text-[10px]">Pending</Badge>
+                  )}
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Events by Category */}
+        {/* Events by Category Tabs */}
         <Tabs defaultValue="all">
-          <TabsList className="mb-4 flex-wrap h-auto">
-            <TabsTrigger value="all">All</TabsTrigger>
-            {Object.keys(categoryCounts).map(cat => (
-              <TabsTrigger key={cat} value={cat}>{categoryLabels[cat]}</TabsTrigger>
+          <TabsList className="mb-4 flex-wrap h-auto gap-1">
+            <TabsTrigger value="all" className="text-xs">All ({filteredEvents.length})</TabsTrigger>
+            {Object.entries(categoryCounts).map(([cat, counts]) => (
+              <TabsTrigger key={cat} value={cat} className="text-xs">
+                {categoryLabels[cat]} ({counts.total})
+              </TabsTrigger>
             ))}
           </TabsList>
 
-          {["all", ...Object.keys(categoryCounts)].map(tab => (
-            <TabsContent key={tab} value={tab} className="space-y-3">
+          {["all", ...Object.keys(categoryCounts)].map((tab) => (
+            <TabsContent key={tab} value={tab} className="space-y-2">
               {filteredEvents
-                .filter(e => tab === "all" || e.category === tab)
-                .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
-                .map(event => {
-                  const statusColor = getStatusColor(event.dueDate, event.completed);
-                  return (
-                    <Card key={event.id} className={`cursor-pointer transition-colors hover:bg-muted/50 ${event.completed ? 'opacity-60' : ''}`} onClick={() => toggleComplete(event.id)}>
-                      <CardContent className="pt-4">
-                        <div className="flex items-start gap-3">
-                          {event.completed ? <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 shrink-0" /> : <Clock className={`h-5 w-5 mt-0.5 shrink-0 ${statusColor}`} />}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-2 flex-wrap">
-                              <p className={`font-medium ${event.completed ? 'line-through' : ''}`}>{event.title}</p>
-                              <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-xs">{categoryLabels[event.category]}</Badge>
-                                <span className={`text-sm font-semibold ${statusColor}`}>{event.completed ? "Done" : getDaysLabel(event.dueDate)}</span>
-                              </div>
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
-                            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                              <span>Due: {new Date(event.dueDate).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}</span>
-                              <span>For: {event.applicable}</span>
-                              <span className="text-amber-500">Penalty: {event.penalty}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+                .filter((e) => tab === "all" || e.category === tab)
+                .sort((a, b) => {
+                  // Sort: overdue first, then by date
+                  const aComp = completedIds.has(a.id) ? 1 : 0;
+                  const bComp = completedIds.has(b.id) ? 1 : 0;
+                  if (aComp !== bComp) return aComp - bComp;
+                  return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+                })
+                .map(renderEventCard)}
+              {filteredEvents.filter((e) => tab === "all" || e.category === tab).length === 0 && (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Calendar className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                  <p>No deadlines found for this filter combination.</p>
+                </div>
+              )}
             </TabsContent>
           ))}
         </Tabs>
+
+        {/* Legend */}
+        <Card className="mt-6">
+          <CardContent className="pt-4 pb-3">
+            <p className="text-xs font-semibold text-muted-foreground mb-2">LEGEND</p>
+            <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1"><CheckCircle className="h-3.5 w-3.5 text-green-500" /> Completed</span>
+              <span className="flex items-center gap-1"><AlertTriangle className="h-3.5 w-3.5 text-destructive" /> Overdue</span>
+              <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-amber-500" /> Due within 7 days</span>
+              <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-muted-foreground" /> Upcoming</span>
+              <span>Click any deadline to mark it as complete/incomplete</span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
