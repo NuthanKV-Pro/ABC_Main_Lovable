@@ -1176,6 +1176,7 @@ const courts = [
 ];
 
 const LegalInterpretations = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
