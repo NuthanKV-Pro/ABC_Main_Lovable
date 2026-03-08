@@ -123,7 +123,13 @@ const MyFinancialProfile = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
-      <Button variant="ghost" onClick={goBack} className="mb-4"><ArrowLeft className="mr-2 h-4 w-4" />Back</Button>
+      <div className="flex items-center justify-between mb-4">
+        <Button variant="ghost" onClick={goBack}><ArrowLeft className="mr-2 h-4 w-4" />Back</Button>
+        <Button onClick={handleSyncAll} variant={synced ? "secondary" : "default"} className="gap-2">
+          {synced ? <CheckCircle className="h-4 w-4" /> : <RefreshCw className="h-4 w-4" />}
+          {synced ? "Synced" : "Sync All Tools"}
+        </Button>
+      </div>
       <h1 className="text-2xl md:text-3xl font-bold mb-6 text-foreground">My Financial Profile</h1>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
