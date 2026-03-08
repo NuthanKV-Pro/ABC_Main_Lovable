@@ -12,7 +12,7 @@ const BreadcrumbNav = () => {
   return (
     <nav
       aria-label="Breadcrumb"
-      className="bg-muted/40 border-b border-border/50 backdrop-blur-sm"
+      className="sticky top-0 z-40 bg-muted/80 border-b border-border/50 backdrop-blur-md"
     >
       <div className="container mx-auto px-4">
         <ol className="flex items-center gap-1 py-2 text-xs sm:text-sm overflow-x-auto">
