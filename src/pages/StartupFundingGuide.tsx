@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Rocket, ExternalLink, Search, Landmark, Users, Building2 } from "lucide-react";
+import { ArrowLeft, Rocket, ExternalLink, Search, Landmark, Users, Building2, Zap } from "lucide-react";
 import { useGoBack } from "@/hooks/useGoBack";
 
 interface FundingEntry {
@@ -90,6 +90,7 @@ const StartupFundingGuide = () => {
   const filteredGovt = useMemo(() => filterEntries(GOVT_SCHEMES), [search, stageFilter, sectorFilter]);
   const filteredVCs = useMemo(() => filterEntries(VCS), [search, stageFilter, sectorFilter]);
   const filteredAngels = useMemo(() => filterEntries(ANGELS), [search, stageFilter, sectorFilter]);
+  const filteredAccelerators = useMemo(() => filterEntries(ACCELERATORS), [search, stageFilter, sectorFilter]);
 
   const renderCard = (entry: FundingEntry) => (
     <Card key={entry.name} className="hover:border-primary/30 transition-colors">
@@ -154,10 +155,11 @@ const StartupFundingGuide = () => {
         </Card>
 
         <Tabs defaultValue="govt" className="space-y-4">
-          <TabsList className="grid grid-cols-3 w-full max-w-lg">
+          <TabsList className="grid grid-cols-4 w-full max-w-2xl">
             <TabsTrigger value="govt" className="flex items-center gap-1"><Landmark className="h-4 w-4" /> Govt ({filteredGovt.length})</TabsTrigger>
             <TabsTrigger value="vcs" className="flex items-center gap-1"><Building2 className="h-4 w-4" /> VCs ({filteredVCs.length})</TabsTrigger>
             <TabsTrigger value="angels" className="flex items-center gap-1"><Users className="h-4 w-4" /> Angels ({filteredAngels.length})</TabsTrigger>
+            <TabsTrigger value="accelerators" className="flex items-center gap-1"><Zap className="h-4 w-4" /> Accelerators ({filteredAccelerators.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="govt">
@@ -175,6 +177,12 @@ const StartupFundingGuide = () => {
           <TabsContent value="angels">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredAngels.length > 0 ? filteredAngels.map(renderCard) : <p className="text-muted-foreground text-center col-span-2 py-8">No matching angel networks found.</p>}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="accelerators">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredAccelerators.length > 0 ? filteredAccelerators.map(renderCard) : <p className="text-muted-foreground text-center col-span-2 py-8">No matching accelerators found.</p>}
             </div>
           </TabsContent>
         </Tabs>
