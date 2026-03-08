@@ -99,7 +99,7 @@ const HomeLoanEligibility = () => {
                 <p className="text-xs text-muted-foreground">Gross monthly salary/income</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="existingEMI">Existing EMIs (₹/month)</Label>
+                <Label htmlFor="existingEMI" className="flex items-center">Existing EMIs (₹/month)<AutoPopulateBadge fieldKey="fhs_monthlyDebtPayment" populatedFields={populatedFields} onReset={resetField} /></Label>
                 <Input
                   id="existingEMI"
                   type="number"
