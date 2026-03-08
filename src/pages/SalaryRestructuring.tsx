@@ -18,10 +18,23 @@ import { useToast } from "@/hooks/use-toast";
 const SalaryRestructuring = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
+  const { toast } = useToast();
+  const taxData = useTaxData();
   const [ctc, setCTC] = useState(2000000);
   const [regime, setRegime] = useState("old");
   const [metro, setMetro] = useState(true);
   const [monthlyRent, setMonthlyRent] = useState(25000);
+  const [salaryImported, setSalaryImported] = useState(false);
+
+  const importFromSalary = () => {
+    if (!taxData.salary.hasData) return;
+    const grossSalary = taxData.salary.grossIncome;
+    if (grossSalary > 0) {
+      setCTC(Math.round(grossSalary * 1.3)); // estimate CTC as ~1.3x gross
+      toast({ title: "Salary data imported", description: `CTC estimated from gross salary ₹${grossSalary.toLocaleString('en-IN')}` });
+      setSalaryImported(true);
+    }
+  };
 
   // Component percentages
   const [basicPct, setBasicPct] = useState(40);
