@@ -107,6 +107,7 @@ export const routeMap: Record<string, RouteInfo> = {
   "/insurance-comparison": { label: "Term vs Endowment vs ULIP", parent: "/compare-and-decide" },
   "/compare-and-decide": { label: "Compare & Decide", parent: "/prototypes" },
   "/life-event-wizards": { label: "Life Event Wizards", parent: "/prototypes" },
+  "/financial-health-score": { label: "Financial Health Score", parent: "/prototypes" },
 };
 
 export function getBreadcrumbs(pathname: string): { label: string; path: string }[] {
