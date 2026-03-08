@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Plus, Trash2, Download, FileText, CheckCircle, AlertTriangle, RotateCcw, ExternalLink, Search, ChevronDown, ChevronUp, Info } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Download, FileText, CheckCircle, AlertTriangle, RotateCcw, ExternalLink, Search, ChevronDown, ChevronUp, Info, Save, FolderOpen, Truck } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -14,6 +14,8 @@ import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { toast } from "sonner";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -27,19 +29,44 @@ interface InvoiceItem {
   discount: number;
 }
 
+interface EWayBillDetails {
+  transporterName: string;
+  transporterId: string;
+  transportMode: string;
+  vehicleNumber: string;
+  distanceKm: string;
+  transDocNo: string;
+  transDocDate: string;
+}
+
+interface InvoiceDraft {
+  id: string;
+  name: string;
+  savedAt: string;
+  sellerGSTIN: string;
+  buyerGSTIN: string;
+  sellerName: string;
+  buyerName: string;
+  sellerState: string;
+  buyerState: string;
+  invoiceNo: string;
+  invoiceDate: string;
+  isInterState: boolean;
+  reverseCharge: boolean;
+  items: InvoiceItem[];
+  eWayBill: EWayBillDetails;
+}
+
 const gstRates = [0, 0.25, 3, 5, 12, 18, 28];
 
 const hsnCodesData: { code: string; description: string; tooltip: string }[] = [
-  // IT & Software
   { code: "9983", description: "Professional Services", tooltip: "Legal, accounting, management consultancy, and other professional services" },
   { code: "9984", description: "Telecommunications", tooltip: "Telecom services including data transmission, VoIP, broadband" },
   { code: "9985", description: "IT & Software Services", tooltip: "Software development, IT consulting, cloud services, data processing" },
   { code: "9986", description: "Support Services", tooltip: "Business support including call centers, collection agencies, packaging" },
-  // Financial
   { code: "9971", description: "Financial Services", tooltip: "Banking, insurance, stock broking, fund management services" },
   { code: "9972", description: "Real Estate Services", tooltip: "Real estate agency, property management, building maintenance" },
   { code: "9973", description: "Leasing/Rental Services", tooltip: "Leasing or rental of machinery, equipment, vehicles without operator" },
-  // Goods
   { code: "8471", description: "Computers & Laptops", tooltip: "Automatic data processing machines, desktops, laptops, tablets" },
   { code: "8517", description: "Mobile Phones", tooltip: "Smartphones, feature phones, satellite phones, wireless devices" },
   { code: "6109", description: "T-shirts & Apparel", tooltip: "T-shirts, singlets, tank tops of knitted or crocheted fabric" },
@@ -49,14 +76,12 @@ const hsnCodesData: { code: string; description: string; tooltip: string }[] = [
   { code: "3304", description: "Beauty Products", tooltip: "Lip, eye, face make-up preparations, manicure/pedicure products" },
   { code: "3004", description: "Medicines", tooltip: "Medicaments consisting of mixed or unmixed products for therapeutic use" },
   { code: "2202", description: "Beverages", tooltip: "Waters including mineral & aerated with added sugar/flavoring" },
-  // Consultancy & Professional
   { code: "9982", description: "Legal Services", tooltip: "Legal advisory, representation, documentation, arbitration services" },
   { code: "998311", description: "Management Consultancy", tooltip: "General management, financial management, HR, marketing consulting" },
   { code: "998312", description: "Business Consultancy", tooltip: "Strategy, operations, supply chain, and organizational consulting" },
   { code: "998313", description: "IT Consultancy", tooltip: "IT strategy, systems planning, architecture design consulting" },
   { code: "998314", description: "Tax Consultancy", tooltip: "Tax advisory, planning, compliance, and representation services" },
   { code: "998315", description: "Accounting Services", tooltip: "Bookkeeping, auditing, tax preparation, payroll services" },
-  // Architecture & Engineering
   { code: "9974", description: "Architecture Services", tooltip: "Architectural design, advisory, planning, urban planning services" },
   { code: "998341", description: "Architectural Advisory", tooltip: "Architectural consulting and preliminary design services" },
   { code: "998342", description: "Architectural Design", tooltip: "Building design, drafting, model making, project management" },
@@ -64,112 +89,91 @@ const hsnCodesData: { code: string; description: string; tooltip: string }[] = [
   { code: "998344", description: "Engineering Design", tooltip: "Engineering design services for buildings, infrastructure" },
   { code: "998345", description: "Engineering Advisory", tooltip: "Integrated engineering services, project management engineering" },
   { code: "998346", description: "Surveying & Mapping", tooltip: "Surface surveying, hydrographic, sub-surface, map making" },
-  // Rental & Leasing
   { code: "997311", description: "Machinery Rental", tooltip: "Leasing/rental of machinery & equipment without operator" },
   { code: "997312", description: "Vehicle Rental", tooltip: "Leasing/rental of motor vehicles without driver" },
   { code: "997313", description: "Office Equipment Rental", tooltip: "Leasing/rental of computers, telecom equipment, office machinery" },
   { code: "997314", description: "Property Rental", tooltip: "Rental of commercial/residential property, office space" },
   { code: "997319", description: "Other Rental Services", tooltip: "Rental of other goods including textiles, furniture, containers" },
-  // Education & Training
   { code: "9992", description: "Education Services", tooltip: "Primary, secondary, higher education, and training services" },
   { code: "999210", description: "Primary Education", tooltip: "Pre-primary and primary education services" },
   { code: "999220", description: "Secondary Education", tooltip: "Secondary and higher secondary education services" },
   { code: "999230", description: "Higher Education", tooltip: "University, college, polytechnic education services" },
   { code: "999240", description: "Vocational Training", tooltip: "Specialized vocational training, coaching, skill development" },
   { code: "999250", description: "Coaching Services", tooltip: "Coaching classes, test prep, tutoring services" },
-  // Healthcare
   { code: "9993", description: "Healthcare Services", tooltip: "Hospital, medical, dental, paramedical services" },
   { code: "999311", description: "Hospital Services", tooltip: "Inpatient hospital, nursing home, sanatorium services" },
   { code: "999312", description: "Medical Services", tooltip: "General/specialist medical practitioner services" },
   { code: "999313", description: "Dental Services", tooltip: "Dental practitioner services, oral surgery" },
   { code: "999314", description: "Paramedical Services", tooltip: "Physiotherapy, optometry, nursing, ambulance services" },
-  // Transport
   { code: "9965", description: "Goods Transport", tooltip: "Freight transport by road, rail, water, or air" },
   { code: "9964", description: "Passenger Transport", tooltip: "Passenger transport by road, rail, air, water" },
   { code: "996511", description: "Road Freight", tooltip: "Freight transport by road including courier, tanker services" },
   { code: "996512", description: "Rail Freight", tooltip: "Freight transport by railways, container train operations" },
   { code: "996521", description: "Coastal Shipping", tooltip: "Coastal and transoceanic water transport of goods" },
   { code: "996531", description: "Air Freight", tooltip: "Transport of freight by aircraft including charter" },
-  // Food & Restaurant
   { code: "9963", description: "Restaurant Services", tooltip: "Food & beverage serving, catering, takeaway services" },
   { code: "996331", description: "Catering Services", tooltip: "Event catering, institutional catering, contract catering" },
   { code: "2106", description: "Food Preparations", tooltip: "Food preparations not elsewhere specified" },
   { code: "2101", description: "Coffee & Tea Extracts", tooltip: "Extracts, essences and concentrates of coffee, tea" },
   { code: "1905", description: "Bread & Bakery", tooltip: "Bread, pastry, cakes, biscuits, and other bakery products" },
-  // Construction
   { code: "9954", description: "Construction Services", tooltip: "Building, civil engineering, installation construction services" },
   { code: "995411", description: "Residential Construction", tooltip: "Construction of residential buildings and houses" },
   { code: "995412", description: "Commercial Construction", tooltip: "Construction of commercial buildings, offices, shopping malls" },
   { code: "995421", description: "Road Construction", tooltip: "Construction of highways, roads, bridges, tunnels" },
   { code: "995422", description: "Utility Construction", tooltip: "Construction of utility projects - water, gas, power" },
-  // Insurance
   { code: "997131", description: "Life Insurance", tooltip: "Life insurance, annuity, pension fund services" },
   { code: "997132", description: "Non-life Insurance", tooltip: "Accident, health, motor, fire, property insurance" },
   { code: "997133", description: "Reinsurance", tooltip: "Reinsurance of life and non-life insurance" },
   { code: "997134", description: "Insurance Auxiliary", tooltip: "Insurance broking, actuarial, risk assessment services" },
-  // Advertising & Media
   { code: "9983", description: "Advertising Services", tooltip: "Advertising, market research, public opinion polling" },
   { code: "998361", description: "Print Advertising", tooltip: "Newspaper, magazine, directory advertising space sale" },
   { code: "998362", description: "TV & Radio Advertising", tooltip: "Television and radio advertising time sale" },
   { code: "998363", description: "Digital Advertising", tooltip: "Online advertising, social media, search engine marketing" },
   { code: "998364", description: "Outdoor Advertising", tooltip: "Billboard, transit, cinema, digital signage advertising" },
-  // Travel & Hospitality
   { code: "9963", description: "Accommodation Services", tooltip: "Hotel, inn, camping, holiday center lodging services" },
   { code: "9995", description: "Tour Operator Services", tooltip: "Tour operator, travel agency, tourist guide services" },
   { code: "996311", description: "5-Star Hotel", tooltip: "Room/unit accommodation in five-star hotels/resorts" },
   { code: "996312", description: "Hotel (below 5-Star)", tooltip: "Room/unit accommodation in hotels rated below 5-star" },
   { code: "996321", description: "Homestay Services", tooltip: "Home-sharing, homestay, vacation rental accommodation" },
-  // Electronics & Technology
   { code: "8443", description: "Printers & Scanners", tooltip: "Printing machinery, printers, copying machines, scanners" },
   { code: "8528", description: "TV & Monitors", tooltip: "Monitors, projectors, television receivers" },
   { code: "8523", description: "Storage Media", tooltip: "Discs, tapes, solid-state storage, smart cards for recording" },
   { code: "8504", description: "Transformers/Chargers", tooltip: "Electrical transformers, static converters, chargers, UPS" },
   { code: "8544", description: "Cables & Wires", tooltip: "Insulated wire, cable, optical fiber cables, connectors" },
-  // Textiles & Garments
   { code: "6101", description: "Men's Overcoats", tooltip: "Men's/boys' overcoats, jackets, cloaks of knitted fabric" },
   { code: "6104", description: "Women's Suits", tooltip: "Women's/girls' suits, dresses, skirts of knitted fabric" },
   { code: "6110", description: "Sweaters & Pullovers", tooltip: "Jerseys, pullovers, cardigans, waistcoats, knitted" },
   { code: "6203", description: "Men's Trousers", tooltip: "Men's/boys' suits, trousers, shorts of woven fabric" },
   { code: "6204", description: "Women's Dresses", tooltip: "Women's/girls' suits, dresses, skirts of woven fabric" },
-  // Furniture & Interiors
   { code: "9401", description: "Chairs & Seats", tooltip: "Seats, chairs (including dentists'), swivel chairs, parts" },
   { code: "9403", description: "Office Furniture", tooltip: "Other furniture - desks, cabinets, bookcases, shelves" },
   { code: "9404", description: "Mattresses", tooltip: "Mattress supports, mattresses, sleeping bags, bed items" },
   { code: "9405", description: "Lighting Fixtures", tooltip: "Lamps, light fittings, illuminated signs, chandeliers" },
-  // Automobiles & Parts
   { code: "8711", description: "Motorcycles", tooltip: "Motorcycles, mopeds, scooters, motorized cycles" },
   { code: "8708", description: "Auto Parts", tooltip: "Parts and accessories of motor vehicles (bodies, brakes)" },
   { code: "4011", description: "Tyres (New)", tooltip: "New pneumatic rubber tyres for cars, buses, trucks" },
   { code: "8507", description: "Batteries", tooltip: "Electric accumulators/batteries including Li-ion, lead-acid" },
-  // Cosmetics & Personal Care
   { code: "3305", description: "Hair Care Products", tooltip: "Shampoos, hair lacquers, hair dyes, conditioners" },
   { code: "3306", description: "Oral Care Products", tooltip: "Toothpaste, dental floss, mouthwash, denture preparations" },
   { code: "3307", description: "Perfumes & Deodorants", tooltip: "Perfumes, eau de toilette, deodorants, bath preparations" },
   { code: "3401", description: "Soap & Detergents", tooltip: "Soap, organic surface-active agents, washing preparations" },
-  // Stationery & Printing
   { code: "4820", description: "Stationery", tooltip: "Registers, notebooks, letter pads, diaries, folders of paper" },
   { code: "4901", description: "Books & Publications", tooltip: "Printed books, brochures, leaflets, and similar materials" },
   { code: "4911", description: "Printed Materials", tooltip: "Trade advertising, commercial catalogs, printed maps" },
-  // Sports & Fitness
   { code: "9506", description: "Sports Equipment", tooltip: "Articles and equipment for sports, outdoor games, swimming" },
   { code: "9504", description: "Gaming Equipment", tooltip: "Video game consoles, table games, billiards, bowling" },
-  // Gems & Jewellery
   { code: "7113", description: "Gold Jewellery", tooltip: "Articles of jewellery of precious metal, gold, silver" },
   { code: "7117", description: "Imitation Jewellery", tooltip: "Imitation jewellery, fashion jewellery, costume jewellery" },
   { code: "7108", description: "Gold (Unwrought)", tooltip: "Gold in unwrought, semi-manufactured, or powder form" },
-  // Petroleum & Energy
   { code: "2710", description: "Petroleum Products", tooltip: "Petroleum oils - diesel, petrol, kerosene, lubricating oils" },
   { code: "2711", description: "LPG & Natural Gas", tooltip: "Petroleum gases - LPG, natural gas, propane, butane" },
   { code: "8541", description: "Solar Cells/Panels", tooltip: "Semiconductor devices, solar cells, photovoltaic panels" },
-  // Agriculture
   { code: "0713", description: "Pulses (Dried)", tooltip: "Dried leguminous vegetables - peas, chickpeas, lentils, beans" },
   { code: "0804", description: "Dates & Figs", tooltip: "Dates, figs, pineapples, avocados, guavas, mangoes" },
   { code: "1001", description: "Wheat", tooltip: "Wheat and meslin, durum wheat, seed wheat" },
   { code: "1201", description: "Soya Beans", tooltip: "Soya beans, whether or not broken, for oil extraction" },
-  // Packaging
   { code: "3923", description: "Plastic Packaging", tooltip: "Articles for conveyance or packing of goods, of plastics" },
   { code: "4819", description: "Paper Packaging", tooltip: "Cartons, boxes, cases, bags of paper or paperboard" },
-  // Miscellaneous Services
   { code: "9981", description: "R&D Services", tooltip: "Research and experimental development in sciences" },
   { code: "9961", description: "Maintenance Services", tooltip: "Maintenance and repair of fabricated metal products, machinery" },
   { code: "9962", description: "Cleaning Services", tooltip: "General cleaning, specialized cleaning, janitorial services" },
@@ -183,6 +187,19 @@ const hsnCodesData: { code: string; description: string; tooltip: string }[] = [
 const validateGSTIN = (gstin: string): boolean => {
   const regex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
   return regex.test(gstin.toUpperCase());
+};
+
+const DRAFTS_KEY = "gst_invoice_drafts";
+
+const getStoredDrafts = (): InvoiceDraft[] => {
+  try {
+    const raw = localStorage.getItem(DRAFTS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+};
+
+const saveDraftsToStorage = (drafts: InvoiceDraft[]) => {
+  localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
 };
 
 const GSTInvoiceGenerator = () => {
@@ -200,6 +217,19 @@ const GSTInvoiceGenerator = () => {
   const [reverseCharge, setReverseCharge] = useState(false);
   const [hsnSearchQuery, setHsnSearchQuery] = useState("");
   const [isHsnOpen, setIsHsnOpen] = useState(false);
+  const [draftsDialogOpen, setDraftsDialogOpen] = useState(false);
+  const [draftName, setDraftName] = useState("");
+  const [savedDrafts, setSavedDrafts] = useState<InvoiceDraft[]>(getStoredDrafts);
+
+  const [eWayBill, setEWayBill] = useState<EWayBillDetails>({
+    transporterName: "",
+    transporterId: "",
+    transportMode: "road",
+    vehicleNumber: "",
+    distanceKm: "",
+    transDocNo: "",
+    transDocDate: "",
+  });
 
   const [items, setItems] = useState<InvoiceItem[]>([
     { id: "1", description: "Software Development Services", hsnCode: "9985", qty: 1, rate: 100000, gstRate: 18, discount: 0 },
@@ -227,6 +257,7 @@ const GSTInvoiceGenerator = () => {
     setIsInterState(false);
     setReverseCharge(false);
     setItems([{ id: "1", description: "", hsnCode: "", qty: 1, rate: 0, gstRate: 18, discount: 0 }]);
+    setEWayBill({ transporterName: "", transporterId: "", transportMode: "road", vehicleNumber: "", distanceKm: "", transDocNo: "", transDocDate: "" });
   };
 
   const totals = useMemo(() => {
@@ -247,6 +278,8 @@ const GSTInvoiceGenerator = () => {
     });
     return { subtotal, totalCGST, totalSGST, totalIGST, totalDiscount, grandTotal: subtotal + totalCGST + totalSGST + totalIGST };
   }, [items, isInterState]);
+
+  const showEWayBill = totals.grandTotal > 50000;
 
   const formatCurrency = (n: number) => "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -270,30 +303,96 @@ const GSTInvoiceGenerator = () => {
     "29": "Karnataka", "32": "Kerala", "33": "Tamil Nadu", "36": "Telangana", "37": "Andhra Pradesh"
   };
 
+  // === Save / Load Drafts ===
+  const handleSaveDraft = () => {
+    const name = draftName.trim() || `Draft - ${invoiceNo}`;
+    const draft: InvoiceDraft = {
+      id: Date.now().toString(),
+      name,
+      savedAt: new Date().toISOString(),
+      sellerGSTIN, buyerGSTIN, sellerName, buyerName, sellerState, buyerState,
+      invoiceNo, invoiceDate, isInterState, reverseCharge, items, eWayBill,
+    };
+    const updated = [draft, ...savedDrafts].slice(0, 20);
+    setSavedDrafts(updated);
+    saveDraftsToStorage(updated);
+    setDraftName("");
+    toast.success(`Draft "${name}" saved`);
+  };
+
+  const handleLoadDraft = (draft: InvoiceDraft) => {
+    setSellerGSTIN(draft.sellerGSTIN);
+    setBuyerGSTIN(draft.buyerGSTIN);
+    setSellerName(draft.sellerName);
+    setBuyerName(draft.buyerName);
+    setSellerState(draft.sellerState);
+    setBuyerState(draft.buyerState);
+    setInvoiceNo(draft.invoiceNo);
+    setInvoiceDate(draft.invoiceDate);
+    setIsInterState(draft.isInterState);
+    setReverseCharge(draft.reverseCharge);
+    setItems(draft.items);
+    if (draft.eWayBill) setEWayBill(draft.eWayBill);
+    setDraftsDialogOpen(false);
+    toast.success(`Loaded "${draft.name}"`);
+  };
+
+  const handleDeleteDraft = (id: string) => {
+    const updated = savedDrafts.filter(d => d.id !== id);
+    setSavedDrafts(updated);
+    saveDraftsToStorage(updated);
+    toast.success("Draft deleted");
+  };
+
+  // === PDF Generation (fixed alignment) ===
   const generatePDF = () => {
     const doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.text("TAX INVOICE", 105, 18, { align: "center" });
-    doc.setFontSize(10);
-    doc.text(`Invoice No: ${invoiceNo}`, 14, 30);
-    doc.text(`Date: ${invoiceDate}`, 160, 30);
-    doc.text(`Supply Type: ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}`, 14, 36);
-    if (reverseCharge) doc.text("Reverse Charge: Yes", 160, 36);
+    const pageWidth = doc.internal.pageSize.getWidth();
 
-    doc.setFontSize(11);
-    doc.text("Seller", 14, 46);
+    // Header bar
+    doc.setFillColor(41, 128, 185);
+    doc.rect(0, 0, pageWidth, 28, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text("TAX INVOICE", pageWidth / 2, 16, { align: "center" });
     doc.setFontSize(9);
-    doc.text(sellerName || "-", 14, 52);
-    doc.text(`GSTIN: ${sellerGSTIN || "-"}`, 14, 57);
-    doc.text(`State: ${states[sellerState] || "-"}`, 14, 62);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Invoice No: ${invoiceNo}  |  Date: ${invoiceDate}`, pageWidth / 2, 24, { align: "center" });
 
-    doc.setFontSize(11);
-    doc.text("Buyer", 110, 46);
-    doc.setFontSize(9);
-    doc.text(buyerName || "-", 110, 52);
-    doc.text(`GSTIN: ${buyerGSTIN || "B2C (Unregistered)"}`, 110, 57);
-    doc.text(`State: ${states[buyerState] || "-"}`, 110, 62);
+    // Reset color
+    doc.setTextColor(0, 0, 0);
 
+    // Invoice meta row
+    let y = 36;
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Supply Type: ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}${reverseCharge ? "  |  Reverse Charge: Yes" : ""}`, 14, y);
+    doc.setTextColor(0, 0, 0);
+    y += 8;
+
+    // Seller / Buyer details table
+    autoTable(doc, {
+      startY: y,
+      body: [
+        [
+          { content: 'SELLER DETAILS', styles: { fontStyle: 'bold', fontSize: 9, fillColor: [240, 240, 240] } },
+          { content: 'BUYER DETAILS', styles: { fontStyle: 'bold', fontSize: 9, fillColor: [240, 240, 240] } }
+        ],
+        [
+          `${sellerName || "-"}\nGSTIN: ${sellerGSTIN || "-"}\nState: ${states[sellerState] || "-"}`,
+          `${buyerName || "-"}\nGSTIN: ${buyerGSTIN || "B2C (Unregistered)"}\nState: ${states[buyerState] || "-"}`
+        ],
+      ],
+      theme: 'grid',
+      styles: { fontSize: 9, cellPadding: 4 },
+      columnStyles: { 0: { cellWidth: (pageWidth - 28) / 2 }, 1: { cellWidth: (pageWidth - 28) / 2 } },
+      margin: { left: 14, right: 14 },
+    });
+
+    y = (doc as any).lastAutoTable?.finalY + 6 || y + 40;
+
+    // Items table
     const tableHead = isInterState
       ? [["#", "Description", "HSN/SAC", "Qty", "Rate", "Disc%", "Taxable", "IGST", "Total"]]
       : [["#", "Description", "HSN/SAC", "Qty", "Rate", "Disc%", "Taxable", "CGST", "SGST", "Total"]];
@@ -309,23 +408,92 @@ const GSTInvoiceGenerator = () => {
       return [String(i + 1), item.description, item.hsnCode, String(item.qty), formatCurrency(item.rate), `${item.discount}%`, formatCurrency(taxable), formatCurrency(gst / 2), formatCurrency(gst / 2), formatCurrency(taxable + gst)];
     });
 
-    autoTable(doc, { head: tableHead, body: tableBody, startY: 70, styles: { fontSize: 8 }, headStyles: { fillColor: [41, 128, 185] } });
+    autoTable(doc, {
+      head: tableHead,
+      body: tableBody,
+      startY: y,
+      styles: { fontSize: 8, cellPadding: 3 },
+      headStyles: { fillColor: [41, 128, 185], textColor: [255, 255, 255], fontStyle: 'bold' },
+      columnStyles: isInterState
+        ? { 0: { cellWidth: 8 }, 1: { cellWidth: 45 }, 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' }, 7: { halign: 'right' }, 8: { halign: 'right' } }
+        : { 0: { cellWidth: 8 }, 1: { cellWidth: 38 }, 4: { halign: 'right' }, 5: { halign: 'right' }, 6: { halign: 'right' }, 7: { halign: 'right' }, 8: { halign: 'right' }, 9: { halign: 'right' } },
+      margin: { left: 14, right: 14 },
+    });
 
-    const finalY = (doc as any).lastAutoTable?.finalY || 150;
-    doc.setFontSize(10);
-    doc.text(`Subtotal: ${formatCurrency(totals.subtotal)}`, 140, finalY + 10);
+    y = (doc as any).lastAutoTable?.finalY + 6 || y + 40;
+
+    // Summary table
+    const summaryRows: string[][] = [
+      ['Subtotal', formatCurrency(totals.subtotal)],
+    ];
+    if (totals.totalDiscount > 0) summaryRows.push(['Discount', `-${formatCurrency(totals.totalDiscount)}`]);
     if (isInterState) {
-      doc.text(`IGST: ${formatCurrency(totals.totalIGST)}`, 140, finalY + 16);
+      summaryRows.push(['IGST', formatCurrency(totals.totalIGST)]);
     } else {
-      doc.text(`CGST: ${formatCurrency(totals.totalCGST)}`, 140, finalY + 16);
-      doc.text(`SGST: ${formatCurrency(totals.totalSGST)}`, 140, finalY + 22);
+      summaryRows.push(['CGST', formatCurrency(totals.totalCGST)]);
+      summaryRows.push(['SGST', formatCurrency(totals.totalSGST)]);
     }
-    const grandY = isInterState ? finalY + 24 : finalY + 30;
-    doc.setFontSize(12);
-    doc.text(`Grand Total: ${formatCurrency(totals.grandTotal)}`, 140, grandY);
+    summaryRows.push(['Grand Total', formatCurrency(totals.grandTotal)]);
 
+    autoTable(doc, {
+      startY: y,
+      body: summaryRows,
+      theme: 'plain',
+      styles: { fontSize: 10, cellPadding: 3 },
+      columnStyles: {
+        0: { fontStyle: 'bold', halign: 'right', cellWidth: pageWidth - 28 - 60 },
+        1: { halign: 'right', cellWidth: 60 },
+      },
+      margin: { left: 14, right: 14 },
+      didParseCell: (data) => {
+        if (data.row.index === summaryRows.length - 1) {
+          data.cell.styles.fontStyle = 'bold';
+          data.cell.styles.fontSize = 12;
+          data.cell.styles.fillColor = [240, 248, 255];
+        }
+      }
+    });
+
+    y = (doc as any).lastAutoTable?.finalY + 6 || y + 40;
+
+    // e-Way Bill section if applicable
+    if (showEWayBill && (eWayBill.transporterName || eWayBill.vehicleNumber)) {
+      // Check if we need a new page
+      if (y > 240) { doc.addPage(); y = 20; }
+
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text("e-Way Bill / Transport Details", 14, y);
+      y += 4;
+
+      const ewayRows = [
+        ['Transporter Name', eWayBill.transporterName || '-'],
+        ['Transporter ID', eWayBill.transporterId || '-'],
+        ['Mode of Transport', eWayBill.transportMode === 'road' ? 'Road' : eWayBill.transportMode === 'rail' ? 'Rail' : eWayBill.transportMode === 'air' ? 'Air' : 'Ship'],
+        ['Vehicle Number', eWayBill.vehicleNumber || '-'],
+        ['Distance (km)', eWayBill.distanceKm || '-'],
+        ['Transport Doc No', eWayBill.transDocNo || '-'],
+        ['Transport Doc Date', eWayBill.transDocDate || '-'],
+      ];
+
+      autoTable(doc, {
+        startY: y,
+        body: ewayRows,
+        theme: 'grid',
+        styles: { fontSize: 9, cellPadding: 3 },
+        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 50 } },
+        margin: { left: 14, right: 14 },
+      });
+
+      y = (doc as any).lastAutoTable?.finalY + 6 || y + 40;
+    }
+
+    // Footer
+    const footerY = doc.internal.pageSize.getHeight() - 15;
     doc.setFontSize(7);
-    doc.text("This is a computer-generated invoice.", 14, 285);
+    doc.setTextColor(128, 128, 128);
+    doc.text("This is a computer-generated invoice. No signature required.", pageWidth / 2, footerY, { align: "center" });
+    doc.text("Generated by ABC - AI Legal & Tax Co-pilot", pageWidth / 2, footerY + 4, { align: "center" });
 
     doc.save(`GST_Invoice_${invoiceNo}.pdf`);
   };
@@ -337,9 +505,9 @@ const GSTInvoiceGenerator = () => {
       const taxable = lineTotal - discAmt;
       const gst = (taxable * item.gstRate) / 100;
       const taxCols = isInterState
-        ? `<td>${formatCurrency(gst)}</td>`
-        : `<td>${formatCurrency(gst / 2)}</td><td>${formatCurrency(gst / 2)}</td>`;
-      return `<tr><td>${i + 1}</td><td>${item.description}</td><td>${item.hsnCode}</td><td>${item.qty}</td><td>${formatCurrency(item.rate)}</td><td>${item.discount}%</td><td>${formatCurrency(taxable)}</td>${taxCols}<td>${formatCurrency(taxable + gst)}</td></tr>`;
+        ? `<td style="text-align:right">${formatCurrency(gst)}</td>`
+        : `<td style="text-align:right">${formatCurrency(gst / 2)}</td><td style="text-align:right">${formatCurrency(gst / 2)}</td>`;
+      return `<tr><td>${i + 1}</td><td>${item.description}</td><td>${item.hsnCode}</td><td style="text-align:right">${item.qty}</td><td style="text-align:right">${formatCurrency(item.rate)}</td><td style="text-align:right">${item.discount}%</td><td style="text-align:right">${formatCurrency(taxable)}</td>${taxCols}<td style="text-align:right">${formatCurrency(taxable + gst)}</td></tr>`;
     }).join("");
 
     const taxHeader = isInterState ? "<th>IGST</th>" : "<th>CGST</th><th>SGST</th>";
@@ -347,10 +515,16 @@ const GSTInvoiceGenerator = () => {
       ? `<p>IGST: ${formatCurrency(totals.totalIGST)}</p>`
       : `<p>CGST: ${formatCurrency(totals.totalCGST)}</p><p>SGST: ${formatCurrency(totals.totalSGST)}</p>`;
 
+    const eWaySection = showEWayBill && (eWayBill.transporterName || eWayBill.vehicleNumber)
+      ? `<h3>e-Way Bill / Transport Details</h3>
+         <table><tr><td><strong>Transporter</strong></td><td>${eWayBill.transporterName || '-'}</td><td><strong>Vehicle No</strong></td><td>${eWayBill.vehicleNumber || '-'}</td></tr>
+         <tr><td><strong>Transport Mode</strong></td><td>${eWayBill.transportMode}</td><td><strong>Distance</strong></td><td>${eWayBill.distanceKm || '-'} km</td></tr></table>`
+      : '';
+
     const html = `
       <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
       <head><meta charset="utf-8"><title>GST Invoice</title>
-      <style>body{font-family:Calibri,sans-serif;padding:20px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:6px 8px;font-size:11px}th{background:#2980b9;color:#fff}h1{text-align:center;color:#2c3e50}.info{display:flex;justify-content:space-between}.summary{text-align:right;margin-top:16px}</style>
+      <style>body{font-family:Calibri,sans-serif;padding:20px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:6px 8px;font-size:11px}th{background:#2980b9;color:#fff}h1{text-align:center;color:#2c3e50}.summary{text-align:right;margin-top:16px}</style>
       </head><body>
       <h1>TAX INVOICE</h1>
       <p>Invoice No: ${invoiceNo} | Date: ${invoiceDate} | ${isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}${reverseCharge ? " | Reverse Charge: Yes" : ""}</p>
@@ -364,6 +538,7 @@ const GSTInvoiceGenerator = () => {
         ${taxSummary}
         <p><strong>Grand Total: ${formatCurrency(totals.grandTotal)}</strong></p>
       </div>
+      ${eWaySection}
       <p style="font-size:9px;color:#999;margin-top:30px">This is a computer-generated invoice.</p>
       </body></html>`;
 
@@ -386,10 +561,53 @@ const GSTInvoiceGenerator = () => {
               <p className="text-muted-foreground text-sm">Generate GST-compliant invoices with HSN/SAC codes & GSTIN validation</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Button variant="outline" size="sm" onClick={handleReset} className="gap-1.5">
               <RotateCcw className="h-4 w-4" /> Reset
             </Button>
+            {/* Save Draft */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-1.5"><Save className="h-4 w-4" /> Save Draft</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader><DialogTitle>Save Invoice Draft</DialogTitle></DialogHeader>
+                <div className="space-y-3 pt-2">
+                  <div>
+                    <Label>Draft Name</Label>
+                    <Input placeholder={`Draft - ${invoiceNo}`} value={draftName} onChange={e => setDraftName(e.target.value)} />
+                  </div>
+                  <Button onClick={handleSaveDraft} className="w-full gap-1.5"><Save className="h-4 w-4" /> Save</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+            {/* Load Draft */}
+            <Dialog open={draftsDialogOpen} onOpenChange={setDraftsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-1.5"><FolderOpen className="h-4 w-4" /> Load Draft</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
+                <DialogHeader><DialogTitle>Saved Drafts</DialogTitle></DialogHeader>
+                {savedDrafts.length === 0 ? (
+                  <p className="text-muted-foreground text-sm py-4 text-center">No saved drafts yet</p>
+                ) : (
+                  <div className="space-y-2 pt-2">
+                    {savedDrafts.map(draft => (
+                      <div key={draft.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-sm truncate">{draft.name}</p>
+                          <p className="text-xs text-muted-foreground">{draft.invoiceNo} &bull; {new Date(draft.savedAt).toLocaleDateString('en-IN')}</p>
+                        </div>
+                        <div className="flex gap-1.5 ml-2">
+                          <Button size="sm" variant="outline" onClick={() => handleLoadDraft(draft)}>Load</Button>
+                          <Button size="sm" variant="ghost" onClick={() => handleDeleteDraft(draft.id)}><Trash2 className="h-3.5 w-3.5 text-destructive" /></Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="sm" className="gap-1.5">
@@ -549,6 +767,60 @@ const GSTInvoiceGenerator = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* e-Way Bill Section - shown when total > ₹50,000 */}
+        {showEWayBill && (
+          <Card className="mt-6 border-amber-500/30">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Truck className="h-5 w-5 text-amber-500" />
+                e-Way Bill Details
+                <Badge variant="outline" className="text-amber-500 border-amber-500/50 text-xs ml-auto">Required for invoices &gt; ₹50,000</Badge>
+              </CardTitle>
+              <CardDescription>As per GST rules, e-Way Bill is mandatory for movement of goods worth more than ₹50,000</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div>
+                  <Label>Transporter Name</Label>
+                  <Input value={eWayBill.transporterName} onChange={e => setEWayBill(p => ({ ...p, transporterName: e.target.value }))} placeholder="Name of transporter" />
+                </div>
+                <div>
+                  <Label>Transporter ID (GSTIN)</Label>
+                  <Input value={eWayBill.transporterId} onChange={e => setEWayBill(p => ({ ...p, transporterId: e.target.value.toUpperCase() }))} placeholder="GSTIN of transporter" maxLength={15} />
+                </div>
+                <div>
+                  <Label>Mode of Transport</Label>
+                  <Select value={eWayBill.transportMode} onValueChange={v => setEWayBill(p => ({ ...p, transportMode: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="road">Road</SelectItem>
+                      <SelectItem value="rail">Rail</SelectItem>
+                      <SelectItem value="air">Air</SelectItem>
+                      <SelectItem value="ship">Ship</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Vehicle Number</Label>
+                  <Input value={eWayBill.vehicleNumber} onChange={e => setEWayBill(p => ({ ...p, vehicleNumber: e.target.value.toUpperCase() }))} placeholder="e.g. KA01AB1234" />
+                </div>
+                <div>
+                  <Label>Approx Distance (km)</Label>
+                  <Input type="number" value={eWayBill.distanceKm} onChange={e => setEWayBill(p => ({ ...p, distanceKm: e.target.value }))} placeholder="Distance in km" />
+                </div>
+                <div>
+                  <Label>Transport Doc No.</Label>
+                  <Input value={eWayBill.transDocNo} onChange={e => setEWayBill(p => ({ ...p, transDocNo: e.target.value }))} placeholder="GR/RR/CN number" />
+                </div>
+                <div>
+                  <Label>Transport Doc Date</Label>
+                  <Input type="date" value={eWayBill.transDocDate} onChange={e => setEWayBill(p => ({ ...p, transDocDate: e.target.value }))} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* HSN Reference - Collapsible */}
         <Card className="mt-6">
