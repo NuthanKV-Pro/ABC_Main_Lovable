@@ -83,6 +83,13 @@ import WillEstatePlanner from "./pages/WillEstatePlanner";
 import ForeignIncomeDTAA from "./pages/ForeignIncomeDTAA";
 import ComplianceCalendar from "./pages/ComplianceCalendar";
 import TaxNoticeAssistant from "./pages/TaxNoticeAssistant";
+import HUFTaxPlanner from "./pages/HUFTaxPlanner";
+import RegimeOptimizer from "./pages/RegimeOptimizer";
+import FIRECalculator from "./pages/FIRECalculator";
+import RealEstateROICalculator from "./pages/RealEstateROICalculator";
+import WeddingBudgetPlanner from "./pages/WeddingBudgetPlanner";
+import EducationCostPlanner from "./pages/EducationCostPlanner";
+import StartupFundingGuide from "./pages/StartupFundingGuide";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -182,6 +189,13 @@ const App = () => (
             <Route path="/foreign-income-dtaa" element={<ForeignIncomeDTAA />} />
             <Route path="/compliance-calendar" element={<ComplianceCalendar />} />
             <Route path="/tax-notice-assistant" element={<TaxNoticeAssistant />} />
+            <Route path="/huf-tax-planner" element={<HUFTaxPlanner />} />
+            <Route path="/regime-optimizer" element={<RegimeOptimizer />} />
+            <Route path="/fire-calculator" element={<FIRECalculator />} />
+            <Route path="/real-estate-roi" element={<RealEstateROICalculator />} />
+            <Route path="/wedding-budget-planner" element={<WeddingBudgetPlanner />} />
+            <Route path="/education-cost-planner" element={<EducationCostPlanner />} />
+            <Route path="/startup-funding-guide" element={<StartupFundingGuide />} />
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

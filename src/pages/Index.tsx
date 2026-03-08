@@ -285,6 +285,24 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         route: "external:https://abcsalop1.lovable.app/hra-calc",
         tag: "WIP",
         tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+      },
+      {
+        id: "huf-tax-planner",
+        title: "HUF Tax Planner",
+        description: "Hindu Undivided Family tax planning",
+        icon: Users,
+        route: "/huf-tax-planner",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "regime-optimizer",
+        title: "Old vs New Regime Optimizer",
+        description: "Data-driven regime recommendation",
+        icon: TrendingUp,
+        route: "/regime-optimizer",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
       }
     ]
   },
@@ -574,6 +592,15 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         route: "/insurance-premium-calculator",
         tag: "Live",
         tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "fire-calculator",
+        title: "FIRE Calculator",
+        description: "Financial Independence, Retire Early",
+        icon: Target,
+        route: "/fire-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
       }
     ]
   },
@@ -606,6 +633,15 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         description: "Property registration charges",
         icon: FileCheck,
         route: "/stamp-duty-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "real-estate-roi",
+        title: "Real Estate ROI Calculator",
+        description: "True returns on property investment",
+        icon: Building2,
+        route: "/real-estate-roi",
         tag: "Live",
         tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
       }
@@ -667,6 +703,24 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         description: "Real vs nominal returns & purchasing power",
         icon: TrendingDown,
         route: "/inflation-calculator",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "wedding-budget-planner",
+        title: "Wedding Budget Planner",
+        description: "Indian wedding budget & gift tracker",
+        icon: Heart,
+        route: "/wedding-budget-planner",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
+      },
+      {
+        id: "education-cost-planner",
+        title: "Education Cost Planner",
+        description: "India vs Abroad cost projection & savings",
+        icon: GraduationCap,
+        route: "/education-cost-planner",
         tag: "Live",
         tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
       }
@@ -748,6 +802,15 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         route: "/escrow",
         tag: "WIP",
         tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+      },
+      {
+        id: "startup-funding-guide",
+        title: "Startup Funding Guide",
+        description: "Govt schemes, VCs & angel networks",
+        icon: Rocket,
+        route: "/startup-funding-guide",
+        tag: "Live",
+        tagColor: "bg-green-500/20 text-green-400 border-green-500/30"
       }
     ]
   },

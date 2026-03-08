@@ -96,6 +96,13 @@ export const routeMap: Record<string, RouteInfo> = {
   "/foreign-income-dtaa": { label: "Foreign Income & DTAA", parent: "/prototypes" },
   "/compliance-calendar": { label: "Compliance Calendar", parent: "/prototypes" },
   "/tax-notice-assistant": { label: "Tax Notice Assistant", parent: "/prototypes" },
+  "/huf-tax-planner": { label: "HUF Tax Planner", parent: "/prototypes" },
+  "/regime-optimizer": { label: "Regime Optimizer", parent: "/prototypes" },
+  "/fire-calculator": { label: "FIRE Calculator", parent: "/prototypes" },
+  "/real-estate-roi": { label: "Real Estate ROI", parent: "/prototypes" },
+  "/wedding-budget-planner": { label: "Wedding Budget Planner", parent: "/prototypes" },
+  "/education-cost-planner": { label: "Education Cost Planner", parent: "/prototypes" },
+  "/startup-funding-guide": { label: "Startup Funding Guide", parent: "/prototypes" },
 };
 
 export function getBreadcrumbs(pathname: string): { label: string; path: string }[] {
