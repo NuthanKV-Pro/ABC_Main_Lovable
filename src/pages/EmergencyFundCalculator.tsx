@@ -349,7 +349,7 @@ const EmergencyFundCalculator = () => {
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
                       <Wallet className="h-4 w-4" />
-                      Monthly Income
+                      Monthly Income<AutoPopulateBadge fieldKey="monthlyIncome" populatedFields={populatedFields} onReset={resetField} />
                     </Label>
                     <Input
                       type="number"
@@ -374,7 +374,7 @@ const EmergencyFundCalculator = () => {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label>Current Emergency Fund</Label>
+                    <Label className="flex items-center">Current Emergency Fund<AutoPopulateBadge fieldKey="fhs_emergencyFund" populatedFields={populatedFields} onReset={resetField} /></Label>
                     <Input
                       type="number"
                       value={currentSavings}
