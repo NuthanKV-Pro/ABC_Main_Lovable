@@ -127,12 +127,23 @@ const SalaryRestructuring = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
-        <div className="flex items-center gap-3 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => goBack()}><ArrowLeft className="h-5 w-5" /></Button>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Salary Restructuring Tool</h1>
-            <p className="text-muted-foreground text-sm">Optimize CTC components for maximum take-home pay</p>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => goBack()}><ArrowLeft className="h-5 w-5" /></Button>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">Salary Restructuring Tool</h1>
+              <p className="text-muted-foreground text-sm">Optimize CTC components for maximum take-home pay</p>
+            </div>
           </div>
+          {taxData.salary.hasData && !salaryImported && (
+            <Button variant="outline" className="gap-2 border-primary/50" onClick={importFromSalary}>
+              <Link2 className="h-4 w-4" />
+              Import from Salary
+            </Button>
+          )}
+          {salaryImported && (
+            <Badge variant="secondary" className="gap-1"><CheckCircle className="h-3 w-3" /> Salary Imported</Badge>
+          )}
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
