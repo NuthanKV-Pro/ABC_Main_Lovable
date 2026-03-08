@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +36,12 @@ const EmergencyFundCalculator = () => {
   // Current Savings
   const [currentSavings, setCurrentSavings] = useState<number>(100000);
   const [monthlySavingCapacity, setMonthlySavingCapacity] = useState<number>(15000);
+
+  useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 75000 },
+    { key: "fhs_emergencyFund", setter: setCurrentSavings, defaultValue: 100000 },
+    { key: "fhs_monthlyDebtPayment", setter: setEmiPayments, defaultValue: 10000 },
+  ]);
 
   // Calculations
   const totalMonthlyExpenses = rent + utilities + groceries + transportation + insurance + emiPayments + otherExpenses;

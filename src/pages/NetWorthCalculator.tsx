@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { toast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,6 +66,27 @@ const NetWorthCalculator = () => {
   const [liabilities, setLiabilities] = useState<Liability[]>(defaultLiabilities);
   const [newAsset, setNewAsset] = useState({ name: '', category: 'cash' as Asset['category'] });
   const [newLiability, setNewLiability] = useState({ name: '', category: 'other' as Liability['category'] });
+
+  // Auto-populate Stocks & MF from fhs_totalInvestments, and total debt from fhs_totalDebt
+  const populateRan = useRef(false);
+  useEffect(() => {
+    if (populateRan.current) return;
+    populateRan.current = true;
+    let filled = 0;
+    const fhsInvestments = parseFloat(localStorage.getItem("fhs_totalInvestments") || "0");
+    if (fhsInvestments > 0) {
+      setAssets(prev => prev.map(a => a.id === '3' && a.value === 0 ? { ...a, value: fhsInvestments } : a));
+      filled++;
+    }
+    const fhsDebt = parseFloat(localStorage.getItem("fhs_totalDebt") || "0");
+    if (fhsDebt > 0) {
+      setLiabilities(prev => prev.map(l => l.id === '3' && l.value === 0 ? { ...l, value: fhsDebt } : l));
+      filled++;
+    }
+    if (filled > 0) {
+      toast({ title: "Pre-filled from your saved data", description: `${filled} field${filled > 1 ? "s" : ""} auto-populated from other tools.` });
+    }
+  }, []);
 
   const addAsset = () => {
     if (newAsset.name.trim()) {

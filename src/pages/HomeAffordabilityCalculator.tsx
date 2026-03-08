@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,10 @@ const HomeAffordabilityCalculator = () => {
   const [existingEMIs, setExistingEMIs] = useState<number>(0);
   const [creditCardDues, setCreditCardDues] = useState<number>(0);
   const [otherDebts, setOtherDebts] = useState<number>(0);
+
+  useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
+  ]);
   
   // Loan parameters
   const [interestRate, setInterestRate] = useState<number>(8.5);

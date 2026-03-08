@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,13 @@ const FIRECalculator = () => {
   const [expectedReturn, setExpectedReturn] = useState(12);
   const [inflation, setInflation] = useState(6);
   const [swr, setSwr] = useState(3.5);
+
+  useAutoPopulate([
+    { key: "fhs_age", setter: setAge, defaultValue: 30 },
+    { key: "fhs_monthlyExpenses", setter: setMonthlyExp, defaultValue: 50000 },
+    { key: "fhs_totalInvestments", setter: setCurrentSavings, defaultValue: 500000 },
+    { key: "fhs_monthlySavings", setter: setMonthlySavings, defaultValue: 30000 },
+  ]);
 
   const annualExp = monthlyExp * 12;
   const fireNumber = annualExp / (swr / 100);

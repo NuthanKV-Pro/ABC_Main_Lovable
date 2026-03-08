@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,11 @@ const RetirementCalculator = () => {
   const [inflationRate, setInflationRate] = useState<number>(6);
   const [expectedReturn, setExpectedReturn] = useState<number>(8);
   const [lifeExpectancy, setLifeExpectancy] = useState<number>(85);
+
+  useAutoPopulate([
+    { key: "fhs_age", setter: setCurrentAge, defaultValue: 30 },
+    { key: "fhs_monthlyExpenses", setter: setMonthlyExpenses, defaultValue: 50000 },
+  ]);
 
   const yearsToRetirement = Math.max(0, retirementAge - currentAge);
   const yearsInRetirement = Math.max(0, lifeExpectancy - retirementAge);

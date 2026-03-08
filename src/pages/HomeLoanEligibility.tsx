@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,11 @@ const HomeLoanEligibility = () => {
   const [interestRate, setInterestRate] = useState<number>(8.5);
   const [tenureYears, setTenureYears] = useState<number>(20);
   const [creditScore, setCreditScore] = useState<string>("750-799");
+
+  useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
+    { key: "fhs_monthlyDebtPayment", setter: setExistingEMI, defaultValue: 0 },
+  ]);
 
   // FOIR (Fixed Obligation to Income Ratio) based on credit score
   const getFOIR = (score: string) => {

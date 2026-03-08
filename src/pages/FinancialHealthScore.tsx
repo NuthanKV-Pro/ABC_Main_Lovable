@@ -129,6 +129,11 @@ const FinancialHealthScore = () => {
       const v = parseFloat(localStorage.getItem(`fhs_${key}`) || "0");
       if (!isNaN(v) && v > 0) saved[key] = v;
     }
+    // Auto-populate monthlyIncome from salary_total if not already saved in FHS
+    if (!saved.monthlyIncome) {
+      const salaryTotal = parseFloat(localStorage.getItem("salary_total") || "0");
+      if (salaryTotal > 0) saved.monthlyIncome = Math.round(salaryTotal / 12);
+    }
     return { ...defaultInputs, ...saved };
   });
   const [calculated, setCalculated] = useState(false);

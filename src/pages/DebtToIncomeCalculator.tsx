@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,10 @@ const DebtToIncomeCalculator = () => {
   const [spouseIncome, setSpouseIncome] = useState<number>(0);
   const [rentalIncome, setRentalIncome] = useState<number>(0);
   const [otherIncome, setOtherIncome] = useState<number>(0);
+
+  useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
+  ]);
   
   // Debt inputs with dynamic list
   const [debts, setDebts] = useState([

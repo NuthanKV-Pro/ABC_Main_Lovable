@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,10 @@ const InsurancePremiumCalculator = () => {
   
   // Term Life Insurance Inputs
   const [age, setAge] = useState<number>(30);
+
+  useAutoPopulate([
+    { key: "fhs_age", setter: setAge, defaultValue: 30 },
+  ]);
   const [gender, setGender] = useState<string>("male");
   const [sumAssured, setSumAssured] = useState<number>(10000000); // 1 Crore
   const [policyTerm, setPolicyTerm] = useState<number>(30);
