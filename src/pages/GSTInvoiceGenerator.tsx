@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Plus, Trash2, Download, FileText, AlertTriangle, RotateCcw, ExternalLink, Search, ChevronDown, ChevronUp, Info, Save, FolderOpen, Truck, BookOpen, MapPin, Copy } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Download, FileText, AlertTriangle, RotateCcw, ExternalLink, Search, ChevronDown, ChevronUp, Info, Save, FolderOpen, Truck, BookOpen, MapPin, Copy, Eye, Sparkles } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -198,6 +198,81 @@ const hsnCodesData: { code: string; description: string; tooltip: string }[] = [
   { code: "9997", description: "Other Services", tooltip: "Washing, dry-cleaning, hairdressing, funeral, other services" },
 ];
 
+// HSN/SAC to typical GST rate mapping
+const hsnGstRateMap: Record<string, { rate: number; label: string }> = {
+  "0402": { rate: 5, label: "Milk Products – 5%" }, "0713": { rate: 5, label: "Pulses – 5%" }, "0804": { rate: 0, label: "Fresh Fruits – 0% (unbranded)" },
+  "1001": { rate: 5, label: "Wheat – 5%" }, "1006": { rate: 5, label: "Rice – 5%" }, "1201": { rate: 5, label: "Soya Beans – 5%" },
+  "1905": { rate: 18, label: "Bread & Bakery – 18% (branded)" }, "2101": { rate: 18, label: "Coffee/Tea Extracts – 18%" },
+  "2106": { rate: 18, label: "Food Preparations – 18%" }, "2202": { rate: 28, label: "Aerated Beverages – 28%" },
+  "2710": { rate: 18, label: "Petroleum Products – 18% (where applicable)" }, "2711": { rate: 5, label: "LPG – 5%" },
+  "3004": { rate: 12, label: "Medicines – 12%" }, "3304": { rate: 28, label: "Beauty Products – 28%" },
+  "3305": { rate: 18, label: "Hair Care – 18%" }, "3306": { rate: 18, label: "Oral Care – 18%" },
+  "3307": { rate: 28, label: "Perfumes – 28%" }, "3401": { rate: 18, label: "Soap – 18%" },
+  "3923": { rate: 18, label: "Plastic Packaging – 18%" }, "4011": { rate: 28, label: "Tyres – 28%" },
+  "4819": { rate: 18, label: "Paper Packaging – 18%" }, "4820": { rate: 18, label: "Stationery – 18%" },
+  "4901": { rate: 0, label: "Books – 0% (printed)" }, "4911": { rate: 12, label: "Printed Materials – 12%" },
+  "6101": { rate: 12, label: "Men's Overcoats – 12% (>₹1000)" }, "6104": { rate: 12, label: "Women's Suits – 12% (>₹1000)" },
+  "6109": { rate: 5, label: "T-shirts – 5% (≤₹1000)" }, "6110": { rate: 12, label: "Sweaters – 12% (>₹1000)" },
+  "6203": { rate: 12, label: "Men's Trousers – 12% (>₹1000)" }, "6204": { rate: 12, label: "Women's Dresses – 12% (>₹1000)" },
+  "7108": { rate: 3, label: "Gold – 3%" }, "7113": { rate: 3, label: "Gold Jewellery – 3%" }, "7117": { rate: 18, label: "Imitation Jewellery – 18%" },
+  "8443": { rate: 18, label: "Printers – 18%" }, "8471": { rate: 18, label: "Computers – 18%" },
+  "8504": { rate: 18, label: "Transformers/Chargers – 18%" }, "8507": { rate: 28, label: "Batteries – 28%" },
+  "8517": { rate: 18, label: "Mobile Phones – 18%" }, "8523": { rate: 18, label: "Storage Media – 18%" },
+  "8528": { rate: 28, label: "TV & Monitors – 28%" }, "8541": { rate: 5, label: "Solar Panels – 5%" },
+  "8544": { rate: 18, label: "Cables – 18%" }, "8703": { rate: 28, label: "Motor Cars – 28%" },
+  "8708": { rate: 28, label: "Auto Parts – 28%" }, "8711": { rate: 28, label: "Motorcycles – 28%" },
+  "9401": { rate: 18, label: "Chairs – 18%" }, "9403": { rate: 18, label: "Furniture – 18%" },
+  "9404": { rate: 18, label: "Mattresses – 18%" }, "9405": { rate: 18, label: "Lighting – 18%" },
+  "9504": { rate: 28, label: "Gaming Equipment – 28%" }, "9506": { rate: 18, label: "Sports Equipment – 18%" },
+  // Services (SAC codes)
+  "9954": { rate: 18, label: "Construction – 18% (commercial)" }, "9961": { rate: 18, label: "Maintenance – 18%" },
+  "9962": { rate: 18, label: "Cleaning – 18%" }, "9963": { rate: 18, label: "Restaurant – 5% (non-AC) / 18%" },
+  "9964": { rate: 18, label: "Passenger Transport – 18% (AC)" }, "9965": { rate: 18, label: "Goods Transport – 18%" },
+  "9967": { rate: 18, label: "Event Management – 18%" }, "9968": { rate: 18, label: "Courier – 18%" },
+  "9969": { rate: 18, label: "Waste Management – 18%" }, "9971": { rate: 18, label: "Financial Services – 18%" },
+  "9972": { rate: 18, label: "Real Estate – 18%" }, "9973": { rate: 18, label: "Rental – 18%" },
+  "9974": { rate: 18, label: "Architecture – 18%" }, "9981": { rate: 18, label: "R&D Services – 18%" },
+  "9982": { rate: 18, label: "Legal Services – 18%" }, "9983": { rate: 18, label: "Professional Services – 18%" },
+  "9984": { rate: 18, label: "Telecom – 18%" }, "9985": { rate: 18, label: "IT & Software – 18%" },
+  "9986": { rate: 18, label: "Support Services – 18%" }, "9992": { rate: 18, label: "Education – 18% (commercial)" },
+  "9993": { rate: 18, label: "Healthcare – 18% (non-exempt)" }, "9995": { rate: 18, label: "Tour Operator – 18%" },
+  "9996": { rate: 18, label: "Recreation – 18%" }, "9997": { rate: 18, label: "Other Services – 18%" },
+  // Sub-codes map to parent
+  "995411": { rate: 12, label: "Residential Construction – 12%" }, "995412": { rate: 18, label: "Commercial Construction – 18%" },
+  "995421": { rate: 12, label: "Road Construction – 12%" }, "995422": { rate: 18, label: "Utility Construction – 18%" },
+  "996311": { rate: 18, label: "5-Star Hotel – 18%" }, "996312": { rate: 12, label: "Hotel (<₹7500) – 12%" },
+  "996321": { rate: 12, label: "Homestay – 12%" }, "996331": { rate: 18, label: "Catering – 18%" },
+  "996511": { rate: 18, label: "Road Freight – 18% (or 5% GTA)" }, "996512": { rate: 5, label: "Rail Freight – 5%" },
+  "996521": { rate: 18, label: "Coastal Shipping – 18%" }, "996531": { rate: 18, label: "Air Freight – 18%" },
+  "997131": { rate: 18, label: "Life Insurance – 18%" }, "997132": { rate: 18, label: "Non-life Insurance – 18%" },
+  "997133": { rate: 18, label: "Reinsurance – 18%" }, "997134": { rate: 18, label: "Insurance Auxiliary – 18%" },
+  "997311": { rate: 18, label: "Machinery Rental – 18%" }, "997312": { rate: 18, label: "Vehicle Rental – 18%" },
+  "997313": { rate: 18, label: "Office Equipment Rental – 18%" }, "997314": { rate: 18, label: "Property Rental – 18%" },
+  "997319": { rate: 18, label: "Other Rental – 18%" },
+  "998311": { rate: 18, label: "Management Consultancy – 18%" }, "998312": { rate: 18, label: "Business Consultancy – 18%" },
+  "998313": { rate: 18, label: "IT Consultancy – 18%" }, "998314": { rate: 18, label: "Tax Consultancy – 18%" },
+  "998315": { rate: 18, label: "Accounting Services – 18%" },
+  "998341": { rate: 18, label: "Architectural Advisory – 18%" }, "998342": { rate: 18, label: "Architectural Design – 18%" },
+  "998343": { rate: 18, label: "Urban Planning – 18%" }, "998344": { rate: 18, label: "Engineering Design – 18%" },
+  "998345": { rate: 18, label: "Engineering Advisory – 18%" }, "998346": { rate: 18, label: "Surveying – 18%" },
+  "998361": { rate: 18, label: "Print Advertising – 18%" }, "998362": { rate: 18, label: "TV/Radio Advertising – 18%" },
+  "998363": { rate: 18, label: "Digital Advertising – 18%" }, "998364": { rate: 18, label: "Outdoor Advertising – 18%" },
+  "999210": { rate: 0, label: "Primary Education – Exempt" }, "999220": { rate: 0, label: "Secondary Education – Exempt" },
+  "999230": { rate: 18, label: "Higher Education – 18% (private)" }, "999240": { rate: 18, label: "Vocational Training – 18%" },
+  "999250": { rate: 18, label: "Coaching – 18%" },
+  "999311": { rate: 0, label: "Hospital Services – Exempt" }, "999312": { rate: 0, label: "Medical Services – Exempt" },
+  "999313": { rate: 18, label: "Dental Services – 18% (cosmetic)" }, "999314": { rate: 0, label: "Paramedical – Exempt (clinical)" },
+};
+
+const getGstSuggestion = (hsnCode: string): { rate: number; label: string } | null => {
+  if (!hsnCode) return null;
+  // Exact match first
+  if (hsnGstRateMap[hsnCode]) return hsnGstRateMap[hsnCode];
+  // Try parent codes (6-digit → 4-digit)
+  if (hsnCode.length > 4 && hsnGstRateMap[hsnCode.slice(0, 4)]) return hsnGstRateMap[hsnCode.slice(0, 4)];
+  return null;
+};
+
 const validateGSTIN = (gstin: string): boolean => {
   const regex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
   return regex.test(gstin.toUpperCase());
@@ -252,6 +327,7 @@ const GSTInvoiceGenerator = () => {
   const [hsnSearchQuery, setHsnSearchQuery] = useState("");
   const [isHsnOpen, setIsHsnOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [draftsDialogOpen, setDraftsDialogOpen] = useState(false);
   const [draftName, setDraftName] = useState("");
   const [savedDrafts, setSavedDrafts] = useState<InvoiceDraft[]>(getStoredDrafts);
@@ -276,7 +352,16 @@ const GSTInvoiceGenerator = () => {
   };
   const removeItem = (id: string) => setItems(prev => prev.filter(i => i.id !== id));
   const updateItem = (id: string, field: keyof InvoiceItem, value: any) => {
-    setItems(prev => prev.map(i => i.id === id ? { ...i, [field]: value } : i));
+    setItems(prev => prev.map(i => {
+      if (i.id !== id) return i;
+      const updated = { ...i, [field]: value };
+      // Auto-suggest GST rate when HSN code changes
+      if (field === "hsnCode") {
+        const suggestion = getGstSuggestion(String(value));
+        if (suggestion) updated.gstRate = suggestion.rate;
+      }
+      return updated;
+    }));
   };
 
   const handleReset = () => {
@@ -686,7 +771,22 @@ const GSTInvoiceGenerator = () => {
                     return (
                       <TableRow key={item.id}>
                         <TableCell><Input className="min-w-[150px]" value={item.description} onChange={e => updateItem(item.id, "description", e.target.value)} /></TableCell>
-                        <TableCell><Input className="w-20" value={item.hsnCode} onChange={e => updateItem(item.id, "hsnCode", e.target.value)} /></TableCell>
+                        <TableCell>
+                          <div className="relative">
+                            <Input className="w-24" value={item.hsnCode} onChange={e => updateItem(item.id, "hsnCode", e.target.value)} placeholder="HSN/SAC" />
+                            {item.hsnCode && getGstSuggestion(item.hsnCode) && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-1 mt-0.5">
+                                    <Sparkles className="h-3 w-3 text-primary" />
+                                    <span className="text-[10px] text-primary font-medium truncate max-w-[80px]">{getGstSuggestion(item.hsnCode)!.label}</span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent><p className="text-xs">GST rate auto-suggested based on HSN/SAC code. You can override manually.</p></TooltipContent>
+                              </Tooltip>
+                            )}
+                          </div>
+                        </TableCell>
                         <TableCell><Input className="w-16" type="number" value={item.qty} onChange={e => updateItem(item.id, "qty", Number(e.target.value))} /></TableCell>
                         <TableCell><Input className="w-24" type="number" value={item.rate} onChange={e => updateItem(item.id, "rate", Number(e.target.value))} /></TableCell>
                         <TableCell>
@@ -727,7 +827,142 @@ const GSTInvoiceGenerator = () => {
           </CardContent>
         </Card>
 
-        {/* e-Way Bill Section */}
+        {/* Live Invoice Preview */}
+        <Card className="mt-6">
+          <Collapsible open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+            <CardHeader className="pb-3">
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center justify-between w-full text-left">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Eye className="h-5 w-5 text-primary" />
+                    Live Invoice Preview
+                  </CardTitle>
+                  {isPreviewOpen ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
+                </button>
+              </CollapsibleTrigger>
+              <CardDescription>See a live formatted preview of your invoice as you fill in details</CardDescription>
+            </CardHeader>
+            <CollapsibleContent>
+              <CardContent className="pt-0">
+                <div className="border rounded-lg bg-card p-6 space-y-6 shadow-inner max-w-3xl mx-auto">
+                  {/* Preview Header */}
+                  <div className="text-center border-b pb-4">
+                    <h2 className="text-2xl font-bold text-primary tracking-tight">TAX INVOICE</h2>
+                    <div className="flex justify-center gap-4 text-sm text-muted-foreground mt-1">
+                      <span>Invoice No: <strong className="text-foreground">{invoiceNo || "—"}</strong></span>
+                      <span>Date: <strong className="text-foreground">{invoiceDate || "—"}</strong></span>
+                    </div>
+                    <div className="flex justify-center gap-3 mt-2">
+                      <Badge variant={isInterState ? "default" : "secondary"}>{isInterState ? "Inter-State (IGST)" : "Intra-State (CGST+SGST)"}</Badge>
+                      {reverseCharge && <Badge variant="outline" className="text-amber-600 border-amber-400">Reverse Charge</Badge>}
+                    </div>
+                  </div>
+
+                  {/* Seller / Buyer */}
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="p-3 rounded-lg bg-muted/40 border">
+                      <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">Seller</p>
+                      <p className="font-semibold text-foreground">{sellerName || "—"}</p>
+                      <p className="text-muted-foreground text-xs">GSTIN: {sellerGSTIN || "—"}</p>
+                      <p className="text-muted-foreground text-xs">State: {states[sellerState] || "—"}</p>
+                      {formatAddr(sellerBillingAddress) && <p className="text-muted-foreground text-xs mt-1">{formatAddr(sellerBillingAddress)}</p>}
+                    </div>
+                    <div className="p-3 rounded-lg bg-muted/40 border">
+                      <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wide">Buyer</p>
+                      <p className="font-semibold text-foreground">{buyerName || "—"}</p>
+                      <p className="text-muted-foreground text-xs">GSTIN: {buyerGSTIN || "B2C (Unregistered)"}</p>
+                      <p className="text-muted-foreground text-xs">State: {states[buyerState] || "—"}</p>
+                      {formatAddr(buyerBillingAddress) && <p className="text-muted-foreground text-xs mt-1">Billing: {formatAddr(buyerBillingAddress)}</p>}
+                      {!shippingSameAsBilling && formatAddr(buyerShippingAddress) && <p className="text-muted-foreground text-xs">Shipping: {formatAddr(buyerShippingAddress)}</p>}
+                    </div>
+                  </div>
+
+                  {/* Items Table */}
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/60">
+                          <TableHead className="text-xs">#</TableHead>
+                          <TableHead className="text-xs">Description</TableHead>
+                          <TableHead className="text-xs">HSN/SAC</TableHead>
+                          <TableHead className="text-xs text-right">Qty</TableHead>
+                          <TableHead className="text-xs text-right">Rate</TableHead>
+                          <TableHead className="text-xs text-right">Disc%</TableHead>
+                          <TableHead className="text-xs text-right">Taxable</TableHead>
+                          {isInterState ? (
+                            <TableHead className="text-xs text-right">IGST</TableHead>
+                          ) : (<>
+                            <TableHead className="text-xs text-right">CGST</TableHead>
+                            <TableHead className="text-xs text-right">SGST</TableHead>
+                          </>)}
+                          <TableHead className="text-xs text-right">Total</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {items.map((item, idx) => {
+                          const lt = item.qty * item.rate;
+                          const da = (lt * item.discount) / 100;
+                          const tv = lt - da;
+                          const gstAmt = (tv * item.gstRate) / 100;
+                          return (
+                            <TableRow key={item.id} className="text-xs">
+                              <TableCell>{idx + 1}</TableCell>
+                              <TableCell className="font-medium">{item.description || "—"}</TableCell>
+                              <TableCell className="font-mono">{item.hsnCode || "—"}</TableCell>
+                              <TableCell className="text-right">{item.qty}</TableCell>
+                              <TableCell className="text-right">{formatCurrency(item.rate)}</TableCell>
+                              <TableCell className="text-right">{item.discount}%</TableCell>
+                              <TableCell className="text-right">{formatCurrency(tv)}</TableCell>
+                              {isInterState ? (
+                                <TableCell className="text-right">{formatCurrency(gstAmt)}</TableCell>
+                              ) : (<>
+                                <TableCell className="text-right">{formatCurrency(gstAmt / 2)}</TableCell>
+                                <TableCell className="text-right">{formatCurrency(gstAmt / 2)}</TableCell>
+                              </>)}
+                              <TableCell className="text-right font-semibold">{formatCurrency(tv + gstAmt)}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Preview Summary */}
+                  <div className="flex justify-end">
+                    <div className="w-64 space-y-1.5 text-sm">
+                      <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatCurrency(totals.subtotal)}</span></div>
+                      {totals.totalDiscount > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Discount</span><span className="text-destructive">-{formatCurrency(totals.totalDiscount)}</span></div>}
+                      {isInterState ? (
+                        <div className="flex justify-between"><span className="text-muted-foreground">IGST</span><span>{formatCurrency(totals.totalIGST)}</span></div>
+                      ) : (<>
+                        <div className="flex justify-between"><span className="text-muted-foreground">CGST</span><span>{formatCurrency(totals.totalCGST)}</span></div>
+                        <div className="flex justify-between"><span className="text-muted-foreground">SGST</span><span>{formatCurrency(totals.totalSGST)}</span></div>
+                      </>)}
+                      <Separator />
+                      <div className="flex justify-between font-bold text-base"><span>Grand Total</span><span className="text-primary">{formatCurrency(totals.grandTotal)}</span></div>
+                    </div>
+                  </div>
+
+                  {/* e-Way Bill in preview */}
+                  {showEWayBill && (eWayBill.transporterName || eWayBill.vehicleNumber) && (
+                    <div className="border-t pt-3 text-xs space-y-1">
+                      <p className="font-semibold text-sm flex items-center gap-1.5"><Truck className="h-4 w-4" /> Transport Details</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-muted-foreground">
+                        {eWayBill.transporterName && <span>Transporter: <strong className="text-foreground">{eWayBill.transporterName}</strong></span>}
+                        {eWayBill.vehicleNumber && <span>Vehicle: <strong className="text-foreground">{eWayBill.vehicleNumber}</strong></span>}
+                        <span>Mode: <strong className="text-foreground capitalize">{eWayBill.transportMode}</strong></span>
+                        {eWayBill.distanceKm && <span>Distance: <strong className="text-foreground">{eWayBill.distanceKm} km</strong></span>}
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="text-[10px] text-muted-foreground text-center pt-2 border-t">This is a computer-generated invoice. No signature required.</p>
+                </div>
+              </CardContent>
+            </CollapsibleContent>
+          </Collapsible>
+        </Card>
+
         {showEWayBill && (
           <Card className="mt-6 border-amber-500/30">
             <CardHeader>
