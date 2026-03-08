@@ -8,23 +8,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Users, Plus, Trash2, ArrowLeft, IndianRupee, TrendingUp, PiggyBank } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import ExportButton from "@/components/ExportButton";
+import { ExportConfig } from "@/utils/unifiedExport";
 
-interface Member {
-  id: string;
-  name: string;
-  relation: string;
-  panNumber: string;
-}
-
-interface IncomeEntry {
-  id: string;
-  source: string;
-  type: string;
-  amount: number;
-}
+interface Member { id: string; name: string; relation: string; panNumber: string; }
+interface IncomeEntry { id: string; source: string; type: string; amount: number; }
 
 const OLD_SLABS = [
   { min: 0, max: 250000, rate: 0 },
@@ -37,105 +26,63 @@ const calcTax = (income: number, deductions: number): number => {
   const taxable = Math.max(0, income - deductions);
   let tax = 0;
   for (const slab of OLD_SLABS) {
-    if (taxable > slab.min) {
-      const chunk = Math.min(taxable, slab.max) - slab.min;
-      tax += chunk * slab.rate;
-    }
+    if (taxable > slab.min) tax += (Math.min(taxable, slab.max) - slab.min) * slab.rate;
   }
-  const cess = tax * 0.04;
-  return Math.round(tax + cess);
+  return Math.round(tax * 1.04);
 };
 
-const HUFTaxPlanner = () => {
-  const navigate = useNavigate();
-  const goBack = useGoBack();
+const fmt = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
+const HUFTaxPlanner = () => {
+  const goBack = useGoBack();
   const [hufName, setHufName] = useState("");
   const [kartaName, setKartaName] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
   const [incomes, setIncomes] = useState<IncomeEntry[]>([]);
-  const [deductions80C, setDeductions80C] = useState(0);
-  const [deductions80D, setDeductions80D] = useState(0);
-  const [individualIncome, setIndividualIncome] = useState(0);
-  const [individualDeductions, setIndividualDeductions] = useState(0);
+  const [ded80C, setDed80C] = useState(0);
+  const [ded80D, setDed80D] = useState(0);
+  const [indIncome, setIndIncome] = useState(0);
+  const [indDed, setIndDed] = useState(0);
 
-  // localStorage persistence
   useEffect(() => {
-    const saved = localStorage.getItem("huf_planner_data");
-    if (saved) {
-      const data = JSON.parse(saved);
-      setHufName(data.hufName || "");
-      setKartaName(data.kartaName || "");
-      setMembers(data.members || []);
-      setIncomes(data.incomes || []);
-      setDeductions80C(data.deductions80C || 0);
-      setDeductions80D(data.deductions80D || 0);
-      setIndividualIncome(data.individualIncome || 0);
-      setIndividualDeductions(data.individualDeductions || 0);
-    }
+    const s = localStorage.getItem("huf_planner_data");
+    if (s) { const d = JSON.parse(s); setHufName(d.hufName||""); setKartaName(d.kartaName||""); setMembers(d.members||[]); setIncomes(d.incomes||[]); setDed80C(d.ded80C||0); setDed80D(d.ded80D||0); setIndIncome(d.indIncome||0); setIndDed(d.indDed||0); }
   }, []);
-
   useEffect(() => {
-    localStorage.setItem("huf_planner_data", JSON.stringify({
-      hufName, kartaName, members, incomes, deductions80C, deductions80D, individualIncome, individualDeductions
-    }));
-  }, [hufName, kartaName, members, incomes, deductions80C, deductions80D, individualIncome, individualDeductions]);
+    localStorage.setItem("huf_planner_data", JSON.stringify({ hufName, kartaName, members, incomes, ded80C, ded80D, indIncome, indDed }));
+  }, [hufName, kartaName, members, incomes, ded80C, ded80D, indIncome, indDed]);
 
-  const addMember = () => {
-    setMembers([...members, { id: crypto.randomUUID(), name: "", relation: "Coparcener", panNumber: "" }]);
-  };
+  const addMember = () => setMembers([...members, { id: crypto.randomUUID(), name: "", relation: "Coparcener", panNumber: "" }]);
+  const addIncome = () => setIncomes([...incomes, { id: crypto.randomUUID(), source: "", type: "Rental", amount: 0 }]);
 
-  const removeMember = (id: string) => setMembers(members.filter(m => m.id !== id));
+  const totalHUF = incomes.reduce((s, i) => s + (i.amount || 0), 0);
+  const hufDed = ded80C + ded80D;
+  const hufTax = calcTax(totalHUF, hufDed);
+  const withoutHUF = calcTax(indIncome + totalHUF, indDed);
+  const withHUF = calcTax(indIncome, indDed) + hufTax;
+  const savings = Math.max(0, withoutHUF - withHUF);
 
-  const updateMember = (id: string, field: keyof Member, value: string) => {
-    setMembers(members.map(m => m.id === id ? { ...m, [field]: value } : m));
-  };
-
-  const addIncome = () => {
-    setIncomes([...incomes, { id: crypto.randomUUID(), source: "", type: "Rental", amount: 0 }]);
-  };
-
-  const removeIncome = (id: string) => setIncomes(incomes.filter(i => i.id !== id));
-
-  const updateIncome = (id: string, field: keyof IncomeEntry, value: string | number) => {
-    setIncomes(incomes.map(i => i.id === id ? { ...i, [field]: value } : i));
-  };
-
-  const totalHUFIncome = incomes.reduce((s, i) => s + (i.amount || 0), 0);
-  const totalHUFDeductions = deductions80C + deductions80D;
-  const hufTax = calcTax(totalHUFIncome, totalHUFDeductions);
-  const individualTax = calcTax(individualIncome + totalHUFIncome, individualDeductions);
-  const splitTax = calcTax(individualIncome, individualDeductions) + hufTax;
-  const savings = Math.max(0, individualTax - splitTax);
-
-  const exportData = {
-    title: "HUF Tax Planner Report",
+  const getExportConfig = (): ExportConfig => ({
+    title: "HUF Tax Planner Report", fileNamePrefix: "huf-tax-plan",
     sections: [
-      { heading: "HUF Details", rows: [["HUF Name", hufName], ["Karta", kartaName], ["Members", String(members.length + 1)]] },
-      { heading: "HUF Income", rows: incomes.map(i => [i.source || i.type, `₹${i.amount.toLocaleString("en-IN")}`]) },
-      { heading: "Tax Comparison", rows: [
-        ["Without HUF (combined)", `₹${individualTax.toLocaleString("en-IN")}`],
-        ["With HUF (split)", `₹${splitTax.toLocaleString("en-IN")}`],
-        ["Tax Savings", `₹${savings.toLocaleString("en-IN")}`],
-      ]}
+      { title: "HUF Details", keyValues: [["HUF Name", hufName], ["Karta", kartaName], ["Members", String(members.length + 1)]] },
+      { title: "HUF Income", table: { head: ["Source", "Type", "Amount"], body: incomes.map(i => [i.source || "-", i.type, fmt(i.amount)]) } },
+      { title: "Tax Comparison", keyValues: [["Without HUF", fmt(withoutHUF)], ["With HUF", fmt(withHUF)], ["Savings", fmt(savings)]] },
     ]
-  };
+  });
 
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={goBack}><ArrowLeft className="h-5 w-5" /></Button>
             <div>
-              <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                <Users className="h-6 w-6 text-primary" /> HUF Tax Planner
-              </h1>
+              <h1 className="text-2xl font-bold text-foreground flex items-center gap-2"><Users className="h-6 w-6 text-primary" /> HUF Tax Planner</h1>
               <p className="text-sm text-muted-foreground">Plan tax savings through Hindu Undivided Family structure</p>
             </div>
           </div>
-          <ExportButton data={exportData} fileName="huf-tax-plan" />
+          <ExportButton getConfig={getExportConfig} />
         </div>
 
         <Tabs defaultValue="setup" className="space-y-4">
@@ -145,74 +92,37 @@ const HUFTaxPlanner = () => {
             <TabsTrigger value="comparison">Comparison</TabsTrigger>
           </TabsList>
 
-          {/* Setup Tab */}
           <TabsContent value="setup" className="space-y-4">
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">HUF Details</CardTitle>
-                <CardDescription>Enter the HUF name and Karta details</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>HUF Name</Label>
-                    <Input placeholder="e.g., Sharma HUF" value={hufName} onChange={e => setHufName(e.target.value)} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Karta Name</Label>
-                    <Input placeholder="e.g., Rajesh Sharma" value={kartaName} onChange={e => setKartaName(e.target.value)} />
-                  </div>
-                </div>
+              <CardHeader><CardTitle className="text-lg">HUF Details</CardTitle></CardHeader>
+              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2"><Label>HUF Name</Label><Input placeholder="e.g., Sharma HUF" value={hufName} onChange={e => setHufName(e.target.value)} /></div>
+                <div className="space-y-2"><Label>Karta Name</Label><Input placeholder="e.g., Rajesh Sharma" value={kartaName} onChange={e => setKartaName(e.target.value)} /></div>
               </CardContent>
             </Card>
-
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-lg">Members (Coparceners)</CardTitle>
-                    <CardDescription>Add coparceners and members of the HUF</CardDescription>
-                  </div>
-                  <Button size="sm" onClick={addMember}><Plus className="h-4 w-4 mr-1" /> Add Member</Button>
+                  <CardTitle className="text-lg">Members (Coparceners)</CardTitle>
+                  <Button size="sm" onClick={addMember}><Plus className="h-4 w-4 mr-1" /> Add</Button>
                 </div>
               </CardHeader>
               <CardContent>
-                {members.length === 0 ? (
-                  <p className="text-muted-foreground text-sm text-center py-4">No members added yet. Click "Add Member" to start.</p>
-                ) : (
+                {members.length === 0 ? <p className="text-muted-foreground text-sm text-center py-4">No members added yet.</p> : (
                   <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Relation</TableHead>
-                        <TableHead>PAN</TableHead>
-                        <TableHead className="w-12"></TableHead>
-                      </TableRow>
-                    </TableHeader>
+                    <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Relation</TableHead><TableHead>PAN</TableHead><TableHead className="w-12" /></TableRow></TableHeader>
                     <TableBody>
                       {members.map(m => (
                         <TableRow key={m.id}>
+                          <TableCell><Input value={m.name} onChange={e => setMembers(members.map(x => x.id === m.id ? { ...x, name: e.target.value } : x))} /></TableCell>
                           <TableCell>
-                            <Input value={m.name} onChange={e => updateMember(m.id, "name", e.target.value)} placeholder="Member name" />
-                          </TableCell>
-                          <TableCell>
-                            <Select value={m.relation} onValueChange={v => updateMember(m.id, "relation", v)}>
+                            <Select value={m.relation} onValueChange={v => setMembers(members.map(x => x.id === m.id ? { ...x, relation: v } : x))}>
                               <SelectTrigger><SelectValue /></SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Coparcener">Coparcener</SelectItem>
-                                <SelectItem value="Spouse">Spouse</SelectItem>
-                                <SelectItem value="Son">Son</SelectItem>
-                                <SelectItem value="Daughter">Daughter</SelectItem>
-                                <SelectItem value="Other">Other</SelectItem>
-                              </SelectContent>
+                              <SelectContent>{["Coparcener","Spouse","Son","Daughter","Other"].map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
                             </Select>
                           </TableCell>
-                          <TableCell>
-                            <Input value={m.panNumber} onChange={e => updateMember(m.id, "panNumber", e.target.value)} placeholder="ABCDE1234F" />
-                          </TableCell>
-                          <TableCell>
-                            <Button variant="ghost" size="icon" onClick={() => removeMember(m.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                          </TableCell>
+                          <TableCell><Input value={m.panNumber} onChange={e => setMembers(members.map(x => x.id === m.id ? { ...x, panNumber: e.target.value } : x))} placeholder="ABCDE1234F" /></TableCell>
+                          <TableCell><Button variant="ghost" size="icon" onClick={() => setMembers(members.filter(x => x.id !== m.id))}><Trash2 className="h-4 w-4 text-destructive" /></Button></TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -222,169 +132,78 @@ const HUFTaxPlanner = () => {
             </Card>
           </TabsContent>
 
-          {/* Income Tab */}
           <TabsContent value="income" className="space-y-4">
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-lg">HUF Income Sources</CardTitle>
-                    <CardDescription>Income earned by the HUF entity</CardDescription>
-                  </div>
-                  <Button size="sm" onClick={addIncome}><Plus className="h-4 w-4 mr-1" /> Add Income</Button>
+                  <CardTitle className="text-lg">HUF Income Sources</CardTitle>
+                  <Button size="sm" onClick={addIncome}><Plus className="h-4 w-4 mr-1" /> Add</Button>
                 </div>
               </CardHeader>
-              <CardContent>
-                {incomes.length === 0 ? (
-                  <p className="text-muted-foreground text-sm text-center py-4">No income entries. Add rental, business, or investment income.</p>
-                ) : (
-                  <div className="space-y-3">
-                    {incomes.map(inc => (
-                      <div key={inc.id} className="flex items-center gap-3 p-3 border rounded-lg bg-muted/30">
-                        <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
-                          <Input value={inc.source} onChange={e => updateIncome(inc.id, "source", e.target.value)} placeholder="Source name" />
-                          <Select value={inc.type} onValueChange={v => updateIncome(inc.id, "type", v)}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Rental">Rental Income</SelectItem>
-                              <SelectItem value="Business">Business Income</SelectItem>
-                              <SelectItem value="Interest">Interest Income</SelectItem>
-                              <SelectItem value="Capital Gains">Capital Gains</SelectItem>
-                              <SelectItem value="Other">Other</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <div className="relative">
-                            <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input type="number" className="pl-9" value={inc.amount || ""} onChange={e => updateIncome(inc.id, "amount", parseFloat(e.target.value) || 0)} placeholder="Amount" />
-                          </div>
-                        </div>
-                        <Button variant="ghost" size="icon" onClick={() => removeIncome(inc.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+              <CardContent className="space-y-3">
+                {incomes.length === 0 ? <p className="text-muted-foreground text-sm text-center py-4">No income entries.</p> : incomes.map(inc => (
+                  <div key={inc.id} className="flex items-center gap-3 p-3 border rounded-lg bg-muted/30">
+                    <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <Input value={inc.source} onChange={e => setIncomes(incomes.map(x => x.id === inc.id ? { ...x, source: e.target.value } : x))} placeholder="Source" />
+                      <Select value={inc.type} onValueChange={v => setIncomes(incomes.map(x => x.id === inc.id ? { ...x, type: v } : x))}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>{["Rental","Business","Interest","Capital Gains","Other"].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+                      </Select>
+                      <div className="relative">
+                        <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input type="number" className="pl-9" value={inc.amount || ""} onChange={e => setIncomes(incomes.map(x => x.id === inc.id ? { ...x, amount: parseFloat(e.target.value) || 0 } : x))} />
                       </div>
-                    ))}
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => setIncomes(incomes.filter(x => x.id !== inc.id))}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                   </div>
-                )}
+                ))}
               </CardContent>
             </Card>
-
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">HUF Deductions</CardTitle>
-                <CardDescription>Deductions available to the HUF entity</CardDescription>
-              </CardHeader>
+              <CardHeader><CardTitle className="text-lg">HUF Deductions</CardTitle></CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Section 80C (max ₹1,50,000)</Label>
-                  <Input type="number" value={deductions80C || ""} onChange={e => setDeductions80C(Math.min(150000, parseFloat(e.target.value) || 0))} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Section 80D - Health Insurance (max ₹25,000)</Label>
-                  <Input type="number" value={deductions80D || ""} onChange={e => setDeductions80D(Math.min(25000, parseFloat(e.target.value) || 0))} />
-                </div>
+                <div className="space-y-2"><Label>Section 80C (max ₹1,50,000)</Label><Input type="number" value={ded80C || ""} onChange={e => setDed80C(Math.min(150000, parseFloat(e.target.value) || 0))} /></div>
+                <div className="space-y-2"><Label>Section 80D (max ₹25,000)</Label><Input type="number" value={ded80D || ""} onChange={e => setDed80D(Math.min(25000, parseFloat(e.target.value) || 0))} /></div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Comparison Tab */}
           <TabsContent value="comparison" className="space-y-4">
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Your Individual Income (for comparison)</CardTitle>
-                <CardDescription>Enter your personal income to see the tax benefit of HUF splitting</CardDescription>
-              </CardHeader>
+              <CardHeader><CardTitle className="text-lg">Your Individual Income</CardTitle><CardDescription>For comparison with HUF splitting</CardDescription></CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Individual Gross Income</Label>
-                  <Input type="number" value={individualIncome || ""} onChange={e => setIndividualIncome(parseFloat(e.target.value) || 0)} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Individual Deductions (80C+80D etc.)</Label>
-                  <Input type="number" value={individualDeductions || ""} onChange={e => setIndividualDeductions(parseFloat(e.target.value) || 0)} />
-                </div>
+                <div className="space-y-2"><Label>Individual Gross Income</Label><Input type="number" value={indIncome || ""} onChange={e => setIndIncome(parseFloat(e.target.value) || 0)} /></div>
+                <div className="space-y-2"><Label>Individual Deductions</Label><Input type="number" value={indDed || ""} onChange={e => setIndDed(parseFloat(e.target.value) || 0)} /></div>
               </CardContent>
             </Card>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card className="border-destructive/30 bg-destructive/5">
-                <CardHeader className="pb-2">
-                  <CardDescription>Without HUF (All combined)</CardDescription>
-                  <CardTitle className="text-2xl text-destructive">₹{individualTax.toLocaleString("en-IN")}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-muted-foreground">Tax on ₹{(individualIncome + totalHUFIncome).toLocaleString("en-IN")} combined income</p>
-                </CardContent>
+                <CardHeader className="pb-2"><CardDescription>Without HUF</CardDescription><CardTitle className="text-2xl text-destructive">{fmt(withoutHUF)}</CardTitle></CardHeader>
+                <CardContent><p className="text-xs text-muted-foreground">Combined income: {fmt(indIncome + totalHUF)}</p></CardContent>
               </Card>
-
               <Card className="border-primary/30 bg-primary/5">
-                <CardHeader className="pb-2">
-                  <CardDescription>With HUF (Split)</CardDescription>
-                  <CardTitle className="text-2xl text-primary">₹{splitTax.toLocaleString("en-IN")}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-muted-foreground">Individual: ₹{calcTax(individualIncome, individualDeductions).toLocaleString("en-IN")} + HUF: ₹{hufTax.toLocaleString("en-IN")}</p>
-                </CardContent>
+                <CardHeader className="pb-2"><CardDescription>With HUF</CardDescription><CardTitle className="text-2xl text-primary">{fmt(withHUF)}</CardTitle></CardHeader>
+                <CardContent><p className="text-xs text-muted-foreground">Individual: {fmt(calcTax(indIncome, indDed))} + HUF: {fmt(hufTax)}</p></CardContent>
               </Card>
-
-              <Card className="border-green-500/30 bg-green-500/5">
-                <CardHeader className="pb-2">
-                  <CardDescription>Tax Savings</CardDescription>
-                  <CardTitle className="text-2xl text-green-500 flex items-center gap-1">
-                    <TrendingUp className="h-5 w-5" /> ₹{savings.toLocaleString("en-IN")}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-muted-foreground">
-                    {savings > 0 ? "HUF structure saves you tax!" : "Add HUF income to see savings"}
-                  </p>
-                </CardContent>
+              <Card className="border-accent/30 bg-accent/10">
+                <CardHeader className="pb-2"><CardDescription>Tax Savings</CardDescription><CardTitle className="text-2xl text-accent-foreground flex items-center gap-1"><TrendingUp className="h-5 w-5" /> {fmt(savings)}</CardTitle></CardHeader>
+                <CardContent><p className="text-xs text-muted-foreground">{savings > 0 ? "HUF structure saves you tax!" : "Add HUF income to see savings"}</p></CardContent>
               </Card>
             </div>
 
-            {/* Summary Table */}
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2"><PiggyBank className="h-5 w-5" /> Detailed Breakdown</CardTitle>
-              </CardHeader>
+              <CardHeader><CardTitle className="text-lg flex items-center gap-2"><PiggyBank className="h-5 w-5" /> Breakdown</CardTitle></CardHeader>
               <CardContent>
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Particular</TableHead>
-                      <TableHead className="text-right">Without HUF</TableHead>
-                      <TableHead className="text-right">With HUF</TableHead>
-                    </TableRow>
-                  </TableHeader>
+                  <TableHeader><TableRow><TableHead>Particular</TableHead><TableHead className="text-right">Without HUF</TableHead><TableHead className="text-right">With HUF</TableHead></TableRow></TableHeader>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>Individual Gross Income</TableCell>
-                      <TableCell className="text-right">₹{(individualIncome + totalHUFIncome).toLocaleString("en-IN")}</TableCell>
-                      <TableCell className="text-right">₹{individualIncome.toLocaleString("en-IN")}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>HUF Gross Income</TableCell>
-                      <TableCell className="text-right">—</TableCell>
-                      <TableCell className="text-right">₹{totalHUFIncome.toLocaleString("en-IN")}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>Individual Deductions</TableCell>
-                      <TableCell className="text-right">₹{individualDeductions.toLocaleString("en-IN")}</TableCell>
-                      <TableCell className="text-right">₹{individualDeductions.toLocaleString("en-IN")}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>HUF Deductions</TableCell>
-                      <TableCell className="text-right">—</TableCell>
-                      <TableCell className="text-right">₹{totalHUFDeductions.toLocaleString("en-IN")}</TableCell>
-                    </TableRow>
-                    <TableRow className="font-bold border-t-2">
-                      <TableCell>Total Tax</TableCell>
-                      <TableCell className="text-right text-destructive">₹{individualTax.toLocaleString("en-IN")}</TableCell>
-                      <TableCell className="text-right text-primary">₹{splitTax.toLocaleString("en-IN")}</TableCell>
-                    </TableRow>
-                    <TableRow className="font-bold">
-                      <TableCell>Net Savings</TableCell>
-                      <TableCell className="text-right" colSpan={2}>
-                        <Badge variant="outline" className="text-green-500 border-green-500/30 text-base">₹{savings.toLocaleString("en-IN")}</Badge>
-                      </TableCell>
-                    </TableRow>
+                    <TableRow><TableCell>Individual Income</TableCell><TableCell className="text-right">{fmt(indIncome + totalHUF)}</TableCell><TableCell className="text-right">{fmt(indIncome)}</TableCell></TableRow>
+                    <TableRow><TableCell>HUF Income</TableCell><TableCell className="text-right">—</TableCell><TableCell className="text-right">{fmt(totalHUF)}</TableCell></TableRow>
+                    <TableRow><TableCell>Individual Deductions</TableCell><TableCell className="text-right">{fmt(indDed)}</TableCell><TableCell className="text-right">{fmt(indDed)}</TableCell></TableRow>
+                    <TableRow><TableCell>HUF Deductions</TableCell><TableCell className="text-right">—</TableCell><TableCell className="text-right">{fmt(hufDed)}</TableCell></TableRow>
+                    <TableRow className="font-bold border-t-2"><TableCell>Total Tax</TableCell><TableCell className="text-right text-destructive">{fmt(withoutHUF)}</TableCell><TableCell className="text-right text-primary">{fmt(withHUF)}</TableCell></TableRow>
+                    <TableRow className="font-bold"><TableCell>Net Savings</TableCell><TableCell className="text-right" colSpan={2}><Badge variant="outline" className="text-base">{fmt(savings)}</Badge></TableCell></TableRow>
                   </TableBody>
                 </Table>
               </CardContent>

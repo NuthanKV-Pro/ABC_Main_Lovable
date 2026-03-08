@@ -67,6 +67,8 @@ export const taxPlanningTools: SearchItem[] = sortAlphabetically([
   { name: "Foreign Income & DTAA", route: "/foreign-income-dtaa", category: "Tax Planning", keywords: ["foreign", "income", "dtaa", "nri", "rnor", "ftc", "form 67", "double taxation"] },
   { name: "Tax Notice Assistant", route: "/tax-notice-assistant", category: "Tax Planning", keywords: ["tax notice", "139", "143", "148", "scrutiny", "demand", "response"] },
   { name: "Compliance Calendar", route: "/compliance-calendar", category: "Tax Planning", keywords: ["compliance", "calendar", "deadline", "roc", "gst", "tds", "itr", "filing"] },
+  { name: "HUF Tax Planner", route: "/huf-tax-planner", category: "Tax Planning", keywords: ["huf", "hindu undivided family", "karta", "coparcener", "income splitting"] },
+  { name: "Regime Optimizer", route: "/regime-optimizer", category: "Tax Planning", keywords: ["regime", "old", "new", "optimizer", "comparison", "recommendation", "savings"] },
   { name: "Advance Tax Calculator", route: "external:https://abcadv1.lovable.app", category: "Tax Planning", keywords: ["advance", "tax", "quarterly", "payment"] },
   { name: "HRA Calc", route: "external:https://abcsalop.lovable.app/hra-calc", category: "Tax Planning", keywords: ["hra", "house rent", "allowance"] },
 ]);
@@ -114,6 +116,7 @@ export const retirementTools: SearchItem[] = sortAlphabetically([
   { name: "Gratuity Calculator", route: "/gratuity-calculator", category: "Retirement & Benefits", keywords: ["gratuity", "retirement", "employee"] },
   { name: "Emergency Fund Calculator", route: "/emergency-fund", category: "Retirement & Benefits", keywords: ["emergency", "fund", "savings", "safety"] },
   { name: "Insurance Premium Calculator", route: "/insurance-premium-calculator", category: "Retirement & Benefits", keywords: ["insurance", "premium", "term life", "health", "coverage"] },
+  { name: "FIRE Calculator", route: "/fire-calculator", category: "Retirement & Benefits", keywords: ["fire", "financial independence", "retire early", "savings rate", "corpus"] },
 ]);
 
 // Real Estate & Property
@@ -121,6 +124,7 @@ export const realEstateTools: SearchItem[] = sortAlphabetically([
   { name: "Rent vs Buy Calculator", route: "/rent-vs-buy", category: "Real Estate", keywords: ["rent", "buy", "home", "decision"] },
   { name: "Home Affordability Calculator", route: "/home-affordability", category: "Real Estate", keywords: ["home", "affordability", "budget", "house"] },
   { name: "Stamp Duty Calculator", route: "/stamp-duty-calculator", category: "Real Estate", keywords: ["stamp", "duty", "registration", "property"] },
+  { name: "Real Estate ROI Calculator", route: "/real-estate-roi", category: "Real Estate", keywords: ["real estate", "roi", "property", "rental yield", "appreciation", "capital gains"] },
 ]);
 
 // Personal Finance & Planning
@@ -131,6 +135,8 @@ export const personalFinanceTools: SearchItem[] = sortAlphabetically([
   { name: "Debt-to-Income Calculator", route: "/debt-to-income", category: "Personal Finance", keywords: ["debt", "income", "ratio", "dti"] },
   { name: "Credit Score Calculator", route: "/credit-score-calculator", category: "Personal Finance", keywords: ["credit", "score", "cibil", "rating"] },
   { name: "Inflation Impact Calculator", route: "/inflation-calculator", category: "Personal Finance", keywords: ["inflation", "purchasing power", "real return", "nominal", "erosion"] },
+  { name: "Wedding Budget Planner", route: "/wedding-budget-planner", category: "Personal Finance", keywords: ["wedding", "marriage", "budget", "planner", "shaadi", "jewelry", "venue", "catering"] },
+  { name: "Education Cost Planner", route: "/education-cost-planner", category: "Personal Finance", keywords: ["education", "cost", "college", "abroad", "india", "ssy", "ppf", "sip", "inflation"] },
 ]);
 
 // Business & Corporate Finance
@@ -142,6 +148,7 @@ export const businessTools: SearchItem[] = sortAlphabetically([
   { name: "GST Invoice Generator", route: "/gst-invoice-generator", category: "Business Finance", keywords: ["gst", "invoice", "hsn", "sac", "gstin", "tax invoice", "billing"] },
   { name: "Escrow", route: "/escrow", category: "Business Finance", keywords: ["escrow", "secure", "transaction"] },
   { name: "Product Builder", route: "external:https://abcprodev1.lovable.app", category: "Business Finance", keywords: ["product", "builder", "idea", "blueprint"] },
+  { name: "Startup Funding Guide", route: "/startup-funding-guide", category: "Business Finance", keywords: ["startup", "funding", "vc", "angel", "government", "grant", "mudra", "sidbi", "seed"] },
 ]);
 
 // Legal & Estate Planning
