@@ -47,6 +47,9 @@ function generateActions(taxData: ReturnType<typeof useTaxData>): ActionItem[] {
   const monthlyExpenses = getNum("fhs_monthlyExpenses");
   const retirementCorpus = getNum("fhs_retirementCorpus");
   const age = getNum("fhs_age") || 30;
+  const monthlySavings = getNum("fhs_monthlySavings");
+  const totalInvestments = getNum("fhs_totalInvestments");
+  const annualIncome = salary.total > 0 ? salary.total : monthlyIncome * 12;
 
   // ========== 80C DEDUCTIONS ==========
   const section80C = deductions.data?.["80C"] || 0;
