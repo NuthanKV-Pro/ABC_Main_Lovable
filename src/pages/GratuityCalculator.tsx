@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 
 const GratuityCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [salaryDA, setSalaryDA] = useState<number>(50000);
   const [yearsOfService, setYearsOfService] = useState<number>(10);
 
@@ -34,7 +35,7 @@ const GratuityCalculator = () => {
             <Button 
               variant="ghost" 
               size="icon"
-              onClick={() => navigate(-1)}
+              onClick={() => goBack()}
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>

@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 const SWPCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [initialInvestment, setInitialInvestment] = useState<number>(2500000);
   const [monthlyWithdrawal, setMonthlyWithdrawal] = useState<number>(25000);
   const [expectedReturn, setExpectedReturn] = useState<number>(12);
@@ -105,7 +106,7 @@ const SWPCalculator = () => {
       <div className="max-w-5xl mx-auto">
         <Button 
           variant="ghost" 
-          onClick={() => navigate(-1)}
+          onClick={() => goBack()}
           className="mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />

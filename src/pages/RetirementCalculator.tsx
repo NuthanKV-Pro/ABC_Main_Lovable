@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 
 const RetirementCalculator = () => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const [currentAge, setCurrentAge] = useState<number>(30);
   const [retirementAge, setRetirementAge] = useState<number>(60);
   const [monthlyExpenses, setMonthlyExpenses] = useState<number>(50000);
@@ -71,7 +72,7 @@ const RetirementCalculator = () => {
             <Button 
               variant="ghost" 
               size="icon"
-              onClick={() => navigate(-1)}
+              onClick={() => goBack()}
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
