@@ -11,6 +11,7 @@ import { Users, Plus, Trash2, ArrowLeft, IndianRupee, TrendingUp, PiggyBank } fr
 import { useGoBack } from "@/hooks/useGoBack";
 import ExportButton from "@/components/ExportButton";
 import { ExportConfig } from "@/utils/unifiedExport";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 interface Member { id: string; name: string; relation: string; panNumber: string; }
 interface IncomeEntry { id: string; source: string; type: string; amount: number; }
@@ -191,6 +192,31 @@ const HUFTaxPlanner = () => {
                 <CardContent><p className="text-xs text-muted-foreground">{savings > 0 ? "HUF structure saves you tax!" : "Add HUF income to see savings"}</p></CardContent>
               </Card>
             </div>
+
+            <Card>
+              <CardHeader><CardTitle className="text-lg">Tax Comparison Chart</CardTitle></CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={[
+                      { name: "Without HUF", tax: withoutHUF },
+                      { name: "With HUF", tax: withHUF },
+                      { name: "Savings", tax: savings },
+                    ]} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                      <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={v => `₹${(v / 1000).toFixed(0)}K`} />
+                      <Tooltip formatter={(value: number) => fmt(value)} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, color: "hsl(var(--foreground))" }} />
+                      <Bar dataKey="tax" radius={[6, 6, 0, 0]}>
+                        <Cell fill="hsl(var(--destructive))" />
+                        <Cell fill="hsl(var(--primary))" />
+                        <Cell fill="hsl(142 76% 36%)" />
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader><CardTitle className="text-lg flex items-center gap-2"><PiggyBank className="h-5 w-5" /> Breakdown</CardTitle></CardHeader>
