@@ -3959,10 +3959,14 @@ const ContractDrafter = () => {
 
       <main className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-3xl grid-cols-4">
+          <TabsList className="grid w-full max-w-4xl grid-cols-5">
             <TabsTrigger value="contracts" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Contracts
+            </TabsTrigger>
+            <TabsTrigger value="clauses" className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4" />
+              Clause Library
             </TabsTrigger>
             <TabsTrigger value="tnc" className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
