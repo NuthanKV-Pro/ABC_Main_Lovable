@@ -92,6 +92,7 @@ import EducationCostPlanner from "./pages/EducationCostPlanner";
 import StartupFundingGuide from "./pages/StartupFundingGuide";
 import InvestmentModeComparison from "./pages/InvestmentModeComparison";
 import InsuranceComparison from "./pages/InsuranceComparison";
+import CompareAndDecide from "./pages/CompareAndDecide";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -200,6 +201,7 @@ const App = () => (
             <Route path="/startup-funding-guide" element={<StartupFundingGuide />} />
             <Route path="/investment-mode-comparison" element={<InvestmentModeComparison />} />
             <Route path="/insurance-comparison" element={<InsuranceComparison />} />
+            <Route path="/compare-and-decide" element={<CompareAndDecide />} />
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

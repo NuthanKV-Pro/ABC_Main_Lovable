@@ -104,7 +104,8 @@ export const routeMap: Record<string, RouteInfo> = {
   "/education-cost-planner": { label: "Education Cost Planner", parent: "/prototypes" },
   "/startup-funding-guide": { label: "Startup Funding Guide", parent: "/prototypes" },
   "/investment-mode-comparison": { label: "SIP vs Lumpsum vs RD", parent: "/prototypes" },
-  "/insurance-comparison": { label: "Term vs Endowment vs ULIP", parent: "/prototypes" },
+  "/insurance-comparison": { label: "Term vs Endowment vs ULIP", parent: "/compare-and-decide" },
+  "/compare-and-decide": { label: "Compare & Decide", parent: "/prototypes" },
 };
 
 export function getBreadcrumbs(pathname: string): { label: string; path: string }[] {
