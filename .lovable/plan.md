@@ -1,23 +1,19 @@
 
 
-## Plan: Move "Clear All Saved Data" Button to Top Navigation Bar
+## Plan: Add Business Valuation to Featured Tools on Index Page
 
-### What
-Move the triple-confirmation "Clear All Saved Data" (Trash2 icon) button from the My Financial Profile page into the main top-right navigation bar in `src/pages/Index.tsx`, positioned between the `SearchBar` and the Compliance Calendar button.
+**What**: Add a "Business Valuation" card to the Featured Tools section in `/src/pages/Index.tsx`.
 
-### Changes
+**How**:
+1. Add a new tool entry after the existing featured tools (e.g., after "Salary Optimisation Engine") in the `⭐ Featured Tools` array (~line 171):
+   - `id`: `"business-valuation"`
+   - `title`: `"Business Valuation"`
+   - `description`: `"DCF, Comps, LBO & Monte Carlo"`
+   - `icon`: `TrendingUp` (already imported)
+   - `route`: `"/business-valuation"`
+   - `tag`: `"Live"`
+   - `tagColor`: green (matching other Live tools)
+   - `starred`: `true`
 
-**1. Edit `src/pages/Index.tsx`**
-- Import `Trash2` icon, `AlertDialog` components, `toast`, and add `clearStep` state
-- Add the Trash2 icon button + 3 AlertDialog components (same triple-confirmation logic currently in MyFinancialProfile)
-- Place the button in the header between `<SearchBar />` and the Calendar `<Tooltip>`
-
-**2. Edit `src/pages/MyFinancialProfile.tsx`**
-- Remove the Trash2 button and all 3 AlertDialog components
-- Remove `clearStep` state and related imports (`Trash2`, `AlertDialog*`)
-- Keep the Sync button as-is
-
-### Files Changed (2)
-- **Edit** `src/pages/Index.tsx`
-- **Edit** `src/pages/MyFinancialProfile.tsx`
+Single file edit, one new object added to the array.
 

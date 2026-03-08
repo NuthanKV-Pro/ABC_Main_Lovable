@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard, Star, BookOpen, Crown, Rocket, Globe, ArrowLeft, FileSearch, FilePlus, ReceiptText, CalendarCheck, Mail, Gavel, Calendar, Zap } from "lucide-react";
+import { FileText, BarChart3, TrendingUp, Building, Receipt, Calculator, Sparkles, Wallet, HelpCircle, Home, DollarSign, MoreHorizontal, Banknote, Gift, PiggyBank, LineChart, Landmark, Coins, Shield, ScrollText, Briefcase, Scale, Heart, BarChart, Repeat, Users, CreditCard, FileCheck, Car, GraduationCap, MessageSquare, GitCompare, Building2, Target, Umbrella, Flag, ClipboardList, BadgeDollarSign, PieChart, Scissors, UserCheck, ShieldCheck, Layers, Workflow, Factory, Split, Briefcase as Portfolio, Goal, TrendingUp as Compound, TrendingDown, CircleDollarSign, ArrowUp, Wrench, Keyboard, Star, BookOpen, Crown, Rocket, Globe, ArrowLeft, FileSearch, FilePlus, ReceiptText, CalendarCheck, Mail, Gavel, Calendar, Zap, Trash2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRef, useState, useEffect } from "react";
@@ -11,6 +11,17 @@ import { motion } from "framer-motion";
 import SolarSystemBackground from "@/components/SolarSystemBackground";
 import PrototypeBanner from "@/components/PrototypeBanner";
 import OnboardingTour from "@/components/OnboardingTour";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "@/hooks/use-toast";
 
 const modules = [
   {
@@ -920,6 +931,7 @@ const Index = () => {
   const modulesRef = useRef<HTMLDivElement>(null);
   const amazingToolsRef = useRef<HTMLDivElement>(null);
   const [showFloatingNav, setShowFloatingNav] = useState(false);
+  const [clearStep, setClearStep] = useState(0);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
     "⭐ Featured Tools": true
   });
@@ -1074,6 +1086,22 @@ const Index = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    aria-label="Clear All Saved Data"
+                    onClick={() => setClearStep(1)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Clear All Saved Data</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
                     variant="outline"
                     size="icon"
                     className="shrink-0 flex"
@@ -1100,6 +1128,65 @@ const Index = () => {
           </div>
         </div>
       </header>
+
+      {/* Triple-confirmation Clear All dialogs */}
+      <AlertDialog open={clearStep === 1} onOpenChange={(open) => !open && setClearStep(0)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will erase <strong>all saved data</strong> across every tool — salary, deductions, calculators, health scores, and more.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setClearStep(0)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setClearStep(2)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={clearStep === 2} onOpenChange={(open) => !open && setClearStep(0)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>This cannot be undone</AlertDialogTitle>
+            <AlertDialogDescription>
+              You will permanently lose data from: Tax heads, Budget Planner, FIRE & Retirement, Net Worth, SIP & EMI, Health Score, GST, HUF, Compliance Calendar, Financial Statements, Wedding Planner, Profile settings, and all synced data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setClearStep(0)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => setClearStep(3)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              I understand, continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={clearStep === 3} onOpenChange={(open) => !open && setClearStep(0)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-destructive">Final confirmation</AlertDialogTitle>
+            <AlertDialogDescription>
+              This is your last chance. Click below to permanently delete <strong>everything</strong>. There is no way to recover this data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setClearStep(0)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                localStorage.clear();
+                toast({ title: "All data cleared", description: "Every tool has been reset. Reloading…" });
+                setTimeout(() => window.location.reload(), 800);
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Yes, delete everything
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Floating Navigation Bar */}
       <motion.div
