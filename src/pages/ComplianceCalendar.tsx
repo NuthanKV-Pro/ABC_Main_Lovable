@@ -662,6 +662,14 @@ const ComplianceCalendar = () => {
             <Button
               variant="outline"
               size="sm"
+              onClick={exportICS}
+              className="gap-2"
+            >
+              <CalendarPlus className="h-4 w-4" /> Export .ics
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={exportPDF}
               className="gap-2"
             >
