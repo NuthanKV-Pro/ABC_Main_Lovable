@@ -121,7 +121,7 @@ const BusinessProfession = () => {
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-sm text-foreground">{activeEntity.name}</span>
-                    <AutoPopulateBadge />
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-accent/20 text-accent-foreground">Auto-filled</Badge>
                     <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                       {activeEntity.type}
                     </span>
