@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +24,7 @@ const FIRECalculator = () => {
   const [inflation, setInflation] = useState(6);
   const [swr, setSwr] = useState(3.5);
 
-  useAutoPopulate([
+  const { populatedFields, resetField } = useAutoPopulate([
     { key: "fhs_age", setter: setAge, defaultValue: 30 },
     { key: "fhs_monthlyExpenses", setter: setMonthlyExp, defaultValue: 50000 },
     { key: "fhs_totalInvestments", setter: setCurrentSavings, defaultValue: 500000 },
@@ -82,10 +83,10 @@ const FIRECalculator = () => {
             <Card>
               <CardHeader><CardTitle className="text-lg">Your Details</CardTitle></CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2"><Label>Current Age</Label><Input type="number" value={age} onChange={e => setAge(parseInt(e.target.value) || 25)} /></div>
-                <div className="space-y-2"><Label>Monthly Expenses (₹)</Label><Input type="number" value={monthlyExp || ""} onChange={e => setMonthlyExp(parseFloat(e.target.value) || 0)} /></div>
-                <div className="space-y-2"><Label>Current Savings (₹)</Label><Input type="number" value={currentSavings || ""} onChange={e => setCurrentSavings(parseFloat(e.target.value) || 0)} /></div>
-                <div className="space-y-2"><Label>Monthly Savings (₹)</Label><Input type="number" value={monthlySavings || ""} onChange={e => setMonthlySavings(parseFloat(e.target.value) || 0)} /></div>
+                <div className="space-y-2"><Label className="flex items-center">Current Age<AutoPopulateBadge fieldKey="fhs_age" populatedFields={populatedFields} onReset={resetField} /></Label><Input type="number" value={age} onChange={e => setAge(parseInt(e.target.value) || 25)} /></div>
+                <div className="space-y-2"><Label className="flex items-center">Monthly Expenses (₹)<AutoPopulateBadge fieldKey="fhs_monthlyExpenses" populatedFields={populatedFields} onReset={resetField} /></Label><Input type="number" value={monthlyExp || ""} onChange={e => setMonthlyExp(parseFloat(e.target.value) || 0)} /></div>
+                <div className="space-y-2"><Label className="flex items-center">Current Savings (₹)<AutoPopulateBadge fieldKey="fhs_totalInvestments" populatedFields={populatedFields} onReset={resetField} /></Label><Input type="number" value={currentSavings || ""} onChange={e => setCurrentSavings(parseFloat(e.target.value) || 0)} /></div>
+                <div className="space-y-2"><Label className="flex items-center">Monthly Savings (₹)<AutoPopulateBadge fieldKey="fhs_monthlySavings" populatedFields={populatedFields} onReset={resetField} /></Label><Input type="number" value={monthlySavings || ""} onChange={e => setMonthlySavings(parseFloat(e.target.value) || 0)} /></div>
               </CardContent>
             </Card>
             <Card>

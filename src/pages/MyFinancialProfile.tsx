@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useTaxData } from "@/hooks/useTaxData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, IndianRupee, TrendingUp, Shield, PiggyBank, Landmark, Heart, AlertTriangle } from "lucide-react";
+import { ArrowLeft, IndianRupee, TrendingUp, Shield, PiggyBank, Landmark, Heart, AlertTriangle, RefreshCw, CheckCircle } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const fmt = (n: number) =>
   n >= 10000000 ? `₹${(n / 10000000).toFixed(2)} Cr` :
@@ -32,6 +34,47 @@ const MyFinancialProfile = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
   const tax = useTaxData();
+  const [synced, setSynced] = useState(false);
+
+  const handleSyncAll = () => {
+    const salaryTotal = parseFloat(localStorage.getItem("salary_total") || "0");
+    const fhsIncome = parseFloat(localStorage.getItem("fhs_monthlyIncome") || "0");
+    const fhsAge = parseFloat(localStorage.getItem("fhs_age") || "0");
+    const fhsExpenses = parseFloat(localStorage.getItem("fhs_monthlyExpenses") || "0");
+    const fhsSavings = parseFloat(localStorage.getItem("fhs_monthlySavings") || "0");
+    const fhsInvestments = parseFloat(localStorage.getItem("fhs_totalInvestments") || "0");
+    const fhsDebt = parseFloat(localStorage.getItem("fhs_totalDebt") || "0");
+    const fhsDebtPayment = parseFloat(localStorage.getItem("fhs_monthlyDebtPayment") || "0");
+    const fhsEmergency = parseFloat(localStorage.getItem("fhs_emergencyFund") || "0");
+
+    // Compute the canonical monthly income
+    const canonicalIncome = salaryTotal > 0 ? Math.round(salaryTotal / 12) : fhsIncome;
+
+    // Write a unified sync snapshot that tools can read
+    const syncData: Record<string, number> = {};
+    if (canonicalIncome > 0) syncData["sync_monthlyIncome"] = canonicalIncome;
+    if (fhsAge > 0) syncData["sync_age"] = fhsAge;
+    if (fhsExpenses > 0) syncData["sync_monthlyExpenses"] = fhsExpenses;
+    if (fhsSavings > 0) syncData["sync_monthlySavings"] = fhsSavings;
+    if (fhsInvestments > 0) syncData["sync_totalInvestments"] = fhsInvestments;
+    if (fhsDebt > 0) syncData["sync_totalDebt"] = fhsDebt;
+    if (fhsDebtPayment > 0) syncData["sync_monthlyDebtPayment"] = fhsDebtPayment;
+    if (fhsEmergency > 0) syncData["sync_emergencyFund"] = fhsEmergency;
+
+    // Also write fhs_ keys from salary if FHS is empty
+    if (canonicalIncome > 0 && !fhsIncome) {
+      localStorage.setItem("fhs_monthlyIncome", String(canonicalIncome));
+    }
+
+    Object.entries(syncData).forEach(([k, v]) => localStorage.setItem(k, String(v)));
+    localStorage.setItem("sync_timestamp", new Date().toISOString());
+
+    setSynced(true);
+    toast({
+      title: "All tools synced",
+      description: `${Object.keys(syncData).length} data points pushed. Open any tool to see pre-filled values.`,
+    });
+  };
 
   // FHS data
   const monthlyIncome = parseFloat(localStorage.getItem("fhs_monthlyIncome") || "0");
@@ -80,7 +123,13 @@ const MyFinancialProfile = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
-      <Button variant="ghost" onClick={goBack} className="mb-4"><ArrowLeft className="mr-2 h-4 w-4" />Back</Button>
+      <div className="flex items-center justify-between mb-4">
+        <Button variant="ghost" onClick={goBack}><ArrowLeft className="mr-2 h-4 w-4" />Back</Button>
+        <Button onClick={handleSyncAll} variant={synced ? "secondary" : "default"} className="gap-2">
+          {synced ? <CheckCircle className="h-4 w-4" /> : <RefreshCw className="h-4 w-4" />}
+          {synced ? "Synced" : "Sync All Tools"}
+        </Button>
+      </div>
       <h1 className="text-2xl md:text-3xl font-bold mb-6 text-foreground">My Financial Profile</h1>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

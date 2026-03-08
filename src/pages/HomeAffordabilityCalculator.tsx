@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -26,7 +27,7 @@ const HomeAffordabilityCalculator = () => {
   const [creditCardDues, setCreditCardDues] = useState<number>(0);
   const [otherDebts, setOtherDebts] = useState<number>(0);
 
-  useAutoPopulate([
+  const { populatedFields, resetField } = useAutoPopulate([
     { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
   ]);
   
@@ -182,7 +183,7 @@ const HomeAffordabilityCalculator = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-sm">Your Monthly Income (Net)</Label>
+                <Label className="text-sm flex items-center">Your Monthly Income (Net)<AutoPopulateBadge fieldKey="monthlyIncome" populatedFields={populatedFields} onReset={resetField} /></Label>
                 <div className="relative">
                   <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input

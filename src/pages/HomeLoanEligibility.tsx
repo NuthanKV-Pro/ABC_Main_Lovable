@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +20,7 @@ const HomeLoanEligibility = () => {
   const [tenureYears, setTenureYears] = useState<number>(20);
   const [creditScore, setCreditScore] = useState<string>("750-799");
 
-  useAutoPopulate([
+  const { populatedFields, resetField } = useAutoPopulate([
     { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
     { key: "fhs_monthlyDebtPayment", setter: setExistingEMI, defaultValue: 0 },
   ]);
@@ -87,7 +88,7 @@ const HomeLoanEligibility = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="monthlyIncome">Monthly Income (₹)</Label>
+                <Label htmlFor="monthlyIncome" className="flex items-center">Monthly Income (₹)<AutoPopulateBadge fieldKey="monthlyIncome" populatedFields={populatedFields} onReset={resetField} /></Label>
                 <Input
                   id="monthlyIncome"
                   type="number"
@@ -98,7 +99,7 @@ const HomeLoanEligibility = () => {
                 <p className="text-xs text-muted-foreground">Gross monthly salary/income</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="existingEMI">Existing EMIs (₹/month)</Label>
+                <Label htmlFor="existingEMI" className="flex items-center">Existing EMIs (₹/month)<AutoPopulateBadge fieldKey="fhs_monthlyDebtPayment" populatedFields={populatedFields} onReset={resetField} /></Label>
                 <Input
                   id="existingEMI"
                   type="number"

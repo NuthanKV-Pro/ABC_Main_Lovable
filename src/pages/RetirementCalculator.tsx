@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
 import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +21,7 @@ const RetirementCalculator = () => {
   const [expectedReturn, setExpectedReturn] = useState<number>(8);
   const [lifeExpectancy, setLifeExpectancy] = useState<number>(85);
 
-  useAutoPopulate([
+  const { populatedFields, resetField } = useAutoPopulate([
     { key: "fhs_age", setter: setCurrentAge, defaultValue: 30 },
     { key: "fhs_monthlyExpenses", setter: setMonthlyExpenses, defaultValue: 50000 },
   ]);
@@ -104,8 +105,8 @@ const RetirementCalculator = () => {
               <CardContent className="space-y-6">
                 {/* Current Age */}
                 <div className="space-y-3">
-                  <Label className="text-base font-medium">
-                    Current Age: <span className="text-primary">{currentAge} years</span>
+                  <Label className="text-base font-medium flex items-center">
+                    Current Age: <span className="text-primary ml-1">{currentAge} years</span><AutoPopulateBadge fieldKey="fhs_age" populatedFields={populatedFields} onReset={resetField} />
                   </Label>
                   <Slider
                     value={[currentAge]}
@@ -158,8 +159,8 @@ const RetirementCalculator = () => {
 
                 {/* Monthly Expenses */}
                 <div className="space-y-3">
-                  <Label className="text-base font-medium">
-                    Current Monthly Expenses
+                  <Label className="text-base font-medium flex items-center">
+                    Current Monthly Expenses<AutoPopulateBadge fieldKey="fhs_monthlyExpenses" populatedFields={populatedFields} onReset={resetField} />
                   </Label>
                   <Input
                     type="number"

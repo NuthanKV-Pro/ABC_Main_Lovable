@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,7 +38,7 @@ const EmergencyFundCalculator = () => {
   const [currentSavings, setCurrentSavings] = useState<number>(100000);
   const [monthlySavingCapacity, setMonthlySavingCapacity] = useState<number>(15000);
 
-  useAutoPopulate([
+  const { populatedFields, resetField } = useAutoPopulate([
     { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 75000 },
     { key: "fhs_emergencyFund", setter: setCurrentSavings, defaultValue: 100000 },
     { key: "fhs_monthlyDebtPayment", setter: setEmiPayments, defaultValue: 10000 },
@@ -348,7 +349,7 @@ const EmergencyFundCalculator = () => {
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
                       <Wallet className="h-4 w-4" />
-                      Monthly Income
+                      Monthly Income<AutoPopulateBadge fieldKey="monthlyIncome" populatedFields={populatedFields} onReset={resetField} />
                     </Label>
                     <Input
                       type="number"
@@ -373,7 +374,7 @@ const EmergencyFundCalculator = () => {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label>Current Emergency Fund</Label>
+                    <Label className="flex items-center">Current Emergency Fund<AutoPopulateBadge fieldKey="fhs_emergencyFund" populatedFields={populatedFields} onReset={resetField} /></Label>
                     <Input
                       type="number"
                       value={currentSavings}
