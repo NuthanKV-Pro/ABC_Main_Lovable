@@ -4124,14 +4124,34 @@ const ContractDrafter = () => {
                   <CardTitle>Contract Preview</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {generatedContract ? (
+                  {generatedContract || importedClauses.length > 0 ? (
                     <div className="bg-muted/50 rounded-lg p-4 font-mono text-sm whitespace-pre-wrap max-h-[600px] overflow-y-auto">
                       {generatedContract}
+                      {importedClauses.length > 0 && (
+                        <>
+                          {generatedContract && "\n\n"}
+                          {"─".repeat(60)}{"\n\n"}
+                          {"IMPORTED CLAUSES\n\n"}
+                          {importedClauses.map((clause, idx) => (
+                            <div key={clause.id} className="relative group mb-4">
+                              <button
+                                onClick={() => handleRemoveImportedClause(clause.id)}
+                                className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-destructive text-destructive-foreground rounded-full p-0.5"
+                                title="Remove clause"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                              {`${idx + 1}. ${clause.title.toUpperCase()}\n\n${clause.fullText}\n\n`}
+                            </div>
+                          ))}
+                        </>
+                      )}
                     </div>
                   ) : (
                     <div className="bg-muted/50 rounded-lg p-8 text-center text-muted-foreground">
                       <FileText className="h-16 w-16 mx-auto mb-4 opacity-50" />
                       <p>Fill in the details and click "Generate Contract" to see the preview here.</p>
+                      <p className="text-xs mt-2">You can also import clauses from the Clause Library tab.</p>
                     </div>
                   )}
                 </CardContent>
