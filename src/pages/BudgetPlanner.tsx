@@ -129,7 +129,7 @@ const BudgetPlanner = () => {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4">
-                <Label htmlFor="income" className="min-w-[120px]">Net Monthly Income</Label>
+                <Label htmlFor="income" className="min-w-[120px] flex items-center">Net Monthly Income<AutoPopulateBadge fieldKey="monthlyIncome" populatedFields={populatedFields} onReset={resetField} /></Label>
                 <Input
                   id="income"
                   type="number"
