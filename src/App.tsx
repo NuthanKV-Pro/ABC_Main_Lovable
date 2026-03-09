@@ -116,6 +116,7 @@ import SideHustleTracker from "./pages/SideHustleTracker";
 import ExpenseSplitCalculator from "./pages/ExpenseSplitCalculator";
 import RentReceiptGenerator from "./pages/RentReceiptGenerator";
 import EMIPrepaymentOptimizer from "./pages/EMIPrepaymentOptimizer";
+import OtherTools from "./pages/OtherTools";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -248,6 +249,7 @@ const App = () => (
             <Route path="/expense-split" element={<ExpenseSplitCalculator />} />
             <Route path="/rent-receipt" element={<RentReceiptGenerator />} />
             <Route path="/emi-prepayment" element={<EMIPrepaymentOptimizer />} />
+            <Route path="/other-tools" element={<OtherTools />} />
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
