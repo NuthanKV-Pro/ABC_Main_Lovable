@@ -156,6 +156,28 @@ export const legalEstateTools: SearchItem[] = sortAlphabetically([
   { name: "Will & Estate Planner", route: "/will-estate-planner", category: "Legal & Estate", keywords: ["will", "estate", "succession", "inheritance", "beneficiary", "testament"] },
 ]);
 
+// Other Tools
+export const otherTools: SearchItem[] = sortAlphabetically([
+  { name: "AIS/TIS Reconciliation", route: "/ais-tis-reconciliation", category: "Other Tools", keywords: ["ais", "tis", "form 26as", "reconciliation", "mismatch"] },
+  { name: "Presumptive Tax Calculator", route: "/presumptive-tax", category: "Other Tools", keywords: ["presumptive", "44ad", "44ada", "business", "profession"] },
+  { name: "Crypto Tax Calculator", route: "/crypto-tax", category: "Other Tools", keywords: ["crypto", "vda", "bitcoin", "30%", "tds"] },
+  { name: "NRI Tax Calculator", route: "/nri-tax", category: "Other Tools", keywords: ["nri", "rnor", "residency", "foreign income"] },
+  { name: "Asset Allocation Optimizer", route: "/asset-allocation", category: "Other Tools", keywords: ["asset", "allocation", "portfolio", "rebalancing"] },
+  { name: "IPO Analysis Tool", route: "/ipo-analysis", category: "Other Tools", keywords: ["ipo", "gmp", "allotment", "listing gains"] },
+  { name: "Bond Ladder Calculator", route: "/bond-ladder", category: "Other Tools", keywords: ["bond", "ladder", "maturity", "yield"] },
+  { name: "Human Life Value Calculator", route: "/human-life-value", category: "Other Tools", keywords: ["hlv", "insurance", "life cover", "term"] },
+  { name: "Multiple Goals Dashboard", route: "/multiple-goals", category: "Other Tools", keywords: ["goals", "tracker", "financial planning"] },
+  { name: "Inflation-Adjusted Corpus", route: "/inflation-corpus", category: "Other Tools", keywords: ["inflation", "corpus", "retirement", "erosion"] },
+  { name: "Break-even Analysis", route: "/breakeven-analysis", category: "Other Tools", keywords: ["breakeven", "fixed cost", "variable cost"] },
+  { name: "Working Capital Calculator", route: "/working-capital", category: "Other Tools", keywords: ["working capital", "current ratio", "quick ratio"] },
+  { name: "Invoice Aging Dashboard", route: "/invoice-aging", category: "Other Tools", keywords: ["invoice", "aging", "receivables", "overdue"] },
+  { name: "Subscription Audit Tool", route: "/subscription-audit", category: "Other Tools", keywords: ["subscription", "recurring", "audit", "waste"] },
+  { name: "Side Hustle Tracker", route: "/side-hustle", category: "Other Tools", keywords: ["side hustle", "freelance", "multiple income"] },
+  { name: "Expense Split Calculator", route: "/expense-split", category: "Other Tools", keywords: ["expense", "split", "roommate", "group"] },
+  { name: "Rent Receipt Generator", route: "/rent-receipt", category: "Other Tools", keywords: ["rent", "receipt", "hra", "landlord"] },
+  { name: "EMI Prepayment Optimizer", route: "/emi-prepayment", category: "Other Tools", keywords: ["emi", "prepayment", "tenure", "loan"] },
+]);
+
 // Pages & Settings
 export const pages: SearchItem[] = sortAlphabetically([
   { name: "Dashboard", route: "/dashboard", category: "Pages", keywords: ["dashboard", "home", "overview"] },
@@ -184,6 +206,7 @@ export const getAllSearchItems = (): SearchItem[] => {
     ...personalFinanceTools,
     ...businessTools,
     ...legalEstateTools,
+    ...otherTools,
     ...pages,
     ...comingSoonTools,
   ];

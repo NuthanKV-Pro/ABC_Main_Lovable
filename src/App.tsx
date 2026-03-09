@@ -98,6 +98,24 @@ import FinancialHealthScore from "./pages/FinancialHealthScore";
 import SmartActionPlan from "./pages/SmartActionPlan";
 import MyFinancialProfile from "./pages/MyFinancialProfile";
 import QuickSummary from "./pages/QuickSummary";
+import AISTISReconciliation from "./pages/AISTISReconciliation";
+import PresumptiveTaxCalculator from "./pages/PresumptiveTaxCalculator";
+import CryptoTaxCalculator from "./pages/CryptoTaxCalculator";
+import NRITaxCalculator from "./pages/NRITaxCalculator";
+import AssetAllocationOptimizer from "./pages/AssetAllocationOptimizer";
+import IPOAnalysisTool from "./pages/IPOAnalysisTool";
+import BondLadderCalculator from "./pages/BondLadderCalculator";
+import HumanLifeValueCalculator from "./pages/HumanLifeValueCalculator";
+import MultipleGoalsDashboard from "./pages/MultipleGoalsDashboard";
+import InflationAdjustedCorpus from "./pages/InflationAdjustedCorpus";
+import BreakevenAnalysis from "./pages/BreakevenAnalysis";
+import WorkingCapitalCalculator from "./pages/WorkingCapitalCalculator";
+import InvoiceAgingDashboard from "./pages/InvoiceAgingDashboard";
+import SubscriptionAuditTool from "./pages/SubscriptionAuditTool";
+import SideHustleTracker from "./pages/SideHustleTracker";
+import ExpenseSplitCalculator from "./pages/ExpenseSplitCalculator";
+import RentReceiptGenerator from "./pages/RentReceiptGenerator";
+import EMIPrepaymentOptimizer from "./pages/EMIPrepaymentOptimizer";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -212,6 +230,24 @@ const App = () => (
             <Route path="/smart-action-plan" element={<SmartActionPlan />} />
             <Route path="/my-financial-profile" element={<MyFinancialProfile />} />
             <Route path="/quick-summary" element={<QuickSummary />} />
+            <Route path="/ais-tis-reconciliation" element={<AISTISReconciliation />} />
+            <Route path="/presumptive-tax" element={<PresumptiveTaxCalculator />} />
+            <Route path="/crypto-tax" element={<CryptoTaxCalculator />} />
+            <Route path="/nri-tax" element={<NRITaxCalculator />} />
+            <Route path="/asset-allocation" element={<AssetAllocationOptimizer />} />
+            <Route path="/ipo-analysis" element={<IPOAnalysisTool />} />
+            <Route path="/bond-ladder" element={<BondLadderCalculator />} />
+            <Route path="/human-life-value" element={<HumanLifeValueCalculator />} />
+            <Route path="/multiple-goals" element={<MultipleGoalsDashboard />} />
+            <Route path="/inflation-corpus" element={<InflationAdjustedCorpus />} />
+            <Route path="/breakeven-analysis" element={<BreakevenAnalysis />} />
+            <Route path="/working-capital" element={<WorkingCapitalCalculator />} />
+            <Route path="/invoice-aging" element={<InvoiceAgingDashboard />} />
+            <Route path="/subscription-audit" element={<SubscriptionAuditTool />} />
+            <Route path="/side-hustle" element={<SideHustleTracker />} />
+            <Route path="/expense-split" element={<ExpenseSplitCalculator />} />
+            <Route path="/rent-receipt" element={<RentReceiptGenerator />} />
+            <Route path="/emi-prepayment" element={<EMIPrepaymentOptimizer />} />
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
