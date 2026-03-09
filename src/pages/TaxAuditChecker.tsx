@@ -11,6 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const TaxAuditChecker = () => {
   const navigate = useNavigate();
@@ -27,6 +30,11 @@ const TaxAuditChecker = () => {
   const [totalIncome, setTotalIncome] = useState(600000);
   const [digitalTurnoverPct, setDigitalTurnoverPct] = useState(80);
   const [assessmentYear, setAssessmentYear] = useState("2026-27");
+  const [panNumber, setPanNumber] = useState("");
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "pan", setter: (v) => setPanNumber(v as string), defaultValue: "" },
+  ]);
 
   const analysis = useMemo(() => {
     const results: { rule: string; applicable: boolean; details: string; section: string; severity: 'required' | 'optional' | 'exempt' }[] = [];
@@ -111,6 +119,7 @@ const TaxAuditChecker = () => {
   const auditDeadline = assessmentYear === "2026-27" ? "30th September 2026" : assessmentYear === "2025-26" ? "30th September 2025" : "30th September 2024";
 
   return (
+    <TooltipProvider>
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="flex items-center gap-3 mb-6">
@@ -170,6 +179,18 @@ const TaxAuditChecker = () => {
                       <SelectItem value="2026-27">AY 2026-27</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                <div>
+                  <Label className="flex items-center">
+                    PAN Number
+                    <AutoPopulateBadge fieldKey="pan" populatedFields={populatedFields} onReset={resetField} />
+                  </Label>
+                  <Input 
+                    value={panNumber} 
+                    onChange={e => setPanNumber(e.target.value.toUpperCase())} 
+                    placeholder="ABCDE1234F"
+                    maxLength={10}
+                  />
                 </div>
               </div>
 
@@ -269,6 +290,7 @@ const TaxAuditChecker = () => {
         </Card>
       </div>
     </div>
+    </TooltipProvider>
   );
 };
 

@@ -5,15 +5,15 @@ type Setter<T> = (value: T) => void;
 
 export interface PopulateField {
   key: string;
-  setter: Setter<number>;
-  defaultValue: number;
-  label?: string; // human-readable field name
+  setter: Setter<number | string>;
+  defaultValue: number | string;
+  label?: string;
 }
 
 export interface PopulatedInfo {
   fieldKey: string;
   source: string;
-  value: number;
+  value: number | string;
 }
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -33,7 +33,22 @@ function getNum(key: string) {
   return !isNaN(v) && v > 0 ? v : 0;
 }
 
-function resolveWithSource(key: string): { value: number; source: string } {
+function resolveWithSource(key: string): { value: number | string; source: string } {
+  // Handle PAN from profile
+  if (key === "pan") {
+    const syncPan = localStorage.getItem("sync_pan");
+    if (syncPan && syncPan.length === 10) {
+      return { value: syncPan, source: "My Profile" };
+    }
+    try {
+      const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+      if (profile.pan && profile.pan.length === 10 && profile.pan !== "ABCDE1234F") {
+        return { value: profile.pan, source: "Profile Settings" };
+      }
+    } catch {}
+    return { value: "", source: "" };
+  }
+
   const salaryTotal = getNum("salary_total");
   const incomeFromSalary = salaryTotal > 0 ? Math.round(salaryTotal / 12) : 0;
   const fhsIncome = getNum("fhs_monthlyIncome");
@@ -90,7 +105,8 @@ export function useAutoPopulate(fields: PopulateField[]): {
 
     for (const { key, setter, defaultValue } of fields) {
       const { value, source } = resolveWithSource(key);
-      if (value > 0 && value !== defaultValue) {
+      const hasValue = typeof value === "string" ? value.length > 0 : value > 0;
+      if (hasValue && value !== defaultValue) {
         setter(value);
         populated.set(key, { fieldKey: key, source, value });
       }

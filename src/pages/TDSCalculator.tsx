@@ -13,6 +13,9 @@ import { Progress } from "@/components/ui/progress";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useTaxData } from "@/hooks/useTaxData";
 import { useToast } from "@/hooks/use-toast";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#0088FE', '#00C49F'];
 
@@ -56,7 +59,19 @@ const TDSCalculator = () => {
   const [selectedSection, setSelectedSection] = useState("194A");
   const [paymentAmount, setPaymentAmount] = useState<number>(500000);
   const [panAvailable, setPanAvailable] = useState("yes");
+  const [panNumber, setPanNumber] = useState("");
   const [importedFromSalary, setImportedFromSalary] = useState(false);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "pan", setter: (v) => setPanNumber(v as string), defaultValue: "" },
+  ]);
+
+  // Auto-set PAN available when PAN is populated
+  useEffect(() => {
+    if (panNumber && panNumber.length === 10) {
+      setPanAvailable("yes");
+    }
+  }, [panNumber]);
 
   const [form26ASEntries, setForm26ASEntries] = useState<TDSEntry[]>([
     { id: "1", section: "192", description: "Salary", payer: "ABC Pvt Ltd", amount: 1200000, tdsRate: 10, tdsDeducted: 120000, quarter: "Q1-Q4", status: "Matched" },
@@ -146,6 +161,7 @@ const TDSCalculator = () => {
   };
 
   return (
+    <TooltipProvider>
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6 max-w-7xl">
         <div className="flex items-center justify-between mb-6">
@@ -192,6 +208,18 @@ const TDSCalculator = () => {
                 <div>
                   <Label>Payment Amount (₹)</Label>
                   <Input type="number" value={paymentAmount} onChange={e => setPaymentAmount(Number(e.target.value))} />
+                </div>
+                <div>
+                  <Label className="flex items-center">
+                    PAN Number
+                    <AutoPopulateBadge fieldKey="pan" populatedFields={populatedFields} onReset={resetField} />
+                  </Label>
+                  <Input 
+                    value={panNumber} 
+                    onChange={e => setPanNumber(e.target.value.toUpperCase())} 
+                    placeholder="ABCDE1234F"
+                    maxLength={10}
+                  />
                 </div>
                 <div>
                   <Label>PAN Available?</Label>
