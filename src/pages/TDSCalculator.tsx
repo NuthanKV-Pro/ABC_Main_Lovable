@@ -421,6 +421,7 @@ const TDSCalculator = () => {
         </Card>
       </div>
     </div>
+    </TooltipProvider>
   );
 };
 
