@@ -26,11 +26,6 @@ const HomeAffordabilityCalculator = () => {
   const [existingEMIs, setExistingEMIs] = useState<number>(0);
   const [creditCardDues, setCreditCardDues] = useState<number>(0);
   const [otherDebts, setOtherDebts] = useState<number>(0);
-
-  const { populatedFields, resetField } = useAutoPopulate([
-    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
-    { key: "age", setter: setAge, defaultValue: 30 },
-  ]);
   
   // Loan parameters
   const [interestRate, setInterestRate] = useState<number>(8.5);
@@ -46,6 +41,11 @@ const HomeAffordabilityCalculator = () => {
   const [creditScore, setCreditScore] = useState<string>("750+");
   const [employmentType, setEmploymentType] = useState<string>("salaried");
   const [age, setAge] = useState<number>(30);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
+    { key: "age", setter: setAge, defaultValue: 30 },
+  ]);
 
   // Calculations
   const totalMonthlyIncome = monthlyIncome + spouseIncome + otherIncome;
