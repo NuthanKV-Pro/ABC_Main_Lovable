@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +27,10 @@ const SalaryRestructuring = () => {
   const [metro, setMetro] = useState(true);
   const [monthlyRent, setMonthlyRent] = useState(25000);
   const [salaryImported, setSalaryImported] = useState(false);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "salaryMonthlyIncome", setter: (v: number) => setCTC(Math.round(v * 12 * 1.3)), defaultValue: 0 },
+  ]);
 
   const importFromSalary = () => {
     if (!taxData.salary.hasData) return;
@@ -158,7 +164,13 @@ const SalaryRestructuring = () => {
             <CardHeader><CardTitle>Salary Configuration</CardTitle></CardHeader>
             <CardContent className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div><Label>Annual CTC (₹)</Label><Input type="number" value={ctc} onChange={e => setCTC(Number(e.target.value))} /></div>
+                <div>
+                  <Label className="flex items-center">
+                    Annual CTC (₹)
+                    <AutoPopulateBadge fieldKey="salaryMonthlyIncome" populatedFields={populatedFields} onReset={resetField} />
+                  </Label>
+                  <Input type="number" value={ctc} onChange={e => setCTC(Number(e.target.value))} />
+                </div>
                 <div>
                   <Label>Tax Regime</Label>
                   <Select value={regime} onValueChange={setRegime}>

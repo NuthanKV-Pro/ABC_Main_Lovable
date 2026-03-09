@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -39,6 +41,11 @@ const ITRFilingAssistant = () => {
   const [assessmentYear, setAssessmentYear] = useState("2026-27");
   const [step, setStep] = useState(1);
   const [autoDetected, setAutoDetected] = useState(false);
+  const [userPan, setUserPan] = useState("");
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "pan", setter: setUserPan, defaultValue: "" },
+  ]);
 
   // Wizard answers
   const [residencyStatus, setResidencyStatus] = useState("resident");

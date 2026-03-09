@@ -26,10 +26,6 @@ const HomeAffordabilityCalculator = () => {
   const [existingEMIs, setExistingEMIs] = useState<number>(0);
   const [creditCardDues, setCreditCardDues] = useState<number>(0);
   const [otherDebts, setOtherDebts] = useState<number>(0);
-
-  const { populatedFields, resetField } = useAutoPopulate([
-    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
-  ]);
   
   // Loan parameters
   const [interestRate, setInterestRate] = useState<number>(8.5);
@@ -45,6 +41,11 @@ const HomeAffordabilityCalculator = () => {
   const [creditScore, setCreditScore] = useState<string>("750+");
   const [employmentType, setEmploymentType] = useState<string>("salaried");
   const [age, setAge] = useState<number>(30);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
+    { key: "age", setter: setAge, defaultValue: 30 },
+  ]);
 
   // Calculations
   const totalMonthlyIncome = monthlyIncome + spouseIncome + otherIncome;
@@ -372,7 +373,10 @@ const HomeAffordabilityCalculator = () => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm">Your Age: {age} years</Label>
+                <Label className="text-sm flex items-center">
+                  Your Age: {age} years
+                  <AutoPopulateBadge fieldKey="age" populatedFields={populatedFields} onReset={resetField} />
+                </Label>
                 <Slider
                   value={[age]}
                   onValueChange={(value) => setAge(value[0])}

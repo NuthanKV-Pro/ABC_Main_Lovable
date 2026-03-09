@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -32,6 +34,11 @@ const RentVsBuyCalculator = () => {
   const [investmentReturn, setInvestmentReturn] = useState<number>(12);
   const [timeHorizon, setTimeHorizon] = useState<number>(10);
   const [taxBracket, setTaxBracket] = useState<number>(30);
+  const [monthlyIncome, setMonthlyIncome] = useState<number>(100000);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
+  ]);
 
   // Calculations
   const downPaymentAmount = (propertyPrice * downPayment) / 100;

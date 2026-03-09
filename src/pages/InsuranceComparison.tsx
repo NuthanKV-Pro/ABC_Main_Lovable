@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,9 +13,13 @@ import Footer from "@/components/Footer";
 const InsuranceComparison = () => {
   const goBack = useGoBack();
   const [age, setAge] = useState(30);
-  const [sumAssured, setSumAssured] = useState(10000000); // 1 Cr
+  const [sumAssured, setSumAssured] = useState(10000000);
   const [policyTerm, setPolicyTerm] = useState(30);
   const [premiumPayingTerm, setPremiumPayingTerm] = useState(20);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "age", setter: setAge, defaultValue: 30 },
+  ]);
 
   // Approximate annual premiums
   const termPremium = Math.round((sumAssured / 1000) * (0.8 + age * 0.04));
@@ -121,7 +127,10 @@ const InsuranceComparison = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="space-y-2">
-                  <Label>Age</Label>
+                  <Label className="flex items-center">
+                    Age
+                    <AutoPopulateBadge fieldKey="age" populatedFields={populatedFields} onReset={resetField} />
+                  </Label>
                   <Input type="number" value={age} onChange={(e) => setAge(Number(e.target.value))} min={18} max={60} />
                 </div>
                 <div className="space-y-2">
