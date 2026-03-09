@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,8 +29,15 @@ const CarLoanCalculator = () => {
   const [tenureYears, setTenureYears] = useState<number>(5);
   const [tenureMonths, setTenureMonths] = useState<number>(0);
   
+  // Income for eligibility
+  const [monthlyIncome, setMonthlyIncome] = useState<number>(80000);
+  
   // Insurance Options
   const [includeInsurance, setIncludeInsurance] = useState<boolean>(true);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 80000 },
+  ]);
 
   // Calculations
   const onRoadPrice = exShowroomPrice + roadTax + (includeInsurance ? insurance : 0) + accessories + registration;

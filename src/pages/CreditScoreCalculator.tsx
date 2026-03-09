@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +29,13 @@ const CreditScoreCalculator = () => {
   
   // New Credit Inquiries (10%)
   const [hardInquiries, setHardInquiries] = useState<string>("0-2");
+  
+  // Income for context
+  const [monthlyIncome, setMonthlyIncome] = useState<number>(80000);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 80000 },
+  ]);
 
   // Calculate score components
   const getPaymentScore = () => {

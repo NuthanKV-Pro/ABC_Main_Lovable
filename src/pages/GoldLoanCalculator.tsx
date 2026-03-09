@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Coins, TrendingUp, AlertTriangle, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const GoldLoanCalculator = () => {
@@ -18,6 +20,11 @@ const GoldLoanCalculator = () => {
   const [ltvRatio, setLtvRatio] = useState<number>(75);
   const [interestRate, setInterestRate] = useState<number>(10);
   const [tenure, setTenure] = useState<number>(12);
+  const [monthlyIncome, setMonthlyIncome] = useState<number>(50000);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 50000 },
+  ]);
 
   // Purity factors
   const purityFactors: { [key: string]: number } = {

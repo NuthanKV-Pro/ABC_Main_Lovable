@@ -8,6 +8,8 @@ import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, GraduationCap, TrendingUp, AlertTriangle, Info, Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -21,6 +23,11 @@ const EducationLoanCalculator = () => {
   const [repaymentYears, setRepaymentYears] = useState<number>(10);
   const [isInterestSubsidy, setIsInterestSubsidy] = useState<boolean>(false);
   const [subsidyPercentage, setSubsidyPercentage] = useState<number>(100);
+  const [monthlyIncome, setMonthlyIncome] = useState<number>(80000);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 80000 },
+  ]);
 
   // Calculations
   const totalMoratoriumMonths = (courseDuration * 12) + moratoriumMonths;
