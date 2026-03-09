@@ -1,10 +1,24 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, FileText, Calculator, Coins, Globe, PieChart, TrendingUp, Layers, Heart, Target, TrendingDown, CreditCard, Briefcase, Users, Search } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  ArrowLeft, FileText, Calculator, Coins, Globe, PieChart,
+  TrendingUp, Layers, Heart, Target, TrendingDown, CreditCard,
+  Briefcase, Users, Search, ShieldCheck, Landmark, Building2,
+  Sparkles, ArrowRight
+} from "lucide-react";
 import { useGoBack } from "@/hooks/useGoBack";
+
+const categoryMeta: Record<string, { icon: any; color: string; bg: string }> = {
+  "Tax & Compliance": { icon: ShieldCheck, color: "text-red-500", bg: "bg-red-500/10" },
+  "Investment & Wealth": { icon: Landmark, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+  "Financial Planning": { icon: Target, color: "text-blue-500", bg: "bg-blue-500/10" },
+  "Business": { icon: Building2, color: "text-amber-500", bg: "bg-amber-500/10" },
+  "Lifestyle": { icon: Sparkles, color: "text-purple-500", bg: "bg-purple-500/10" },
+};
 
 const tools = [
   { id: "ais-tis-reconciliation", title: "AIS/TIS Reconciliation", description: "Match Form 26AS with AIS/TIS data, flag discrepancies", icon: FileText, route: "/ais-tis-reconciliation", category: "Tax & Compliance" },
@@ -47,6 +61,52 @@ const OtherTools = () => {
     return acc;
   }, {} as Record<string, typeof tools>);
 
+  const ToolCard = ({ tool }: { tool: typeof tools[0] }) => {
+    const catMeta = categoryMeta[tool.category];
+    return (
+      <Card
+        className="group cursor-pointer border-border/50 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1 overflow-hidden relative"
+        onClick={() => navigate(tool.route)}
+      >
+        <div className={`absolute top-0 left-0 right-0 h-1 ${catMeta.bg.replace('/10', '/60')} opacity-0 group-hover:opacity-100 transition-opacity`} />
+        <CardContent className="p-5">
+          <div className="flex items-start gap-4">
+            <div className={`p-3 rounded-xl ${catMeta.bg} shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+              <tool.icon className={`h-5 w-5 ${catMeta.color}`} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1.5">
+                <h3 className="font-semibold text-sm text-foreground truncate">{tool.title}</h3>
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 shrink-0 bg-primary/10 text-primary border-0">
+                  New
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{tool.description}</p>
+            </div>
+            <ArrowRight className="h-4 w-4 text-muted-foreground/0 group-hover:text-muted-foreground transition-all shrink-0 mt-1" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
+  const CategoryHeader = ({ category }: { category: string }) => {
+    const meta = categoryMeta[category];
+    const CategoryIcon = meta.icon;
+    const count = groupedTools[category]?.length || 0;
+    return (
+      <div className="flex items-center gap-3 mb-4">
+        <div className={`p-2 rounded-lg ${meta.bg}`}>
+          <CategoryIcon className={`h-5 w-5 ${meta.color}`} />
+        </div>
+        <div>
+          <h2 className="text-lg font-bold text-foreground">{category}</h2>
+          <p className="text-xs text-muted-foreground">{count} tool{count !== 1 ? 's' : ''}</p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="container mx-auto py-8 px-4 max-w-6xl">
       <Button variant="ghost" onClick={goBack} className="mb-4">
@@ -54,12 +114,12 @@ const OtherTools = () => {
       </Button>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">📦 Other Tools</h1>
-        <p className="text-muted-foreground">Additional utilities for tax, investment, business, and financial planning</p>
+        <h1 className="text-3xl font-bold mb-1">📦 Other Tools</h1>
+        <p className="text-muted-foreground text-sm">18 specialized utilities for tax, investment, business & lifestyle</p>
       </div>
 
       {/* Search and Filter */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row gap-3 mb-8">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -70,16 +130,22 @@ const OtherTools = () => {
           />
         </div>
         <div className="flex gap-2 flex-wrap">
-          {categories.map(category => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
-            </Button>
-          ))}
+          {categories.map(category => {
+            const isActive = selectedCategory === category;
+            const meta = category !== "All" ? categoryMeta[category] : null;
+            return (
+              <Button
+                key={category}
+                variant={isActive ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(category)}
+                className={!isActive && meta ? `hover:${meta.bg}` : ""}
+              >
+                {meta && <meta.icon className="h-3.5 w-3.5 mr-1" />}
+                {category}
+              </Button>
+            );
+          })}
         </div>
       </div>
 
@@ -87,64 +153,30 @@ const OtherTools = () => {
       {selectedCategory === "All" ? (
         Object.entries(groupedTools).map(([category, categoryTools]) => (
           categoryTools.length > 0 && (
-            <div key={category} className="mb-8">
-              <h2 className="text-xl font-semibold mb-4">{category}</h2>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div key={category} className="mb-10">
+              <CategoryHeader category={category} />
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {categoryTools.map(tool => (
-                  <Card
-                    key={tool.id}
-                    className="cursor-pointer hover:shadow-lg transition-all hover:border-primary/50"
-                    onClick={() => navigate(tool.route)}
-                  >
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-primary/10">
-                          <tool.icon className="h-5 w-5 text-primary" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-base">{tool.title}</CardTitle>
-                          <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full">New</span>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CardDescription>{tool.description}</CardDescription>
-                    </CardContent>
-                  </Card>
+                  <ToolCard key={tool.id} tool={tool} />
                 ))}
               </div>
             </div>
           )
         ))
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredTools.map(tool => (
-            <Card
-              key={tool.id}
-              className="cursor-pointer hover:shadow-lg transition-all hover:border-primary/50"
-              onClick={() => navigate(tool.route)}
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <tool.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-base">{tool.title}</CardTitle>
-                    <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full">New</span>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{tool.description}</CardDescription>
-              </CardContent>
-            </Card>
-          ))}
+        <div>
+          <CategoryHeader category={selectedCategory} />
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {filteredTools.map(tool => (
+              <ToolCard key={tool.id} tool={tool} />
+            ))}
+          </div>
         </div>
       )}
 
       {filteredTools.length === 0 && (
-        <div className="text-center py-12">
+        <div className="text-center py-16">
+          <Search className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
           <p className="text-muted-foreground">No tools found matching your search.</p>
         </div>
       )}
