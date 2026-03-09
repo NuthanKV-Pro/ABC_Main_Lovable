@@ -41,6 +41,11 @@ const ITRFilingAssistant = () => {
   const [assessmentYear, setAssessmentYear] = useState("2026-27");
   const [step, setStep] = useState(1);
   const [autoDetected, setAutoDetected] = useState(false);
+  const [userPan, setUserPan] = useState("");
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "pan", setter: setUserPan, defaultValue: "" },
+  ]);
 
   // Wizard answers
   const [residencyStatus, setResidencyStatus] = useState("resident");

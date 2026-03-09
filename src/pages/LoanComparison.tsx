@@ -34,9 +34,14 @@ interface LoanAnalysis {
 const LoanComparison = () => {
   const navigate = useNavigate();
   const goBack = useGoBack();
+  const [monthlyIncome, setMonthlyIncome] = useState<number>(100000);
   const [loans, setLoans] = useState<LoanOffer[]>([
     { id: "1", name: "Bank A", principal: 1000000, interestRate: 8.5, tenure: 20, processingFee: 0.5, prepaymentPenalty: 2 },
     { id: "2", name: "Bank B", principal: 1000000, interestRate: 8.75, tenure: 20, processingFee: 0, prepaymentPenalty: 0 },
+  ]);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
   ]);
 
   const addLoan = () => {

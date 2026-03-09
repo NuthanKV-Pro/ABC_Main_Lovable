@@ -34,6 +34,11 @@ const RentVsBuyCalculator = () => {
   const [investmentReturn, setInvestmentReturn] = useState<number>(12);
   const [timeHorizon, setTimeHorizon] = useState<number>(10);
   const [taxBracket, setTaxBracket] = useState<number>(30);
+  const [monthlyIncome, setMonthlyIncome] = useState<number>(100000);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
+  ]);
 
   // Calculations
   const downPaymentAmount = (propertyPrice * downPayment) / 100;
