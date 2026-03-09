@@ -1,14 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 
-type Setter<T> = (value: T) => void;
-
-export interface PopulateField {
+export interface PopulateFieldNumeric {
   key: string;
-  setter: Setter<number | string>;
-  defaultValue: number | string;
+  setter: (value: number) => void;
+  defaultValue: number;
   label?: string;
 }
+
+export interface PopulateFieldString {
+  key: string;
+  setter: (value: string) => void;
+  defaultValue: string;
+  label?: string;
+}
+
+export type PopulateField = PopulateFieldNumeric | PopulateFieldString;
 
 export interface PopulatedInfo {
   fieldKey: string;
@@ -103,12 +110,17 @@ export function useAutoPopulate(fields: PopulateField[]): {
 
     const populated = new Map<string, PopulatedInfo>();
 
-    for (const { key, setter, defaultValue } of fields) {
-      const { value, source } = resolveWithSource(key);
+    for (const field of fields) {
+      const { value, source } = resolveWithSource(field.key);
       const hasValue = typeof value === "string" ? value.length > 0 : value > 0;
-      if (hasValue && value !== defaultValue) {
-        setter(value);
-        populated.set(key, { fieldKey: key, source, value });
+      if (hasValue && value !== field.defaultValue) {
+        // Type-safe setter call
+        if (typeof value === "string" && typeof field.defaultValue === "string") {
+          (field.setter as (v: string) => void)(value);
+        } else if (typeof value === "number" && typeof field.defaultValue === "number") {
+          (field.setter as (v: number) => void)(value);
+        }
+        populated.set(field.key, { fieldKey: field.key, source, value });
       }
     }
 
