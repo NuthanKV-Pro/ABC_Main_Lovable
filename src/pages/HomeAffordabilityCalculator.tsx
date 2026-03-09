@@ -373,7 +373,10 @@ const HomeAffordabilityCalculator = () => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm">Your Age: {age} years</Label>
+                <Label className="text-sm flex items-center">
+                  Your Age: {age} years
+                  <AutoPopulateBadge fieldKey="age" populatedFields={populatedFields} onReset={resetField} />
+                </Label>
                 <Slider
                   value={[age]}
                   onValueChange={(value) => setAge(value[0])}
