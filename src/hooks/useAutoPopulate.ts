@@ -136,7 +136,11 @@ export function useAutoPopulate(fields: PopulateField[]): {
   const resetField = (fieldKey: string) => {
     const field = fields.find(f => f.key === fieldKey);
     if (field) {
-      field.setter(field.defaultValue);
+      if (typeof field.defaultValue === "string") {
+        (field.setter as (v: string) => void)(field.defaultValue);
+      } else {
+        (field.setter as (v: number) => void)(field.defaultValue);
+      }
       setPopulatedFields(prev => {
         const next = new Map(prev);
         next.delete(fieldKey);
