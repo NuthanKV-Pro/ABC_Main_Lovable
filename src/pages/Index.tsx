@@ -262,6 +262,31 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
     ]
   },
   {
+    name: "📦 Other Tools",
+    icon: MoreHorizontal,
+    description: "Additional utilities for tax, investment, and financial planning",
+    tools: [
+      { id: "ais-tis-reconciliation", title: "AIS/TIS Reconciliation", description: "Match Form 26AS with AIS/TIS data", icon: FileText, route: "/ais-tis-reconciliation", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "presumptive-tax", title: "Presumptive Tax Calculator", description: "44AD/44ADA eligibility & calculation", icon: Calculator, route: "/presumptive-tax", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "crypto-tax", title: "Crypto Tax Calculator", description: "30% VDA tax, 1% TDS rules", icon: Coins, route: "/crypto-tax", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "nri-tax", title: "NRI Tax Calculator", description: "Residency status & taxable income", icon: Globe, route: "/nri-tax", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "asset-allocation", title: "Asset Allocation Optimizer", description: "Age & goal-based portfolio rebalancing", icon: PieChart, route: "/asset-allocation", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "ipo-analysis", title: "IPO Analysis Tool", description: "GMP tracking & allotment probability", icon: TrendingUp, route: "/ipo-analysis", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "bond-ladder", title: "Bond Ladder Calculator", description: "Maturity staggering & yield optimization", icon: Layers, route: "/bond-ladder", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "human-life-value", title: "Human Life Value Calculator", description: "Insurance needs based on income", icon: Heart, route: "/human-life-value", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "multiple-goals", title: "Multiple Goals Dashboard", description: "Track progress across financial goals", icon: Target, route: "/multiple-goals", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "inflation-corpus", title: "Inflation-Adjusted Corpus", description: "Future value with inflation erosion", icon: TrendingDown, route: "/inflation-corpus", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "breakeven-analysis", title: "Break-even Analysis", description: "Fixed/variable costs & units to break even", icon: Target, route: "/breakeven-analysis", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "working-capital", title: "Working Capital Calculator", description: "Current ratio, operating cycle", icon: Calculator, route: "/working-capital", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "invoice-aging", title: "Invoice Aging Dashboard", description: "AR aging buckets & overdue tracking", icon: FileText, route: "/invoice-aging", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "subscription-audit", title: "Subscription Audit Tool", description: "Track recurring expenses & waste", icon: CreditCard, route: "/subscription-audit", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "side-hustle", title: "Side Hustle Tracker", description: "Multi-source income & tax implications", icon: Briefcase, route: "/side-hustle", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "expense-split", title: "Expense Split Calculator", description: "Roommate/group expense splitting", icon: Users, route: "/expense-split", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "rent-receipt", title: "Rent Receipt Generator", description: "Generate rent receipts for HRA claims", icon: FileText, route: "/rent-receipt", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      { id: "emi-prepayment", title: "EMI Prepayment Optimizer", description: "EMI reduction vs tenure reduction", icon: Calculator, route: "/emi-prepayment", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" }
+    ]
+  },
+  {
     name: "Tax Planning & Optimization",
     icon: Calculator,
     description: "Maximize tax savings and optimize your strategy",
