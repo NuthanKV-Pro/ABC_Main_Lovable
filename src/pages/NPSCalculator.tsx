@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +19,9 @@ const NPSCalculator = () => {
   const [expectedReturn, setExpectedReturn] = useState<number>(10);
   const [annuityRate, setAnnuityRate] = useState<number>(40);
 
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "age", setter: setCurrentAge, defaultValue: 30 },
+  ]);
   const years = retirementAge - currentAge;
   const months = years * 12;
   const monthlyRate = expectedReturn / 100 / 12;
@@ -73,7 +78,10 @@ const NPSCalculator = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="currentAge">Current Age (Years)</Label>
+                <Label htmlFor="currentAge" className="flex items-center">
+                  Current Age (Years)
+                  <AutoPopulateBadge fieldKey="age" populatedFields={populatedFields} onReset={resetField} />
+                </Label>
                 <Input
                   id="currentAge"
                   type="number"

@@ -56,6 +56,37 @@ function resolveWithSource(key: string): { value: number | string; source: strin
     return { value: "", source: "" };
   }
 
+  // Handle name from profile
+  if (key === "name") {
+    try {
+      const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+      if (profile.name && profile.name !== "Shankaran Pillai") {
+        return { value: profile.name, source: "Profile Settings" };
+      }
+    } catch {}
+    return { value: "", source: "" };
+  }
+
+  // Handle address from profile
+  if (key === "address") {
+    try {
+      const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+      if (profile.address) {
+        return { value: profile.address, source: "Profile Settings" };
+      }
+    } catch {}
+    return { value: "", source: "" };
+  }
+
+  // Handle age - check sync key first, then fhs_age
+  if (key === "age" || key === "fhs_age") {
+    const syncAge = getNum("sync_age");
+    if (syncAge > 0) return { value: syncAge, source: "My Profile" };
+    const fhsAge = getNum("fhs_age");
+    if (fhsAge > 0) return { value: fhsAge, source: "Health Score" };
+    return { value: 0, source: "" };
+  }
+
   const salaryTotal = getNum("salary_total");
   const incomeFromSalary = salaryTotal > 0 ? Math.round(salaryTotal / 12) : 0;
   const fhsIncome = getNum("fhs_monthlyIncome");
@@ -63,13 +94,15 @@ function resolveWithSource(key: string): { value: number | string; source: strin
   // Check sync_ keys first (from "Sync All Tools")
   const syncMap: Record<string, string> = {
     monthlyIncome: "sync_monthlyIncome",
-    fhs_age: "sync_age",
     fhs_monthlyExpenses: "sync_monthlyExpenses",
     fhs_totalInvestments: "sync_totalInvestments",
     fhs_monthlySavings: "sync_monthlySavings",
     fhs_emergencyFund: "sync_emergencyFund",
     fhs_monthlyDebtPayment: "sync_monthlyDebtPayment",
     fhs_totalDebt: "sync_totalDebt",
+    monthlySavings: "sync_monthlySavings",
+    totalInvestments: "sync_totalInvestments",
+    totalDebt: "sync_totalDebt",
   };
 
   const syncKey = syncMap[key];
@@ -86,6 +119,21 @@ function resolveWithSource(key: string): { value: number | string; source: strin
     }
     case "salaryMonthlyIncome":
       return { value: incomeFromSalary, source: "Salary" };
+    case "monthlySavings": {
+      const v = getNum("fhs_monthlySavings");
+      if (v > 0) return { value: v, source: "Health Score" };
+      return { value: 0, source: "" };
+    }
+    case "totalInvestments": {
+      const v = getNum("fhs_totalInvestments");
+      if (v > 0) return { value: v, source: "Health Score" };
+      return { value: 0, source: "" };
+    }
+    case "totalDebt": {
+      const v = getNum("fhs_totalDebt");
+      if (v > 0) return { value: v, source: "Health Score" };
+      return { value: 0, source: "" };
+    }
     default: {
       const v = getNum(key);
       return { value: v, source: SOURCE_LABELS[key] || "Saved Data" };

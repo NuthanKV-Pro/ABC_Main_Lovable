@@ -33,6 +33,10 @@ const ProfileSettings = () => {
 
   const handleSave = () => {
     updateProfile(formData);
+    // Write sync_pan for auto-populate priority chain
+    if (formData.pan && formData.pan.length === 10 && formData.pan !== "ABCDE1234F") {
+      localStorage.setItem("sync_pan", formData.pan);
+    }
     toast({ title: "Profile Updated", description: "Your profile settings have been saved successfully." });
   };
 

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +18,7 @@ const PersonalLoanCalculator = () => {
   
   // Basic inputs
   const [loanAmount, setLoanAmount] = useState<number>(500000);
-  const [tenure, setTenure] = useState<number>(36); // months
+  const [tenure, setTenure] = useState<number>(36);
   const [creditScore, setCreditScore] = useState<number>(750);
   
   // Eligibility inputs
@@ -28,6 +30,10 @@ const PersonalLoanCalculator = () => {
   // Prepayment inputs
   const [monthsCompleted, setMonthsCompleted] = useState<number>(12);
   const [prepaymentAmount, setPrepaymentAmount] = useState<number>(100000);
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 80000 },
+  ]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
