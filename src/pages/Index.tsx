@@ -258,8 +258,14 @@ const toolCategories: { name: string; icon: React.ComponentType<{ className?: st
         tag: "New",
         tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
         starred: true
-      },
-      // 📦 Other Tools (18 additional utilities)
+      }
+    ]
+  },
+  {
+    name: "📦 Other Tools",
+    icon: MoreHorizontal,
+    description: "Additional utilities for tax, investment, and financial planning",
+    tools: [
       { id: "ais-tis-reconciliation", title: "AIS/TIS Reconciliation", description: "Match Form 26AS with AIS/TIS data", icon: FileText, route: "/ais-tis-reconciliation", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
       { id: "presumptive-tax", title: "Presumptive Tax Calculator", description: "44AD/44ADA eligibility & calculation", icon: Calculator, route: "/presumptive-tax", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
       { id: "crypto-tax", title: "Crypto Tax Calculator", description: "30% VDA tax, 1% TDS rules", icon: Coins, route: "/crypto-tax", tag: "New", tagColor: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
