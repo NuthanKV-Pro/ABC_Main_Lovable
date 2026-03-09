@@ -29,6 +29,7 @@ const HomeAffordabilityCalculator = () => {
 
   const { populatedFields, resetField } = useAutoPopulate([
     { key: "monthlyIncome", setter: setMonthlyIncome, defaultValue: 100000 },
+    { key: "age", setter: setAge, defaultValue: 30 },
   ]);
   
   // Loan parameters

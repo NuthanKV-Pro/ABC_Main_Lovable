@@ -368,7 +368,10 @@ const PersonalLoanCalculator = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label>Monthly Income (₹)</Label>
+                      <Label className="flex items-center">
+                        Monthly Income (₹)
+                        <AutoPopulateBadge fieldKey="monthlyIncome" populatedFields={populatedFields} onReset={resetField} />
+                      </Label>
                       <Input
                         type="number"
                         value={monthlyIncome}

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGoBack } from "@/hooks/useGoBack";
+import { useAutoPopulate } from "@/hooks/useAutoPopulate";
+import AutoPopulateBadge from "@/components/AutoPopulateBadge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +19,10 @@ const SIPCalculator = () => {
   const [monthlyInvestment, setMonthlyInvestment] = useState<string>("10000");
   const [duration, setDuration] = useState<string>("10");
   const [expectedReturn, setExpectedReturn] = useState<string>("12");
+
+  const { populatedFields, resetField } = useAutoPopulate([
+    { key: "monthlySavings", setter: (v: number) => setMonthlyInvestment(String(v)), defaultValue: 10000 },
+  ]);
 
   const calculateSIP = () => {
     const P = parseFloat(monthlyInvestment) || 0;
@@ -149,7 +155,10 @@ const SIPCalculator = () => {
               {/* Inputs */}
               <div className="grid gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="monthlyInvestment">Monthly Investment (₹)</Label>
+                  <Label htmlFor="monthlyInvestment" className="flex items-center">
+                    Monthly Investment (₹)
+                    <AutoPopulateBadge fieldKey="monthlySavings" populatedFields={populatedFields} onReset={resetField} />
+                  </Label>
                   <Input
                     id="monthlyInvestment"
                     type="number"
